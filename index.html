@@ -6,531 +6,304 @@
 <title>DesignFlow</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
-
   :root {
-    --bg-primary: #222831;
-    --bg-secondary: #393E46;
-    --bg-tertiary: #2d3340;
-    --accent: #00ADB5;
-    --accent-hover: #00c5cf;
-    --accent-dim: rgba(0,173,181,0.15);
-    --text: #EEEEEE;
-    --text-muted: #9aa3b0;
-    --border: rgba(255,255,255,0.08);
-    --border-accent: rgba(0,173,181,0.4);
-    --panel-w: 260px;
-    --toolbar-h: 56px;
-    --topbar-h: 48px;
-    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    --bg-primary:#222831;--bg-secondary:#393E46;--bg-tertiary:#2d3340;
+    --accent:#00ADB5;--accent-hover:#00c5cf;--accent-dim:rgba(0,173,181,0.15);
+    --text:#EEEEEE;--text-muted:#9aa3b0;--border:rgba(255,255,255,0.08);
+    --border-accent:rgba(0,173,181,0.4);--panel-w:260px;--toolbar-h:56px;
+    --topbar-h:48px;--shadow:0 4px 24px rgba(0,0,0,0.4);
   }
-
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'DM Sans',sans-serif; background:var(--bg-primary); color:var(--text); height:100vh; overflow:hidden; display:flex; flex-direction:column; }
-
-  /* Loading screen */
-  #loadingScreen { position:fixed; inset:0; background:var(--bg-primary); z-index:2000; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; }
-  #loadingScreen .logo { display:flex; align-items:center; gap:10px; }
-  #loadingScreen .logo svg { width:32px; height:32px; }
-  #loadingScreen .logo span { font-size:22px; font-weight:700; letter-spacing:-0.5px; }
-  #loadingScreen .status { font-size:13px; color:var(--text-muted); }
-  #loadingScreen.hidden { display:none; }
-
-  /* ===== LOGIN SCREEN ===== */
-  #loginScreen {
-    position:fixed; inset:0; background:var(--bg-primary); z-index:1500;
-    display:none; flex-direction:column; align-items:center; justify-content:center; gap:0;
-  }
-  #loginScreen.active { display:flex; }
-  .login-card {
-    background:var(--bg-secondary); border:1px solid var(--border);
-    border-radius:20px; padding:48px 40px; width:400px; max-width:90vw;
-    display:flex; flex-direction:column; align-items:center; gap:28px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-  }
-  .login-logo { display:flex; align-items:center; gap:10px; }
-  .login-logo svg { width:36px; height:36px; }
-  .login-logo span { font-size:26px; font-weight:700; letter-spacing:-0.5px; color:var(--text); }
-  .login-desc { font-size:13px; color:var(--text-muted); text-align:center; line-height:1.6; }
-  .login-divider { display:flex; align-items:center; gap:12px; width:100%; }
-  .login-divider::before, .login-divider::after { content:''; flex:1; height:1px; background:var(--border); }
-  .login-divider span { font-size:11px; color:var(--text-muted); }
-
-  .btn-google {
-    width:100%; display:flex; align-items:center; justify-content:center; gap:12px;
-    padding:12px 20px; background:#fff; color:#1a1a1a;
-    border:none; border-radius:10px; cursor:pointer;
-    font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600;
-    transition:all .2s; box-shadow:0 2px 8px rgba(0,0,0,0.2);
-  }
-  .btn-google:hover { background:#f0f0f0; transform:translateY(-1px); box-shadow:0 4px 16px rgba(0,0,0,0.25); }
-  .btn-google svg { width:20px; height:20px; flex-shrink:0; }
-
-  /* Email/Password form */
-  .login-form { width:100%; display:flex; flex-direction:column; gap:12px; }
-  .form-group { display:flex; flex-direction:column; gap:6px; }
-  .form-label { font-size:12px; font-weight:500; color:var(--text-muted); }
-  .form-input {
-    background:var(--bg-primary); border:1px solid var(--border);
-    border-radius:8px; padding:10px 14px; color:var(--text);
-    font-family:'DM Sans',sans-serif; font-size:13px; outline:none;
-    transition:border-color .2s;
-  }
-  .form-input:focus { border-color:var(--accent); }
-  .form-input::placeholder { color:var(--text-muted); }
-
-  .btn-primary {
-    width:100%; padding:11px 20px; background:var(--accent); color:#fff;
-    border:none; border-radius:8px; cursor:pointer;
-    font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600;
-    transition:all .2s;
-  }
-  .btn-primary:hover { background:var(--accent-hover); }
-  .btn-primary:disabled { opacity:.5; cursor:not-allowed; }
-
-  .login-toggle { font-size:12px; color:var(--text-muted); text-align:center; }
-  .login-toggle a { color:var(--accent); cursor:pointer; text-decoration:underline; }
-  .login-error { font-size:12px; color:#ff6b6b; text-align:center; min-height:16px; }
-
-  .btn { display:inline-flex; align-items:center; gap:8px; padding:10px 18px; border-radius:8px; border:none; cursor:pointer; font-family:inherit; font-size:13px; font-weight:500; transition:all .2s; }
-  .btn-accent { background:var(--accent); color:#fff; }
-  .btn-accent:hover { background:var(--accent-hover); }
-  .btn-ghost { background:transparent; color:var(--text-muted); border:1px solid var(--border); }
-  .btn-ghost:hover { border-color:var(--accent); color:var(--accent); }
-
-  /* DASHBOARD */
-  #dashboard { flex:1; overflow-y:auto; padding:40px; display:none; flex-direction:column; gap:32px; }
-  #dashboard.active { display:flex; }
-  .dash-header { display:flex; align-items:center; justify-content:space-between; }
-  .dash-header h2 { font-size:20px; font-weight:600; }
-  .dash-user { display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text-muted); }
-  .dash-avatar { width:32px; height:32px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; color:#fff; }
-  .projects-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:20px; }
-  .project-card { background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; overflow:hidden; cursor:pointer; transition:all .2s; position:relative; }
-  .project-card:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,173,181,0.15); }
-  .project-thumb { height:140px; background:var(--bg-primary); display:flex; align-items:center; justify-content:center; }
-  .project-info { padding:12px 14px; }
-  .project-name { font-size:13px; font-weight:500; margin-bottom:4px; }
-  .project-meta { font-size:11px; color:var(--text-muted); }
-  .project-del-btn { position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.5); border:none; border-radius:6px; width:28px; height:28px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#fff; opacity:0; transition:opacity .2s; }
-  .project-card:hover .project-del-btn { opacity:1; }
-  .new-project-card { border:2px dashed var(--border); border-radius:12px; height:196px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; cursor:pointer; color:var(--text-muted); font-size:13px; transition:all .2s; }
-  .new-project-card:hover { border-color:var(--accent); color:var(--accent); }
-  .new-project-card svg { width:28px; height:28px; }
-  .section-title { font-size:14px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.5px; }
-
-  /* EDITOR */
-  #editor { display:none; flex:1; flex-direction:column; }
-  #editor.active { display:flex; }
-
-  .topbar { height:var(--topbar-h); background:var(--bg-secondary); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 16px; gap:12px; flex-shrink:0; z-index:50; }
-  .topbar-left { display:flex; align-items:center; gap:10px; flex:1; }
-  .topbar-center { display:flex; align-items:center; gap:8px; flex:1; justify-content:center; }
-  .topbar-right { display:flex; align-items:center; gap:8px; flex:1; justify-content:flex-end; }
-  .back-btn { display:flex; align-items:center; gap:6px; color:var(--text-muted); font-size:13px; cursor:pointer; padding:5px 8px; border-radius:6px; border:none; background:transparent; transition:color .2s; }
-  .back-btn:hover { color:var(--text); }
-  .project-title-input { background:transparent; border:none; color:var(--text); font-family:inherit; font-size:14px; font-weight:500; text-align:center; outline:none; border-bottom:1px solid transparent; transition:border-color .2s; min-width:120px; max-width:240px; }
-  .project-title-input:focus { border-bottom-color:var(--accent); }
-  .topbar-btn { padding:5px 12px; border-radius:6px; font-size:12px; font-weight:500; cursor:pointer; font-family:inherit; border:1px solid var(--border); background:transparent; color:var(--text-muted); transition:all .2s; display:flex; align-items:center; gap:5px; }
-  .topbar-btn:hover { border-color:var(--accent); color:var(--accent); }
-  .topbar-btn.save { background:var(--accent); color:#fff; border-color:var(--accent); }
-  .topbar-btn.save:hover { background:var(--accent-hover); }
-
-  .editor-body { flex:1; display:flex; overflow:hidden; position:relative; }
-
-  /* LEFT PANEL */
-  .left-panel { width:200px; background:var(--bg-secondary); border-right:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; overflow:hidden; }
-  .panel-header { padding:10px 14px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:var(--text-muted); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
-  .layers-list { flex:1; overflow-y:auto; padding:6px; }
-  .layer-item { display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:6px; cursor:pointer; font-size:12px; color:var(--text-muted); transition:all .15s; border:1px solid transparent; user-select:none; }
-  .layer-item:hover { background:var(--bg-tertiary); color:var(--text); }
-  .layer-item.selected { background:var(--accent-dim); border-color:var(--border-accent); color:var(--text); }
-  .layer-icon { width:16px; height:16px; flex-shrink:0; }
-  .layer-name { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .layer-vis { width:16px; height:16px; flex-shrink:0; cursor:pointer; opacity:.5; }
-  .layer-vis:hover { opacity:1; }
-  .layer-actions { display:flex; gap:2px; padding:6px; }
-  .layer-action-btn { flex:1; padding:5px; background:var(--bg-primary); border:1px solid var(--border); border-radius:5px; color:var(--text-muted); font-size:10px; cursor:pointer; text-align:center; transition:all .15s; }
-  .layer-action-btn:hover { border-color:var(--accent); color:var(--accent); }
-
-  /* CANVAS */
-  .canvas-area {
-    flex:1; position:relative; overflow:hidden; background:var(--bg-primary);
-    background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
-    background-size: 24px 24px;
-    cursor: default;
-  }
-  .canvas-area.grabbing { cursor: grabbing !important; }
-  #canvas-viewport { position:absolute; top:0; left:0; transform-origin:0 0; will-change:transform; }
-  .canvas-zoom-info { position:absolute; bottom:70px; left:50%; transform:translateX(-50%); background:var(--bg-secondary); border:1px solid var(--border); border-radius:6px; padding:4px 10px; font-size:11px; color:var(--text-muted); pointer-events:none; font-family:'DM Mono',monospace; z-index:10; }
-
-  /* SMART GUIDES */
-  .smart-guide { position:absolute; pointer-events:none; z-index:100; }
-  .smart-guide.h { width:100%; height:1px; background:#00ADB5; left:0; }
-  .smart-guide.v { height:100%; width:1px; background:#00ADB5; top:0; }
-
-  /* RIGHT PANEL */
-  .right-panel { width:var(--panel-w); background:var(--bg-secondary); border-left:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; flex-shrink:0; }
-  .right-panel-scroll { flex:1; overflow-y:auto; padding:10px; display:flex; flex-direction:column; gap:1px; }
-  .prop-section { background:var(--bg-tertiary); border-radius:8px; overflow:hidden; margin-bottom:4px; }
-  .prop-section-header { padding:8px 12px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:var(--text-muted); cursor:pointer; display:flex; align-items:center; justify-content:space-between; transition:color .2s; }
-  .prop-section-header:hover { color:var(--text); }
-  .prop-section-body { padding:8px 10px 10px; display:flex; flex-direction:column; gap:8px; }
-  .prop-section-body.hidden { display:none; }
-  .chevron { transition:transform .2s; }
-  .collapsed .chevron { transform:rotate(-90deg); }
-  .prop-row { display:flex; align-items:center; gap:6px; }
-  .prop-label { font-size:11px; color:var(--text-muted); width:28px; flex-shrink:0; }
-  .prop-label-wide { font-size:11px; color:var(--text-muted); width:60px; flex-shrink:0; }
-  .prop-input { flex:1; background:var(--bg-primary); border:1px solid var(--border); border-radius:5px; padding:4px 7px; color:var(--text); font-family:'DM Mono',monospace; font-size:12px; outline:none; transition:border-color .2s; min-width:0; -moz-appearance:textfield; }
-  .prop-input::-webkit-outer-spin-button,
-  .prop-input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
-  .prop-input:focus { border-color:var(--accent); }
-  .prop-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
-  .prop-row-2 .prop-group { display:flex; align-items:center; gap:4px; }
-  .prop-row-2 .prop-label { width:14px; font-size:10px; }
-
-  .color-picker-wrap { display:flex; align-items:center; gap:8px; }
-  .color-swatch { width:24px; height:24px; border-radius:4px; border:1px solid var(--border); cursor:pointer; position:relative; flex-shrink:0; }
-  .color-input-native { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
-
-  .fill-tabs { display:flex; gap:2px; background:var(--bg-primary); border-radius:6px; padding:3px; }
-  .fill-tab { flex:1; padding:4px 6px; text-align:center; border-radius:4px; font-size:11px; cursor:pointer; color:var(--text-muted); transition:all .15s; border:none; background:transparent; font-family:inherit; }
-  .fill-tab.active { background:var(--bg-secondary); color:var(--text); }
-
-  .gradient-bar-wrap { position:relative; height:20px; border-radius:4px; overflow:visible; margin:2px 0; cursor:crosshair; }
-  .gradient-bar { position:absolute; inset:0; border-radius:4px; border:1px solid var(--border); }
-  .gradient-stop { position:absolute; top:50%; transform:translate(-50%,-50%); width:14px; height:14px; border-radius:50%; border:2px solid #fff; cursor:grab; box-shadow:0 0 0 1px rgba(0,0,0,0.4),0 2px 6px rgba(0,0,0,0.4); z-index:5; }
-  .gradient-stop.selected { border-color:var(--accent); }
-  .gradient-dir-btns { display:flex; gap:3px; }
-  .gradient-dir-btn { width:28px; height:28px; background:var(--bg-primary); border:1px solid var(--border); border-radius:5px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text-muted); transition:all .15s; font-size:14px; }
-  .gradient-dir-btn.active { border-color:var(--accent); color:var(--accent); }
-
-  .slider-wrap { display:flex; align-items:center; gap:8px; }
-  .prop-slider { flex:1; -webkit-appearance:none; appearance:none; height:4px; border-radius:2px; background:var(--bg-primary); outline:none; cursor:pointer; }
-  .prop-slider::-webkit-slider-thumb { -webkit-appearance:none; width:14px; height:14px; border-radius:50%; background:var(--accent); cursor:pointer; border:2px solid var(--bg-primary); box-shadow:0 0 0 1px var(--accent); }
-  .slider-val { font-size:11px; color:var(--text-muted); width:28px; text-align:right; font-family:'DM Mono',monospace; }
-
-  .align-btns { display:flex; gap:3px; flex-wrap:wrap; }
-  .align-btn { width:28px; height:28px; background:var(--bg-primary); border:1px solid var(--border); border-radius:5px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text-muted); transition:all .15s; }
-  .align-btn:hover { border-color:var(--accent); color:var(--accent); }
-  .align-btn svg { width:14px; height:14px; }
-
-  /* BOTTOM TOOLBAR */
-  .bottom-toolbar { height:var(--toolbar-h); background:var(--bg-secondary); border-top:1px solid var(--border); display:flex; align-items:center; justify-content:center; gap:6px; padding:0 20px; flex-shrink:0; z-index:50; position:relative; }
-  .tool-btn { width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:10px; cursor:pointer; border:1px solid transparent; background:transparent; color:var(--text-muted); transition:all .15s; position:relative; }
-  .tool-btn:hover { background:var(--bg-tertiary); color:var(--text); }
-  .tool-btn.active { background:var(--accent-dim); border-color:var(--border-accent); color:var(--accent); }
-  .tool-btn svg { width:18px; height:18px; }
-  .tool-sep { width:1px; height:24px; background:var(--border); margin:0 4px; }
-  .tool-tooltip { position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%); background:#000; color:#fff; font-size:11px; padding:4px 8px; border-radius:5px; white-space:nowrap; pointer-events:none; opacity:0; transition:opacity .15s; z-index:100; }
-  .tool-btn:hover .tool-tooltip { opacity:1; }
-
-  /* SHAPE PICKER */
-  .shape-picker { position:absolute; bottom:calc(var(--toolbar-h) + 10px); left:50%; transform:translateX(-50%); background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; padding:12px; display:none; gap:8px; z-index:200; box-shadow:var(--shadow); flex-wrap:wrap; width:210px; }
-  .shape-picker.open { display:flex; }
-  .shape-opt { width:52px; height:52px; background:var(--bg-primary); border:1px solid var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text-muted); transition:all .15s; flex-direction:column; gap:2px; font-size:10px; }
-  .shape-opt:hover { border-color:var(--accent); color:var(--accent); }
-  .shape-opt svg { width:20px; height:20px; }
-
-  /* SETTINGS POPUP */
-  .settings-popup { position:absolute; bottom:calc(var(--toolbar-h) + 10px); right:20px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; padding:14px; display:none; z-index:200; box-shadow:var(--shadow); width:200px; }
-  .settings-popup.open { display:block; }
-  .settings-row { display:flex; align-items:center; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border); font-size:12px; }
-  .settings-row:last-child { border-bottom:none; }
-  .toggle { position:relative; width:34px; height:18px; }
-  .toggle input { opacity:0; width:0; height:0; }
-  .toggle-slider { position:absolute; inset:0; background:var(--bg-primary); border-radius:18px; cursor:pointer; transition:.2s; }
-  .toggle-slider:before { content:''; position:absolute; width:12px; height:12px; left:3px; top:3px; background:var(--text-muted); border-radius:50%; transition:.2s; }
-  .toggle input:checked + .toggle-slider { background:var(--accent); }
-  .toggle input:checked + .toggle-slider:before { transform:translateX(16px); background:#fff; }
-
-  /* CONTEXT MENU */
-  .ctx-menu { position:fixed; background:var(--bg-secondary); border:1px solid var(--border); border-radius:10px; padding:6px; z-index:500; box-shadow:var(--shadow); min-width:160px; display:none; }
-  .ctx-menu.open { display:block; }
-  .ctx-item { padding:7px 12px; font-size:13px; cursor:pointer; border-radius:6px; color:var(--text-muted); transition:all .15s; display:flex; align-items:center; gap:8px; }
-  .ctx-item:hover { background:var(--bg-tertiary); color:var(--text); }
-  .ctx-item.danger:hover { color:#ff6b6b; }
-  .ctx-sep { height:1px; background:var(--border); margin:4px 0; }
-
-  /* MULTI SELECT */
-  .multi-info { position:absolute; top:10px; left:50%; transform:translateX(-50%); background:var(--bg-secondary); border:1px solid var(--border-accent); border-radius:8px; padding:6px 14px; font-size:12px; color:var(--accent); display:none; gap:12px; z-index:90; align-items:center; }
-  .multi-info.show { display:flex; }
-  .multi-align-btn { padding:3px 10px; background:var(--accent-dim); border:1px solid var(--border-accent); border-radius:5px; color:var(--accent); font-size:11px; cursor:pointer; transition:all .15s; }
-  .multi-align-btn:hover { background:var(--accent); color:#fff; }
-
-  /* FRAME PRESETS */
-  .frame-presets { display:flex; gap:4px; flex-wrap:wrap; margin-top:4px; }
-  .frame-preset { padding:3px 8px; background:var(--bg-primary); border:1px solid var(--border); border-radius:4px; font-size:10px; cursor:pointer; color:var(--text-muted); transition:all .15px; }
-  .frame-preset:hover { border-color:var(--accent); color:var(--accent); }
-
-  ::-webkit-scrollbar { width:4px; }
-  ::-webkit-scrollbar-track { background:transparent; }
-  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
-  ::-webkit-scrollbar-thumb:hover { background:var(--text-muted); }
-
-  .logo-mark { display:flex; align-items:center; gap:8px; }
-  .logo-mark svg { width:22px; height:22px; }
-  .logo-mark span { font-size:15px; font-weight:700; letter-spacing:-0.3px; }
-
-  /* Config error screen */
-  #configError {
-    position:fixed; inset:0; background:var(--bg-primary); z-index:3000;
-    display:none; flex-direction:column; align-items:center; justify-content:center; gap:16px;
-    text-align:center; padding:32px;
-  }
-  #configError.active { display:flex; }
-  #configError h2 { font-size:20px; color:#ff6b6b; }
-  #configError p { font-size:13px; color:var(--text-muted); max-width:440px; line-height:1.7; }
-  #configError code { background:var(--bg-secondary); padding:2px 8px; border-radius:4px; font-size:12px; color:var(--accent); }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg-primary);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+  #loadingScreen{position:fixed;inset:0;background:var(--bg-primary);z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+  #loadingScreen .logo{display:flex;align-items:center;gap:10px;}
+  #loadingScreen .logo svg{width:32px;height:32px;}
+  #loadingScreen .logo span{font-size:22px;font-weight:700;letter-spacing:-0.5px;}
+  #loadingScreen .status{font-size:13px;color:var(--text-muted);}
+  #loadingScreen.hidden{display:none;}
+  #configError{position:fixed;inset:0;background:var(--bg-primary);z-index:3000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:32px;}
+  #configError.active{display:flex;}
+  #configError h2{font-size:20px;color:#ff6b6b;}
+  #configError p{font-size:13px;color:var(--text-muted);max-width:440px;line-height:1.7;}
+  #configError code{background:var(--bg-secondary);padding:2px 8px;border-radius:4px;font-size:12px;color:var(--accent);}
+  #loginScreen{position:fixed;inset:0;background:var(--bg-primary);z-index:1500;display:none;flex-direction:column;align-items:center;justify-content:center;}
+  #loginScreen.active{display:flex;}
+  .login-card{background:var(--bg-secondary);border:1px solid var(--border);border-radius:20px;padding:48px 40px;width:400px;max-width:90vw;display:flex;flex-direction:column;align-items:center;gap:24px;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+  .login-logo{display:flex;align-items:center;gap:10px;}
+  .login-logo svg{width:36px;height:36px;}
+  .login-logo span{font-size:26px;font-weight:700;letter-spacing:-0.5px;}
+  .login-desc{font-size:13px;color:var(--text-muted);text-align:center;line-height:1.6;}
+  .login-divider{display:flex;align-items:center;gap:12px;width:100%;}
+  .login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+  .login-divider span{font-size:11px;color:var(--text-muted);}
+  .btn-google{width:100%;display:flex;align-items:center;justify-content:center;gap:12px;padding:12px 20px;background:#fff;color:#1a1a1a;border:none;border-radius:10px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+  .btn-google:hover{background:#f0f0f0;transform:translateY(-1px);}
+  .btn-google svg{width:20px;height:20px;flex-shrink:0;}
+  .login-form{width:100%;display:flex;flex-direction:column;gap:12px;}
+  .form-group{display:flex;flex-direction:column;gap:6px;}
+  .form-label{font-size:12px;font-weight:500;color:var(--text-muted);}
+  .form-input{background:var(--bg-primary);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s;width:100%;}
+  .form-input:focus{border-color:var(--accent);}
+  .form-input::placeholder{color:var(--text-muted);}
+  .btn-primary{width:100%;padding:11px 20px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;transition:all .2s;}
+  .btn-primary:hover{background:var(--accent-hover);}
+  .btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+  .login-toggle{font-size:12px;color:var(--text-muted);text-align:center;}
+  .login-toggle a{color:var(--accent);cursor:pointer;text-decoration:underline;}
+  .login-error{font-size:12px;color:#ff6b6b;text-align:center;min-height:16px;}
+  #dashboard{flex:1;overflow-y:auto;padding:40px;display:none;flex-direction:column;gap:32px;}
+  #dashboard.active{display:flex;}
+  .dash-header{display:flex;align-items:center;justify-content:space-between;}
+  .dash-user{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-muted);}
+  .dash-avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;}
+  .projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;}
+  .project-card{background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative;}
+  .project-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,173,181,0.15);}
+  .project-thumb{height:140px;background:var(--bg-primary);display:flex;align-items:center;justify-content:center;}
+  .project-info{padding:12px 14px;}
+  .project-name{font-size:13px;font-weight:500;margin-bottom:4px;}
+  .project-meta{font-size:11px;color:var(--text-muted);}
+  .project-del-btn{position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.5);border:none;border-radius:6px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;opacity:0;transition:opacity .2s;}
+  .project-card:hover .project-del-btn{opacity:1;}
+  .new-project-card{border:2px dashed var(--border);border-radius:12px;height:196px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;color:var(--text-muted);font-size:13px;transition:all .2s;}
+  .new-project-card:hover{border-color:var(--accent);color:var(--accent);}
+  .new-project-card svg{width:28px;height:28px;}
+  .section-title{font-size:14px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;}
+  #editor{display:none;flex:1;flex-direction:column;}
+  #editor.active{display:flex;}
+  .topbar{height:var(--topbar-h);background:var(--bg-secondary);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:50;}
+  .topbar-left,.topbar-right{display:flex;align-items:center;gap:8px;flex:1;}
+  .topbar-right{justify-content:flex-end;}
+  .topbar-center{display:flex;align-items:center;gap:8px;flex:1;justify-content:center;}
+  .back-btn{display:flex;align-items:center;gap:6px;color:var(--text-muted);font-size:13px;cursor:pointer;padding:5px 8px;border-radius:6px;border:none;background:transparent;transition:color .2s;}
+  .back-btn:hover{color:var(--text);}
+  .project-title-input{background:transparent;border:none;color:var(--text);font-family:inherit;font-size:14px;font-weight:500;text-align:center;outline:none;border-bottom:1px solid transparent;transition:border-color .2s;min-width:120px;max-width:240px;}
+  .project-title-input:focus{border-bottom-color:var(--accent);}
+  .topbar-btn{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;border:1px solid var(--border);background:transparent;color:var(--text-muted);transition:all .2s;display:flex;align-items:center;gap:5px;}
+  .topbar-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .topbar-btn.save{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .topbar-btn.save:hover{background:var(--accent-hover);}
+  .editor-body{flex:1;display:flex;overflow:hidden;position:relative;}
+  .left-panel{width:200px;background:var(--bg-secondary);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;}
+  .panel-header{padding:10px 14px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+  .layers-list{flex:1;overflow-y:auto;padding:6px;}
+  .layer-item{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;font-size:12px;color:var(--text-muted);transition:all .15s;border:1px solid transparent;user-select:none;}
+  .layer-item:hover{background:var(--bg-tertiary);color:var(--text);}
+  .layer-item.selected{background:var(--accent-dim);border-color:var(--border-accent);color:var(--text);}
+  .layer-icon{width:16px;height:16px;flex-shrink:0;}
+  .layer-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .layer-vis{width:16px;height:16px;flex-shrink:0;cursor:pointer;opacity:.5;}
+  .layer-vis:hover{opacity:1;}
+  .layer-actions{display:flex;gap:2px;padding:6px;}
+  .layer-action-btn{flex:1;padding:5px;background:var(--bg-primary);border:1px solid var(--border);border-radius:5px;color:var(--text-muted);font-size:10px;cursor:pointer;text-align:center;transition:all .15s;}
+  .layer-action-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .canvas-area{flex:1;position:relative;overflow:hidden;background:var(--bg-primary);background-image:radial-gradient(circle,rgba(255,255,255,0.04) 1px,transparent 1px);background-size:24px 24px;cursor:default;}
+  .canvas-area.grabbing{cursor:grabbing!important;}
+  #canvas-viewport{position:absolute;top:0;left:0;transform-origin:0 0;will-change:transform;}
+  .canvas-zoom-info{position:absolute;bottom:70px;left:50%;transform:translateX(-50%);background:var(--bg-secondary);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--text-muted);pointer-events:none;font-family:'DM Mono',monospace;z-index:10;}
+  .smart-guide{position:absolute;pointer-events:none;z-index:100;}
+  .smart-guide.h{width:100%;height:1px;background:#00ADB5;left:0;}
+  .smart-guide.v{height:100%;width:1px;background:#00ADB5;top:0;}
+  .right-panel{width:var(--panel-w);background:var(--bg-secondary);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;}
+  .right-panel-scroll{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:1px;}
+  .prop-section{background:var(--bg-tertiary);border-radius:8px;overflow:hidden;margin-bottom:4px;}
+  .prop-section-header{padding:8px 12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:color .2s;}
+  .prop-section-header:hover{color:var(--text);}
+  .prop-section-body{padding:8px 10px 10px;display:flex;flex-direction:column;gap:8px;}
+  .prop-section-body.hidden{display:none;}
+  .chevron{transition:transform .2s;}
+  .collapsed .chevron{transform:rotate(-90deg);}
+  .prop-row{display:flex;align-items:center;gap:6px;}
+  .prop-label{font-size:11px;color:var(--text-muted);width:28px;flex-shrink:0;}
+  .prop-label-wide{font-size:11px;color:var(--text-muted);width:60px;flex-shrink:0;}
+  .prop-input{flex:1;background:var(--bg-primary);border:1px solid var(--border);border-radius:5px;padding:4px 7px;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;outline:none;transition:border-color .2s;min-width:0;-moz-appearance:textfield;}
+  .prop-input::-webkit-outer-spin-button,.prop-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .prop-input:focus{border-color:var(--accent);}
+  .prop-row-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .prop-row-2 .prop-group{display:grid;grid-template-columns:22px 1fr;align-items:center;gap:6px;min-width:0;}
+  .prop-row-2 .prop-label{width:auto;font-size:11px;text-align:center;flex-shrink:0;}
+  .prop-row-2 .prop-input{min-width:0;width:100%;text-align:end;padding:5px 8px;}
+  .color-picker-wrap{display:flex;align-items:center;gap:8px;}
+  .color-swatch{width:24px;height:24px;border-radius:4px;border:1px solid var(--border);cursor:pointer;position:relative;flex-shrink:0;}
+  .color-input-native{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+  .fill-tabs{display:flex;gap:2px;background:var(--bg-primary);border-radius:6px;padding:3px;}
+  .fill-tab{flex:1;padding:4px 6px;text-align:center;border-radius:4px;font-size:11px;cursor:pointer;color:var(--text-muted);transition:all .15s;border:none;background:transparent;font-family:inherit;}
+  .fill-tab.active{background:var(--bg-secondary);color:var(--text);}
+  .gradient-bar-wrap{position:relative;height:20px;border-radius:4px;overflow:visible;margin:2px 0;cursor:crosshair;}
+  .gradient-bar{position:absolute;inset:0;border-radius:4px;border:1px solid var(--border);}
+  .gradient-stop{position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;border:2px solid #fff;cursor:grab;box-shadow:0 0 0 1px rgba(0,0,0,0.4),0 2px 6px rgba(0,0,0,0.4);z-index:5;}
+  .gradient-stop.selected{border-color:var(--accent);}
+  .gradient-dir-btns{display:flex;gap:3px;}
+  .gradient-dir-btn{width:28px;height:28px;background:var(--bg-primary);border:1px solid var(--border);border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:all .15s;font-size:14px;}
+  .gradient-dir-btn.active{border-color:var(--accent);color:var(--accent);}
+  .slider-wrap{display:flex;align-items:center;gap:8px;}
+  .prop-slider{flex:1;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--bg-primary);outline:none;cursor:pointer;}
+  .prop-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--bg-primary);box-shadow:0 0 0 1px var(--accent);}
+  .slider-val{font-size:11px;color:var(--text-muted);width:28px;text-align:right;font-family:'DM Mono',monospace;}
+  .align-btns{display:flex;gap:3px;flex-wrap:wrap;}
+  .align-btn{width:28px;height:28px;background:var(--bg-primary);border:1px solid var(--border);border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:all .15s;}
+  .align-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .align-btn svg{width:14px;height:14px;}
+  .bottom-toolbar{height:var(--toolbar-h);background:var(--bg-secondary);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:center;gap:6px;padding:0 20px;flex-shrink:0;z-index:50;position:relative;}
+  .tool-btn{width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;cursor:pointer;border:1px solid transparent;background:transparent;color:var(--text-muted);transition:all .15s;position:relative;}
+  .tool-btn:hover{background:var(--bg-tertiary);color:var(--text);}
+  .tool-btn.active{background:var(--accent-dim);border-color:var(--border-accent);color:var(--accent);}
+  .tool-btn svg{width:18px;height:18px;}
+  .tool-sep{width:1px;height:24px;background:var(--border);margin:0 4px;}
+  .tool-tooltip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#000;color:#fff;font-size:11px;padding:4px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:100;}
+  .tool-btn:hover .tool-tooltip{opacity:1;}
+  .shape-picker{position:absolute;bottom:calc(var(--toolbar-h) + 10px);left:50%;transform:translateX(-50%);background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:12px;display:none;gap:8px;z-index:200;box-shadow:var(--shadow);flex-wrap:wrap;width:210px;}
+  .shape-picker.open{display:flex;}
+  .shape-opt{width:52px;height:52px;background:var(--bg-primary);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);transition:all .15s;flex-direction:column;gap:2px;font-size:10px;}
+  .shape-opt:hover{border-color:var(--accent);color:var(--accent);}
+  .shape-opt svg{width:20px;height:20px;}
+  .settings-popup{position:absolute;bottom:calc(var(--toolbar-h) + 10px);right:20px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:14px;display:none;z-index:200;box-shadow:var(--shadow);width:200px;}
+  .settings-popup.open{display:block;}
+  .settings-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;}
+  .settings-row:last-child{border-bottom:none;}
+  .toggle{position:relative;width:34px;height:18px;}
+  .toggle input{opacity:0;width:0;height:0;}
+  .toggle-slider{position:absolute;inset:0;background:var(--bg-primary);border-radius:18px;cursor:pointer;transition:.2s;}
+  .toggle-slider:before{content:'';position:absolute;width:12px;height:12px;left:3px;top:3px;background:var(--text-muted);border-radius:50%;transition:.2s;}
+  .toggle input:checked+.toggle-slider{background:var(--accent);}
+  .toggle input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff;}
+  .ctx-menu{position:fixed;background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;padding:6px;z-index:500;box-shadow:var(--shadow);min-width:160px;display:none;}
+  .ctx-menu.open{display:block;}
+  .ctx-item{padding:7px 12px;font-size:13px;cursor:pointer;border-radius:6px;color:var(--text-muted);transition:all .15s;display:flex;align-items:center;gap:8px;}
+  .ctx-item:hover{background:var(--bg-tertiary);color:var(--text);}
+  .ctx-item.danger:hover{color:#ff6b6b;}
+  .ctx-sep{height:1px;background:var(--border);margin:4px 0;}
+  .multi-info{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:var(--bg-secondary);border:1px solid var(--border-accent);border-radius:8px;padding:6px 14px;font-size:12px;color:var(--accent);display:none;gap:12px;z-index:90;align-items:center;}
+  .multi-info.show{display:flex;}
+  .multi-align-btn{padding:3px 10px;background:var(--accent-dim);border:1px solid var(--border-accent);border-radius:5px;color:var(--accent);font-size:11px;cursor:pointer;transition:all .15s;}
+  .multi-align-btn:hover{background:var(--accent);color:#fff;}
+  .frame-presets{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;}
+  .frame-preset{padding:3px 8px;background:var(--bg-primary);border:1px solid var(--border);border-radius:4px;font-size:10px;cursor:pointer;color:var(--text-muted);transition:all .15s;}
+  .frame-preset:hover{border-color:var(--accent);color:var(--accent);}
+  ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}::-webkit-scrollbar-thumb:hover{background:var(--text-muted);}
+  .logo-mark{display:flex;align-items:center;gap:8px;}
+  .logo-mark svg{width:22px;height:22px;}
+  .logo-mark span{font-size:15px;font-weight:700;letter-spacing:-0.3px;}
 </style>
 </head>
 <body>
 
-<!-- CONFIG ERROR -->
 <div id="configError">
   <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
   <h2>설정 파일 오류</h2>
-  <p>
-    <code>config.txt</code> 파일을 찾을 수 없거나 Supabase 설정이 올바르지 않습니다.<br><br>
-    같은 폴더에 <code>config.txt</code> 파일을 만들고 아래 내용을 입력하세요:
-  </p>
+  <p><code>config.txt</code> 파일을 찾을 수 없거나 Supabase 설정이 올바르지 않습니다.<br><br>같은 폴더에 <code>config.txt</code> 파일을 만들고 아래 내용을 입력하세요:</p>
   <pre style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;padding:16px;font-size:12px;color:var(--text);text-align:left;line-height:1.8">SUPABASE_URL = https://your-project.supabase.co
 SUPABASE_KEY = your-anon-key</pre>
 </div>
 
-<!-- LOADING SCREEN -->
 <div id="loadingScreen">
   <div class="logo">
-    <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round">
-      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-    </svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
     <span>DesignFlow</span>
   </div>
   <div class="status" id="loadStatus">초기화 중...</div>
 </div>
 
-<!-- LOGIN SCREEN -->
 <div id="loginScreen">
   <div class="login-card">
     <div class="login-logo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round">
-        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
       <span>DesignFlow</span>
     </div>
     <p class="login-desc">디자인을 시작하려면 로그인하세요.<br>계정이 없어도 바로 가입할 수 있습니다.</p>
-
-    <!-- Google OAuth -->
     <button class="btn-google" onclick="loginWithGoogle()">
       <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
       Google로 계속하기
     </button>
-
     <div class="login-divider"><span>또는 이메일로</span></div>
-
-    <!-- Email/Password -->
     <div class="login-form">
-      <div class="form-group">
-        <label class="form-label">이메일</label>
-        <input class="form-input" type="email" id="authEmail" placeholder="you@example.com" autocomplete="email"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">비밀번호</label>
-        <input class="form-input" type="password" id="authPassword" placeholder="비밀번호 (6자 이상)" autocomplete="current-password"
-          onkeydown="if(event.key==='Enter') handleEmailAuth()"/>
-      </div>
+      <div class="form-group"><label class="form-label">이메일</label><input class="form-input" type="email" id="authEmail" placeholder="you@example.com" autocomplete="email"/></div>
+      <div class="form-group"><label class="form-label">비밀번호</label><input class="form-input" type="password" id="authPassword" placeholder="비밀번호 (6자 이상)" autocomplete="current-password" onkeydown="if(event.key==='Enter')handleEmailAuth()"/></div>
       <div class="login-error" id="authError"></div>
       <button class="btn-primary" id="authSubmitBtn" onclick="handleEmailAuth()">로그인</button>
     </div>
-
-    <div class="login-toggle">
-      <span id="authToggleText">계정이 없으신가요?</span>
-      <a onclick="toggleAuthMode()"> <span id="authToggleLink">회원가입</span></a>
-    </div>
+    <div class="login-toggle"><span id="authToggleText">계정이 없으신가요?</span> <a onclick="toggleAuthMode()"><span id="authToggleLink">회원가입</span></a></div>
   </div>
 </div>
 
-<!-- DASHBOARD -->
 <div id="dashboard">
   <div class="dash-header">
     <div class="logo-mark">
-      <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round">
-        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
       <span>DesignFlow</span>
     </div>
     <div class="dash-user">
       <span id="dashUserEmail"></span>
       <div class="dash-avatar" id="dashAvatar">?</div>
-      <button class="btn btn-ghost" onclick="handleLogout()" style="font-size:12px;padding:6px 12px;">로그아웃</button>
+      <button class="topbar-btn" onclick="handleLogout()">로그아웃</button>
     </div>
   </div>
   <div><div class="section-title">프로젝트</div></div>
   <div class="projects-grid" id="projectsGrid"></div>
 </div>
 
-<!-- EDITOR -->
 <div id="editor">
   <div class="topbar">
-    <div class="topbar-left">
-      <button class="back-btn" onclick="goToDashboard()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15,18 9,12 15,6"/></svg>
-        대시보드
-      </button>
-    </div>
-    <div class="topbar-center">
-      <input type="text" class="project-title-input" id="projectTitle" value="새 디자인" onchange="markDirty()"/>
-    </div>
+    <div class="topbar-left"><button class="back-btn" onclick="goToDashboard()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15,18 9,12 15,6"/></svg>대시보드</button></div>
+    <div class="topbar-center"><input type="text" class="project-title-input" id="projectTitle" value="새 디자인" onchange="markDirty()"/></div>
     <div class="topbar-right">
-      <button class="topbar-btn" onclick="handleDownload()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        내보내기
-      </button>
-      <button class="topbar-btn save" onclick="saveProject()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-        저장
-      </button>
+      <button class="topbar-btn" onclick="handleDownload()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>내보내기</button>
+      <button class="topbar-btn save" onclick="saveProject()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>저장</button>
     </div>
   </div>
-
   <div class="editor-body">
     <div class="left-panel">
-      <div class="panel-header">
-        레이어
-        <span style="cursor:pointer;color:var(--text-muted);display:flex;align-items:center" onclick="addText()" title="텍스트 추가">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </span>
-      </div>
+      <div class="panel-header">레이어<span style="cursor:pointer;color:var(--text-muted);display:flex;align-items:center" onclick="addText()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span></div>
       <div class="layers-list" id="layersList"></div>
-      <div class="layer-actions">
-        <div class="layer-action-btn" onclick="moveLayerUp()">위로</div>
-        <div class="layer-action-btn" onclick="moveLayerDown()">아래로</div>
-        <div class="layer-action-btn" onclick="deleteSelected()" style="color:#ff6b6b">삭제</div>
-      </div>
+      <div class="layer-actions"><div class="layer-action-btn" onclick="moveLayerUp()">위로</div><div class="layer-action-btn" onclick="moveLayerDown()">아래로</div><div class="layer-action-btn" onclick="deleteSelected()" style="color:#ff6b6b">삭제</div></div>
     </div>
-
     <div class="canvas-area" id="canvasArea">
-      <div id="canvas-viewport">
-        <div id="konva-container"></div>
-      </div>
+      <div id="canvas-viewport"><div id="konva-container"></div></div>
       <div class="canvas-zoom-info" id="zoomInfo">100%</div>
-      <div class="multi-info" id="multiInfo">
-        <span id="multiCount">2개 선택됨</span>
-        <button class="multi-align-btn" onclick="alignSelected('left')">좌</button>
-        <button class="multi-align-btn" onclick="alignSelected('center')">가운데</button>
-        <button class="multi-align-btn" onclick="alignSelected('right')">우</button>
-        <button class="multi-align-btn" onclick="alignSelected('top')">상</button>
-        <button class="multi-align-btn" onclick="alignSelected('middle')">중</button>
-        <button class="multi-align-btn" onclick="alignSelected('bottom')">하</button>
-      </div>
+      <div class="multi-info" id="multiInfo"><span id="multiCount">2개 선택됨</span><button class="multi-align-btn" onclick="alignSelected('left')">좌</button><button class="multi-align-btn" onclick="alignSelected('center')">가운데</button><button class="multi-align-btn" onclick="alignSelected('right')">우</button><button class="multi-align-btn" onclick="alignSelected('top')">상</button><button class="multi-align-btn" onclick="alignSelected('middle')">중</button><button class="multi-align-btn" onclick="alignSelected('bottom')">하</button></div>
     </div>
-
-    <div class="right-panel">
-      <div class="panel-header">속성</div>
-      <div class="right-panel-scroll" id="propsPanel">
-        <div style="color:var(--text-muted);font-size:12px;padding:20px;text-align:center">요소를 선택하세요</div>
-      </div>
-    </div>
+    <div class="right-panel"><div class="panel-header">속성</div><div class="right-panel-scroll" id="propsPanel"><div style="color:var(--text-muted);font-size:12px;padding:20px;text-align:center">요소를 선택하세요</div></div></div>
   </div>
-
   <div class="bottom-toolbar">
     <div class="shape-picker" id="shapePicker">
-      <div class="shape-opt" onclick="addShape('rect')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-        <span>사각형</span>
-      </div>
-      <div class="shape-opt" onclick="addShape('circle')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>
-        <span>원</span>
-      </div>
-      <div class="shape-opt" onclick="addShape('triangle')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,3 22,21 2,21"/></svg>
-        <span>삼각형</span>
-      </div>
-      <div class="shape-opt" onclick="addShape('line')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        <span>선</span>
-      </div>
-      <div class="shape-opt" onclick="addShape('star')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        <span>별</span>
-      </div>
-      <div class="shape-opt" onclick="addImageFromFile()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        <span>이미지</span>
-      </div>
+      <div class="shape-opt" onclick="addShape('rect')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg><span>사각형</span></div>
+      <div class="shape-opt" onclick="addShape('circle')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg><span>원</span></div>
+      <div class="shape-opt" onclick="addShape('triangle')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,3 22,21 2,21"/></svg><span>삼각형</span></div>
+      <div class="shape-opt" onclick="addShape('line')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg><span>선</span></div>
+      <div class="shape-opt" onclick="addShape('star')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>별</span></div>
+      <div class="shape-opt" onclick="addImageFromFile()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>이미지</span></div>
     </div>
-
     <div class="settings-popup" id="settingsPopup">
       <div style="font-size:13px;font-weight:600;margin-bottom:10px">설정</div>
-      <div class="settings-row">
-        <span style="font-size:12px">스마트 가이드</span>
-        <label class="toggle"><input type="checkbox" id="smartGuidesToggle" checked/><span class="toggle-slider"></span></label>
-      </div>
-      <div class="settings-row">
-        <span style="font-size:12px">스냅핑</span>
-        <label class="toggle"><input type="checkbox" id="snappingToggle" checked/><span class="toggle-slider"></span></label>
-      </div>
+      <div class="settings-row"><span style="font-size:12px">스마트 가이드</span><label class="toggle"><input type="checkbox" id="smartGuidesToggle" checked/><span class="toggle-slider"></span></label></div>
+      <div class="settings-row"><span style="font-size:12px">스냅핑</span><label class="toggle"><input type="checkbox" id="snappingToggle" checked/><span class="toggle-slider"></span></label></div>
     </div>
-
-    <div class="tool-btn active" id="toolSelect" onclick="setTool('select')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4l7 18 3-7 7-3z"/></svg>
-      <div class="tool-tooltip">선택 (V)</div>
-    </div>
+    <div class="tool-btn active" id="toolSelect" onclick="setTool('select')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4l7 18 3-7 7-3z"/></svg><div class="tool-tooltip">선택 (V)</div></div>
     <div class="tool-sep"></div>
-    <div class="tool-btn" id="toolShapes" onclick="toggleShapePicker()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="8" height="8" rx="1"/><circle cx="17" cy="7" r="4"/><polygon points="12 21 17 13 7 13 12 21"/></svg>
-      <div class="tool-tooltip">도형 추가</div>
-    </div>
-    <div class="tool-btn" onclick="addText()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
-      <div class="tool-tooltip">텍스트 (T)</div>
-    </div>
-    <div class="tool-btn" id="toolDraw" onclick="setTool('draw')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-      <div class="tool-tooltip">그리기 (P)</div>
-    </div>
+    <div class="tool-btn" onclick="toggleShapePicker()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="8" height="8" rx="1"/><circle cx="17" cy="7" r="4"/><polygon points="12 21 17 13 7 13 12 21"/></svg><div class="tool-tooltip">도형 추가</div></div>
+    <div class="tool-btn" onclick="addText()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg><div class="tool-tooltip">텍스트 (T)</div></div>
+    <div class="tool-btn" id="toolDraw" onclick="setTool('draw')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg><div class="tool-tooltip">그리기 (P)</div></div>
     <div class="tool-sep"></div>
-    <div class="tool-btn" onclick="undo()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 00-4-4H4"/></svg>
-      <div class="tool-tooltip">실행 취소 (Ctrl+Z)</div>
-    </div>
-    <div class="tool-btn" onclick="redo()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 014-4h12"/></svg>
-      <div class="tool-tooltip">다시 실행 (Ctrl+Y)</div>
-    </div>
+    <div class="tool-btn" onclick="undo()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 00-4-4H4"/></svg><div class="tool-tooltip">실행 취소 (Ctrl+Z)</div></div>
+    <div class="tool-btn" onclick="redo()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 014-4h12"/></svg><div class="tool-tooltip">다시 실행 (Ctrl+Y)</div></div>
     <div class="tool-sep"></div>
-    <div class="tool-btn" onclick="resetView()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
-      <div class="tool-tooltip">뷰 초기화</div>
-    </div>
-    <div class="tool-btn" onclick="toggleSettings()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-      <div class="tool-tooltip">설정</div>
-    </div>
+    <div class="tool-btn" onclick="resetView()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg><div class="tool-tooltip">뷰 초기화</div></div>
+    <div class="tool-btn" onclick="toggleSettings()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg><div class="tool-tooltip">설정</div></div>
   </div>
 </div>
 
-<!-- CONTEXT MENU -->
 <div class="ctx-menu" id="ctxMenu">
-  <div class="ctx-item" onclick="ctxAction('duplicate')">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-    복제
-  </div>
+  <div class="ctx-item" onclick="ctxAction('duplicate')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>복제</div>
   <div class="ctx-item" onclick="ctxAction('bringFront')">앞으로 가져오기</div>
   <div class="ctx-item" onclick="ctxAction('sendBack')">뒤로 보내기</div>
   <div class="ctx-sep"></div>
-  <div class="ctx-item danger" onclick="ctxAction('delete')">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
-    삭제
-  </div>
+  <div class="ctx-item danger" onclick="ctxAction('delete')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>삭제</div>
 </div>
-
 <input type="file" id="imageFileInput" accept="image/*" style="display:none" onchange="handleImageFile(event)"/>
 
 <script>
-// ========== GLOBALS ==========
-let supabase = null;
+// Supabase is loaded via ESM dynamic import (no UMD global). The live client is `sbClient` only.
+let sbClient = null;
 let currentUser = null;
 let currentProjectId = null;
 let stage = null, layer = null;
@@ -546,9 +319,8 @@ let frameW = 800, frameH = 600;
 let frameRect = null, bgRect = null;
 let gradientStopsMap = {};
 let selectedStopIdx = 0;
-let isSignUp = false; // toggle login/signup mode
+let isSignUp = false;
 
-// ========== STARTUP ==========
 async function startup() {
   setStatus('설정 불러오는 중...');
   try {
@@ -564,11 +336,11 @@ async function startup() {
       if (k === 'SUPABASE_URL') sbUrl = v;
       if (k === 'SUPABASE_KEY') sbKey = v;
     });
-    if (!sbUrl || !sbKey) throw new Error('Missing SUPABASE_URL or SUPABASE_KEY');
+    if (!sbUrl || !sbKey) throw new Error('Missing keys in config.txt');
     setStatus('Supabase 연결 중...');
-    await loadSupabase(sbUrl, sbKey);
+    await loadSupabaseLib(sbUrl, sbKey);
   } catch(e) {
-    console.error('Config error:', e);
+    console.error('Startup error:', e);
     document.getElementById('loadingScreen').classList.add('hidden');
     document.getElementById('configError').classList.add('active');
   }
@@ -576,57 +348,37 @@ async function startup() {
 
 function setStatus(msg) { document.getElementById('loadStatus').textContent = msg; }
 
-async function loadSupabase(url, key) {
-  return new Promise(resolve => {
-    const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
-    s.onload = async () => {
-      try {
-        supabase = window.supabase.createClient(url, key);
+async function loadSupabaseLib(url, key) {
+  try {
+    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+    if (typeof createClient !== 'function') throw new Error('createClient unavailable');
+    sbClient = createClient(url, key);
 
-        // Listen for auth state changes (handles OAuth redirect)
-        supabase.auth.onAuthStateChange(async (event, session) => {
-          if (session) {
-            currentUser = session.user;
-            if (document.getElementById('loginScreen').classList.contains('active')) {
-              showDashboard();
-            }
-          } else {
-            currentUser = null;
-          }
-        });
-
-        const { data: { session } } = await supabase.auth.getSession();
-        document.getElementById('loadingScreen').classList.add('hidden');
-        if (session) {
-          currentUser = session.user;
-          showDashboard();
-        } else {
-          showLoginScreen();
-        }
-      } catch(e) {
-        console.error('Supabase init error:', e);
-        document.getElementById('loadingScreen').classList.add('hidden');
-        document.getElementById('configError').classList.add('active');
+    sbClient.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        currentUser = session.user;
+        if (document.getElementById('loginScreen').classList.contains('active')) showDashboard();
+      } else {
+        currentUser = null;
       }
-      resolve();
-    };
-    s.onerror = () => {
-      document.getElementById('loadingScreen').classList.add('hidden');
-      document.getElementById('configError').classList.add('active');
-      resolve();
-    };
-    document.head.appendChild(s);
-  });
+    });
+
+    const { data: { session } } = await sbClient.auth.getSession();
+    document.getElementById('loadingScreen').classList.add('hidden');
+    if (session) { currentUser = session.user; showDashboard(); }
+    else showLoginScreen();
+  } catch (e) {
+    console.error('Supabase init error:', e);
+    document.getElementById('loadingScreen').classList.add('hidden');
+    document.getElementById('configError').classList.add('active');
+  }
 }
 
-// ========== AUTH UI ==========
 function showLoginScreen() {
   document.getElementById('loginScreen').classList.add('active');
   document.getElementById('dashboard').classList.remove('active');
   document.getElementById('editor').classList.remove('active');
 }
-
 function toggleAuthMode() {
   isSignUp = !isSignUp;
   document.getElementById('authSubmitBtn').textContent = isSignUp ? '회원가입' : '로그인';
@@ -634,158 +386,92 @@ function toggleAuthMode() {
   document.getElementById('authToggleLink').textContent = isSignUp ? '로그인' : '회원가입';
   document.getElementById('authError').textContent = '';
 }
-
 async function loginWithGoogle() {
-  if (!supabase) return;
+  if (!sbClient) return;
   setAuthError('');
-  try {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: window.location.href }
-    });
-    if (error) setAuthError(error.message);
-  } catch(e) { setAuthError('Google 로그인 중 오류가 발생했습니다.'); }
+  const { error } = await sbClient.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+  if (error) setAuthError(error.message);
 }
-
 async function handleEmailAuth() {
   const email = document.getElementById('authEmail').value.trim();
   const password = document.getElementById('authPassword').value;
   if (!email || !password) { setAuthError('이메일과 비밀번호를 입력하세요.'); return; }
-
   const btn = document.getElementById('authSubmitBtn');
-  btn.disabled = true;
-  btn.textContent = '처리 중...';
-  setAuthError('');
-
+  btn.disabled = true; btn.textContent = '처리 중...'; setAuthError('');
   try {
     let result;
     if (isSignUp) {
-      result = await supabase.auth.signUp({ email, password });
-      if (result.error) { setAuthError(result.error.message); }
-      else if (result.data?.user?.identities?.length === 0) {
-        setAuthError('이미 가입된 이메일입니다. 로그인을 시도하세요.');
-      } else {
-        // Check if email confirmation required
-        if (!result.data.session) {
-          setAuthError('');
-          showToast('인증 이메일을 발송했습니다. 이메일을 확인해 주세요.');
-        } else {
-          currentUser = result.data.user;
-          showDashboard();
-        }
-      }
+      result = await sbClient.auth.signUp({ email, password });
+      if (result.error) setAuthError(result.error.message);
+      else if (!result.data.session) showToast('인증 이메일을 발송했습니다. 이메일을 확인해 주세요.');
+      else { currentUser = result.data.user; showDashboard(); }
     } else {
-      result = await supabase.auth.signInWithPassword({ email, password });
-      if (result.error) { setAuthError('이메일 또는 비밀번호가 올바르지 않습니다.'); }
+      result = await sbClient.auth.signInWithPassword({ email, password });
+      if (result.error) setAuthError('이메일 또는 비밀번호가 올바르지 않습니다.');
       else { currentUser = result.data.user; showDashboard(); }
     }
   } catch(e) { setAuthError('오류가 발생했습니다. 다시 시도하세요.'); }
-
-  btn.disabled = false;
-  btn.textContent = isSignUp ? '회원가입' : '로그인';
+  btn.disabled = false; btn.textContent = isSignUp ? '회원가입' : '로그인';
 }
-
 function setAuthError(msg) { document.getElementById('authError').textContent = msg; }
-
 async function handleLogout() {
-  if (supabase) await supabase.auth.signOut();
+  if (sbClient) await sbClient.auth.signOut();
   currentUser = null;
   document.getElementById('dashboard').classList.remove('active');
   showLoginScreen();
 }
 
-// ========== DASHBOARD ==========
 function showDashboard() {
   document.getElementById('loginScreen').classList.remove('active');
   document.getElementById('loadingScreen').classList.add('hidden');
   document.getElementById('dashboard').classList.add('active');
   document.getElementById('editor').classList.remove('active');
-  updateDashboardUser();
+  if (currentUser) {
+    const display = currentUser.email || currentUser.user_metadata?.full_name || '사용자';
+    document.getElementById('dashUserEmail').textContent = display;
+    document.getElementById('dashAvatar').textContent = display[0].toUpperCase();
+  }
   loadProjects();
 }
-
-function updateDashboardUser() {
-  const email = document.getElementById('dashUserEmail');
-  const avatar = document.getElementById('dashAvatar');
-  if (currentUser) {
-    const displayEmail = currentUser.email || currentUser.user_metadata?.full_name || '사용자';
-    email.textContent = displayEmail;
-    avatar.textContent = displayEmail[0].toUpperCase();
-  }
-}
-
 async function loadProjects() {
   projects = [];
-  if (supabase && currentUser) {
-    try {
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('user_id', currentUser.id)
-        .order('updated_at', { ascending: false });
-      if (!error && data) projects = data;
-    } catch(e) { console.error('loadProjects error:', e); }
-  }
+  if (!sbClient || !currentUser) return;
+  try {
+    const { data, error } = await sbClient.from('projects').select('*').eq('user_id', currentUser.id).order('updated_at', { ascending: false });
+    if (!error && data) projects = data;
+  } catch(e) {}
   renderProjects();
 }
-
 function renderProjects() {
   const grid = document.getElementById('projectsGrid');
-  grid.innerHTML = `<div class="new-project-card" onclick="createNewProject()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    새 디자인 만들기
-  </div>`;
+  grid.innerHTML = `<div class="new-project-card" onclick="createNewProject()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>새 디자인 만들기</div>`;
   projects.forEach(p => {
-    const card = document.createElement('div');
-    card.className = 'project-card';
-    card.innerHTML = `
-      <div class="project-thumb" style="background:${p.thumb_bg||'#2d3340'}">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-      </div>
-      <div class="project-info">
-        <div class="project-name">${p.name||'제목 없음'}</div>
-        <div class="project-meta">${formatDate(p.updated_at||p.created_at)}</div>
-      </div>
-      <button class="project-del-btn" onclick="deleteProject('${p.id}',event)">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
-      </button>`;
+    const card = document.createElement('div'); card.className = 'project-card';
+    card.innerHTML = `<div class="project-thumb" style="background:${p.thumb_bg||'#2d3340'}"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div><div class="project-info"><div class="project-name">${p.name||'제목 없음'}</div><div class="project-meta">${formatDate(p.updated_at||p.created_at)}</div></div><button class="project-del-btn" onclick="deleteProject('${p.id}',event)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>`;
     card.onclick = e => { if (e.target.closest('.project-del-btn')) return; openProject(p.id); };
     grid.appendChild(card);
   });
 }
-
 function formatDate(d) {
   if (!d) return '';
-  const diff = Date.now() - new Date(d).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return '방금 전';
-  if (mins < 60) return `${mins}분 전`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}시간 전`;
+  const diff = Date.now() - new Date(d).getTime(), mins = Math.floor(diff/60000);
+  if (mins < 1) return '방금 전'; if (mins < 60) return `${mins}분 전`;
+  const hrs = Math.floor(mins/60); if (hrs < 24) return `${hrs}시간 전`;
   return `${Math.floor(hrs/24)}일 전`;
 }
-
 async function deleteProject(id, e) {
-  e.stopPropagation();
-  if (!confirm('프로젝트를 삭제하시겠습니까?')) return;
+  e.stopPropagation(); if (!confirm('프로젝트를 삭제하시겠습니까?')) return;
   projects = projects.filter(p => p.id !== id);
-  if (supabase && currentUser) {
-    try { await supabase.from('projects').delete().eq('id', id).eq('user_id', currentUser.id); } catch(err) {}
-  }
+  try { await sbClient.from('projects').delete().eq('id', id).eq('user_id', currentUser.id); } catch(err) {}
   renderProjects();
 }
-
 async function createNewProject() {
-  if (!supabase || !currentUser) return;
+  if (!sbClient || !currentUser) return;
   const id = 'p_' + Date.now();
   const p = { id, user_id: currentUser.id, name: '새 디자인', created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
-  try {
-    await supabase.from('projects').insert(p);
-  } catch(e) { console.error(e); }
-  projects.unshift(p);
-  openProject(id);
+  try { await sbClient.from('projects').insert(p); } catch(e) { console.error(e); }
+  projects.unshift(p); openProject(id);
 }
-
 function openProject(id) {
   currentProjectId = id;
   const p = projects.find(x => x.id === id);
@@ -794,64 +480,42 @@ function openProject(id) {
   document.getElementById('editor').classList.add('active');
   initEditor(id);
 }
-
 function goToDashboard() {
   if (isDirty && !confirm('저장되지 않은 변경사항이 있습니다. 나가시겠습니까?')) return;
   if (stage) { stage.destroy(); stage = null; layer = null; }
   showDashboard();
 }
 
-// ========== EDITOR ==========
 function initEditor(projectId) {
   if (typeof Konva === 'undefined') {
     const s = document.createElement('script');
     s.src = 'https://unpkg.com/konva@9/konva.min.js';
     s.onload = () => setupStage(projectId);
-    s.onerror = () => {
-      const s2 = document.createElement('script');
-      s2.src = 'https://cdn.jsdelivr.net/npm/konva@9/konva.min.js';
-      s2.onload = () => setupStage(projectId);
-      document.head.appendChild(s2);
-    };
+    s.onerror = () => { const s2 = document.createElement('script'); s2.src = 'https://cdn.jsdelivr.net/npm/konva@9/konva.min.js'; s2.onload = () => setupStage(projectId); document.head.appendChild(s2); };
     document.head.appendChild(s);
-  } else {
-    setupStage(projectId);
-  }
+  } else setupStage(projectId);
 }
-
 function setupStage(projectId) {
   if (stage) stage.destroy();
   selectedNodes = []; undoStack = []; redoStack = []; gradientStopsMap = {};
   zoomLevel = 1; panX = 0; panY = 0;
   document.getElementById('konva-container').innerHTML = '';
-
-  stage = new Konva.Stage({ container: 'konva-container', width: frameW, height: frameH });
-  layer = new Konva.Layer();
-  stage.add(layer);
-
-  bgRect = new Konva.Rect({ x: 0, y: 0, width: frameW, height: frameH, fill: '#ffffff', listening: false, name: 'bg' });
-  layer.add(bgRect);
-  frameRect = new Konva.Rect({ x: 0, y: 0, width: frameW, height: frameH, stroke: '#00ADB5', strokeWidth: 1.5, listening: false, fill: 'transparent', name: 'frame' });
-  layer.add(frameRect);
+  const _dpr = Math.min(typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1, 2);
+  stage = new Konva.Stage({ container: 'konva-container', width: frameW, height: frameH, pixelRatio: _dpr });
+  layer = new Konva.Layer(); stage.add(layer);
+  bgRect = new Konva.Rect({ x:0,y:0,width:frameW,height:frameH,fill:'#ffffff',listening:false,name:'bg' }); layer.add(bgRect);
+  frameRect = new Konva.Rect({ x:0,y:0,width:frameW,height:frameH,stroke:'#00ADB5',strokeWidth:1.5,listening:false,fill:'transparent',name:'frame' }); layer.add(frameRect);
   layer.draw();
-
   const area = document.getElementById('canvasArea');
-  panX = Math.max(40, (area.clientWidth - frameW) / 2);
-  panY = Math.max(40, (area.clientHeight - frameH) / 2);
+  panX = Math.max(40,(area.clientWidth-frameW)/2); panY = Math.max(40,(area.clientHeight-frameH)/2);
   applyViewTransform();
-
-  // Load from Supabase
   loadProjectData(projectId);
-  setupStageEvents();
-  setupPanZoom();
-  updateLayers();
-  isDirty = false;
+  setupStageEvents(); setupPanZoom(); updateLayers(); isDirty = false;
 }
-
 async function loadProjectData(projectId) {
-  if (!supabase || !currentUser) return;
+  if (!sbClient || !currentUser) return;
   try {
-    const { data, error } = await supabase.from('projects').select('data').eq('id', projectId).single();
+    const { data, error } = await sbClient.from('projects').select('data').eq('id', projectId).single();
     if (!error && data && data.data) {
       const saved = typeof data.data === 'string' ? JSON.parse(data.data) : data.data;
       if (saved.title) document.getElementById('projectTitle').value = saved.title;
@@ -859,659 +523,114 @@ async function loadProjectData(projectId) {
       if (saved.bgColor) bgRect.fill(saved.bgColor);
       restoreElements(saved.elements || []);
     }
-  } catch(e) { console.error('loadProjectData error:', e); }
+  } catch(e) { console.error(e); }
 }
-
 function applyViewTransform() {
   const vp = document.getElementById('canvas-viewport');
   if (vp) vp.style.transform = `translate(${panX}px,${panY}px) scale(${zoomLevel})`;
-  document.getElementById('zoomInfo').textContent = Math.round(zoomLevel * 100) + '%';
+  document.getElementById('zoomInfo').textContent = Math.round(zoomLevel*100)+'%';
 }
-
-function resetView() {
-  zoomLevel = 1;
-  const area = document.getElementById('canvasArea');
-  panX = Math.max(40, (area.clientWidth - frameW) / 2);
-  panY = Math.max(40, (area.clientHeight - frameH) / 2);
-  applyViewTransform();
-}
-
-function resizeFrame() {
-  stage.width(frameW); stage.height(frameH);
-  bgRect.width(frameW); bgRect.height(frameH);
-  frameRect.width(frameW); frameRect.height(frameH);
-  layer.batchDraw();
-}
-
-// ========== PAN & ZOOM ==========
+function resetView() { zoomLevel=1; const area=document.getElementById('canvasArea'); panX=Math.max(40,(area.clientWidth-frameW)/2); panY=Math.max(40,(area.clientHeight-frameH)/2); applyViewTransform(); }
+function resizeFrame() { stage.width(frameW);stage.height(frameH);bgRect.width(frameW);bgRect.height(frameH);frameRect.width(frameW);frameRect.height(frameH);layer.batchDraw(); }
 function setupPanZoom() {
   const area = document.getElementById('canvasArea');
-  let isPanning = false, panStart = {}, panStartOffset = {};
-  area.addEventListener('mousedown', e => {
-    if (e.button === 2) { isPanning = true; panStart = { x: e.clientX, y: e.clientY }; panStartOffset = { x: panX, y: panY }; area.classList.add('grabbing'); e.preventDefault(); }
-  });
-  window.addEventListener('mousemove', e => { if (!isPanning) return; panX = panStartOffset.x + (e.clientX - panStart.x); panY = panStartOffset.y + (e.clientY - panStart.y); applyViewTransform(); });
-  window.addEventListener('mouseup', e => { if (e.button === 2 && isPanning) { isPanning = false; area.classList.remove('grabbing'); } });
-  area.addEventListener('contextmenu', e => e.preventDefault());
-  area.addEventListener('wheel', e => {
-    e.preventDefault();
-    const rect = area.getBoundingClientRect();
-    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-    const cx = (mx - panX) / zoomLevel, cy = (my - panY) / zoomLevel;
-    const delta = e.deltaY > 0 ? 0.9 : 1.1;
-    zoomLevel = Math.min(5, Math.max(0.1, zoomLevel * delta));
-    panX = mx - cx * zoomLevel; panY = my - cy * zoomLevel;
-    applyViewTransform();
-  }, { passive: false });
+  let isPanning=false,panStart={},panStartOffset={};
+  area.addEventListener('mousedown',e=>{if(e.button===2){isPanning=true;panStart={x:e.clientX,y:e.clientY};panStartOffset={x:panX,y:panY};area.classList.add('grabbing');e.preventDefault();}});
+  window.addEventListener('mousemove',e=>{if(!isPanning)return;panX=panStartOffset.x+(e.clientX-panStart.x);panY=panStartOffset.y+(e.clientY-panStart.y);applyViewTransform();});
+  window.addEventListener('mouseup',e=>{if(e.button===2&&isPanning){isPanning=false;area.classList.remove('grabbing');}});
+  area.addEventListener('contextmenu',e=>e.preventDefault());
+  area.addEventListener('wheel',e=>{e.preventDefault();const rect=area.getBoundingClientRect();const mx=e.clientX-rect.left,my=e.clientY-rect.top;const cx=(mx-panX)/zoomLevel,cy=(my-panY)/zoomLevel;const delta=e.deltaY>0?0.9:1.1;zoomLevel=Math.min(5,Math.max(0.1,zoomLevel*delta));panX=mx-cx*zoomLevel;panY=my-cy*zoomLevel;applyViewTransform();},{passive:false});
 }
-
-// ========== STAGE EVENTS ==========
 function setupStageEvents() {
-  document.addEventListener('keydown', e => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); }
-    if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.shiftKey && e.key === 'Z'))) { e.preventDefault(); redo(); }
-    if ((e.ctrlKey || e.metaKey) && e.key === 'd') { e.preventDefault(); duplicateSelected(); }
-    if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveProject(); }
-    if ((e.key === 'Delete' || e.key === 'Backspace') && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') deleteSelected();
-    if (e.key === 'v' || e.key === 'V') setTool('select');
-    if (e.key === 't' || e.key === 'T') addText();
-    if (e.key === 'p' || e.key === 'P') setTool('draw');
-    if (e.key === 'Escape') { setTool('select'); closeAllPopups(); }
+  document.addEventListener('keydown',e=>{
+    if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();undo();}
+    if((e.ctrlKey||e.metaKey)&&(e.key==='y'||(e.shiftKey&&e.key==='Z'))){e.preventDefault();redo();}
+    if((e.ctrlKey||e.metaKey)&&e.key==='d'){e.preventDefault();duplicateSelected();}
+    if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();saveProject();}
+    if((e.key==='Delete'||e.key==='Backspace')&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA')deleteSelected();
+    if(e.key==='v'||e.key==='V')setTool('select');
+    if(e.key==='t'||e.key==='T')addText();
+    if(e.key==='p'||e.key==='P')setTool('draw');
+    if(e.key==='Escape'){setTool('select');closeAllPopups();}
   });
-
-  stage.on('click tap', e => {
-    closeAllPopups();
-    if (e.target === stage || e.target === bgRect || e.target === frameRect) { if (!(e.evt.ctrlKey || e.evt.metaKey)) clearSelection(); return; }
-    if (e.target instanceof Konva.Transformer) return;
-    if (e.evt.ctrlKey || e.evt.metaKey) toggleNodeSelection(e.target);
-    else selectNode(e.target);
-  });
-
-  stage.on('mousedown', e => {
-    if (currentTool !== 'draw') return;
-    const pos = stage.getPointerPosition(); if (!pos) return;
-    isDrawing = true; drawPoints = [pos.x, pos.y];
-    drawLine = new Konva.Line({ points: drawPoints, stroke: '#00ADB5', strokeWidth: 2, lineCap: 'round', lineJoin: 'round', draggable: true });
-    addDragHandlers(drawLine); pushUndo(); layer.add(drawLine); layer.batchDraw();
-  });
-  stage.on('mousemove', e => {
-    if (!isDrawing || currentTool !== 'draw') return;
-    const pos = stage.getPointerPosition(); if (!pos) return;
-    drawPoints = drawPoints.concat([pos.x, pos.y]); drawLine.points(drawPoints); layer.batchDraw();
-  });
-  stage.on('mouseup', () => {
-    if (!isDrawing) return; isDrawing = false;
-    if (drawLine) { selectNode(drawLine); updateLayers(); } drawLine = null;
-  });
+  stage.on('click tap',e=>{closeAllPopups();if(e.target===stage||e.target===bgRect||e.target===frameRect){if(!(e.evt.ctrlKey||e.evt.metaKey))clearSelection();return;}if(e.target instanceof Konva.Transformer)return;if(e.evt.ctrlKey||e.evt.metaKey)toggleNodeSelection(e.target);else selectNode(e.target);});
+  stage.on('mousedown',e=>{if(currentTool!=='draw')return;const pos=stage.getPointerPosition();if(!pos)return;isDrawing=true;drawPoints=[pos.x,pos.y];drawLine=new Konva.Line({points:drawPoints,stroke:'#00ADB5',strokeWidth:2,lineCap:'round',lineJoin:'round',draggable:true});addDragHandlers(drawLine);pushUndo();layer.add(drawLine);layer.batchDraw();});
+  stage.on('mousemove',e=>{if(!isDrawing||currentTool!=='draw')return;const pos=stage.getPointerPosition();if(!pos)return;drawPoints=drawPoints.concat([pos.x,pos.y]);drawLine.points(drawPoints);layer.batchDraw();});
+  stage.on('mouseup',()=>{if(!isDrawing)return;isDrawing=false;if(drawLine){selectNode(drawLine);updateLayers();}drawLine=null;});
 }
-
-// ========== SELECTION ==========
-function selectNode(node) { removeTransformers(); selectedNodes = [node]; addTransformer([node]); updatePropsPanel(); updateLayers(); updateMultiInfo(); }
-function toggleNodeSelection(node) {
-  if (selectedNodes.includes(node)) selectedNodes = selectedNodes.filter(n => n !== node);
-  else selectedNodes.push(node);
-  removeTransformers(); if (selectedNodes.length) addTransformer(selectedNodes);
-  updatePropsPanel(); updateLayers(); updateMultiInfo();
-}
-function clearSelection() { removeTransformers(); selectedNodes = []; updatePropsPanel(); updateLayers(); updateMultiInfo(); }
-function removeTransformers() { layer.find('Transformer').forEach(t => t.destroy()); layer.batchDraw(); }
-function addTransformer(nodes) {
-  if (!nodes.length) return;
-  const tr = new Konva.Transformer({ nodes, borderStroke: '#00ADB5', anchorStroke: '#00ADB5', anchorFill: '#fff', anchorSize: 8, rotateAnchorOffset: 20 });
-  layer.add(tr);
-  nodes.forEach(n => {
-    n.off('.tr');
-    n.on('dragmove.tr', () => { if (smartGuides) drawSmartGuides(n); markDirty(); });
-    n.on('dragend.tr', () => { clearSmartGuides(); updatePropsPanel(); });
-    n.on('transform.tr', () => { markDirty(); updatePropsPanel(); });
-    n.on('transformend.tr', () => { markDirty(); updatePropsPanel(); updateLayers(); });
-  });
-  layer.batchDraw();
-}
-function updateMultiInfo() {
-  const info = document.getElementById('multiInfo');
-  if (selectedNodes.length > 1) { info.classList.add('show'); document.getElementById('multiCount').textContent = selectedNodes.length + '개 선택됨'; }
-  else info.classList.remove('show');
-}
-
-// ========== SMART GUIDES ==========
-let guideLines = [];
-function drawSmartGuides(node) {
-  clearSmartGuides(); if (!smartGuides) return;
-  const box = node.getClientRect();
-  const area = document.getElementById('canvasArea'); const vp = document.getElementById('canvas-viewport');
-  const areaRect = area.getBoundingClientRect(); const vpRect = vp.getBoundingClientRect();
-  const threshold = 8;
-  const cx = box.x + box.width / 2, cy = box.y + box.height / 2;
-  const fcx = frameW / 2, fcy = frameH / 2;
-  if (Math.abs(cx - fcx) < threshold) {
-    const g = document.createElement('div'); g.className = 'smart-guide v'; g.style.left = (vpRect.left - areaRect.left + fcx * zoomLevel) + 'px'; area.appendChild(g); guideLines.push(g);
-    if (snapping) { node.x(frameW / 2 - (node.width ? node.width() * node.scaleX() : 0) / 2); layer.batchDraw(); }
-  }
-  if (Math.abs(cy - fcy) < threshold) {
-    const g = document.createElement('div'); g.className = 'smart-guide h'; g.style.top = (vpRect.top - areaRect.top + fcy * zoomLevel) + 'px'; area.appendChild(g); guideLines.push(g);
-    if (snapping) { node.y(frameH / 2 - (node.height ? node.height() * node.scaleY() : 0) / 2); layer.batchDraw(); }
-  }
-}
-function clearSmartGuides() { guideLines.forEach(g => g.remove()); guideLines = []; }
-
-// ========== SHAPES ==========
-function addShape(type) {
-  closeAllPopups(); if (!stage || !layer) return; pushUndo();
-  const cx = frameW / 2, cy = frameH / 2; let node = null;
-  if (type === 'rect') node = new Konva.Rect({ x: cx - 60, y: cy - 40, width: 120, height: 80, fill: '#00ADB5', draggable: true, cornerRadius: 4 });
-  else if (type === 'circle') node = new Konva.Circle({ x: cx, y: cy, radius: 60, fill: '#00ADB5', draggable: true });
-  else if (type === 'triangle') node = new Konva.RegularPolygon({ x: cx, y: cy, sides: 3, radius: 70, fill: '#00ADB5', draggable: true });
-  else if (type === 'line') node = new Konva.Line({ points: [cx - 80, cy, cx + 80, cy], stroke: '#00ADB5', strokeWidth: 3, draggable: true, lineCap: 'round' });
-  else if (type === 'star') node = new Konva.Star({ x: cx, y: cy, numPoints: 5, innerRadius: 35, outerRadius: 70, fill: '#00ADB5', draggable: true });
-  if (!node) return;
-  addDragHandlers(node); layer.add(node); layer.batchDraw(); selectNode(node); updateLayers(); markDirty();
-}
-
-function addText() {
-  closeAllPopups(); if (!stage || !layer) return; pushUndo();
-  const node = new Konva.Text({ x: frameW / 2 - 100, y: frameH / 2 - 16, text: '텍스트를 입력하세요', fontSize: 24, fontFamily: 'DM Sans, sans-serif', fill: '#222831', draggable: true, width: 220 });
-  addDragHandlers(node);
-  node.on('dblclick dbltap', () => editTextInline(node));
-  layer.add(node); layer.batchDraw(); selectNode(node); updateLayers(); markDirty();
-}
-
-function editTextInline(node) {
-  const pos = node.absolutePosition();
-  const vp = document.getElementById('canvas-viewport'); const area = document.getElementById('canvasArea');
-  const vpRect = vp.getBoundingClientRect(); const areaRect = area.getBoundingClientRect();
-  const x = vpRect.left - areaRect.left + pos.x * zoomLevel;
-  const y = vpRect.top - areaRect.top + pos.y * zoomLevel;
-  node.hide(); layer.batchDraw();
-  const ta = document.createElement('textarea');
-  ta.value = node.text();
-  ta.style.cssText = `position:absolute;left:${x}px;top:${y}px;font-size:${node.fontSize() * zoomLevel}px;font-family:${node.fontFamily()};color:${node.fill()};background:transparent;border:1px dashed var(--accent);outline:none;resize:none;min-width:120px;z-index:200;padding:0;line-height:1.3;width:${(node.width() || 200) * zoomLevel}px`;
-  area.appendChild(ta); ta.focus(); ta.select();
-  ta.onblur = () => { node.text(ta.value || 'Text'); node.show(); layer.batchDraw(); ta.remove(); markDirty(); updatePropsPanel(); };
-  ta.onkeydown = e => { if (e.key === 'Escape') ta.blur(); };
-}
-
-function addImageFromFile() { closeAllPopups(); document.getElementById('imageFileInput').click(); }
-function handleImageFile(e) {
-  const file = e.target.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    const img = new window.Image();
-    img.onload = () => {
-      pushUndo();
-      const maxW = Math.min(img.width, frameW * 0.7), maxH = Math.min(img.height, frameH * 0.7);
-      const scale = Math.min(maxW / img.width, maxH / img.height);
-      const w = img.width * scale, h = img.height * scale;
-      const kImg = new Konva.Image({ x: frameW / 2 - w / 2, y: frameH / 2 - h / 2, image: img, width: w, height: h, draggable: true });
-      addDragHandlers(kImg); layer.add(kImg); layer.batchDraw(); selectNode(kImg); updateLayers(); markDirty();
-    };
-    img.src = ev.target.result;
-  };
-  reader.readAsDataURL(file);
-  e.target.value = '';
-}
-
-function addDragHandlers(node) {
-  node.on('dragstart', () => pushUndo());
-  node.on('dragmove', () => { if (smartGuides) drawSmartGuides(node); markDirty(); });
-  node.on('dragend', () => { clearSmartGuides(); updatePropsPanel(); });
-}
-
-// ========== LAYERS ==========
-function updateLayers() {
-  const list = document.getElementById('layersList'); list.innerHTML = '';
-  const children = layer.children.filter(n => n.name() !== 'bg' && n.name() !== 'frame' && !(n instanceof Konva.Transformer));
-  [...children].reverse().forEach(node => {
-    const item = document.createElement('div');
-    item.className = 'layer-item' + (selectedNodes.includes(node) ? ' selected' : '');
-    item.innerHTML = `<span class="layer-icon">${getNodeIcon(node)}</span><span class="layer-name">${getNodeName(node)}</span><span class="layer-vis" onclick="toggleVis(event,${node._id})">${node.visible() ? eyeOn() : eyeOff()}</span>`;
-    item.onclick = e => { if (e.target.closest('.layer-vis')) return; if (e.ctrlKey || e.metaKey) toggleNodeSelection(node); else selectNode(node); };
-    list.appendChild(item);
-  });
-}
-function getNodeIcon(node) {
-  if (node instanceof Konva.Text) return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>`;
-  if (node instanceof Konva.Image) return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`;
-  if (node instanceof Konva.Line) return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
-  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`;
-}
-function getNodeName(node) {
-  if (node instanceof Konva.Text) return '텍스트';
-  if (node instanceof Konva.Image) return '이미지';
-  if (node instanceof Konva.Line) return '선';
-  if (node instanceof Konva.Circle) return '원';
-  if (node instanceof Konva.RegularPolygon) return '삼각형';
-  if (node instanceof Konva.Star) return '별';
-  return '사각형';
-}
-function eyeOn() { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`; }
-function eyeOff() { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="1" y1="1" x2="23" y2="23"/><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/></svg>`; }
-function toggleVis(e, nodeId) { e.stopPropagation(); const n = layer.findOne(x => x._id == nodeId); if (n) { n.visible(!n.visible()); layer.batchDraw(); updateLayers(); } }
-function moveLayerUp() { if (!selectedNodes.length) return; pushUndo(); selectedNodes[0].moveUp(); layer.batchDraw(); updateLayers(); markDirty(); }
-function moveLayerDown() { if (!selectedNodes.length) return; pushUndo(); selectedNodes[0].moveDown(); layer.batchDraw(); updateLayers(); markDirty(); }
-
-// ========== PROPS PANEL ==========
-function updatePropsPanel() {
-  const panel = document.getElementById('propsPanel');
-  if (!selectedNodes.length) { panel.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:20px;text-align:center">요소를 선택하세요</div>'; return; }
-  const node = selectedNodes[0];
-  const isText = node instanceof Konva.Text;
-  const isLine = node instanceof Konva.Line;
-  panel.innerHTML = `
-    ${makePropSection('프레임', makeFrameProps())}
-    ${makePropSection('위치 / 크기', makeTransformProps(node))}
-    ${!isLine ? makePropSection('채우기', makeFillProps(node, isText)) : ''}
-    ${!isLine ? makePropSection('투명도', makeOpacityProps(node)) : ''}
-    ${isText ? makePropSection('텍스트', makeTextProps(node)) : ''}
-    ${makePropSection('정렬', makeAlignProps())}
-  `;
-  attachPropEvents(node);
-  if ((node._fillMode || 'solid') === 'gradient') updateGradBar(node);
-}
-function makePropSection(title, content) { return `<div class="prop-section"><div class="prop-section-header" onclick="toggleSection(this)">${title}<span class="chevron">▾</span></div><div class="prop-section-body">${content}</div></div>`; }
-function toggleSection(el) { el.parentElement.classList.toggle('collapsed'); el.nextElementSibling.classList.toggle('hidden'); }
-
-function makeFrameProps() {
-  const bgColor = bgRect ? rgbToHex(bgRect.fill()) : '#ffffff';
-  return `<div class="prop-row"><span class="prop-label-wide" style="width:40px">너비</span><input class="prop-input" id="pFrameW" type="number" value="${frameW}"></div>
-    <div class="prop-row"><span class="prop-label-wide" style="width:40px">높이</span><input class="prop-input" id="pFrameH" type="number" value="${frameH}"></div>
-    <div class="frame-presets">
-      <div class="frame-preset" onclick="applyFramePreset(1920,1080)">1920×1080</div>
-      <div class="frame-preset" onclick="applyFramePreset(1080,1080)">1080×1080</div>
-      <div class="frame-preset" onclick="applyFramePreset(1080,1920)">Story</div>
-      <div class="frame-preset" onclick="applyFramePreset(800,600)">800×600</div>
-    </div>
-    <div class="prop-row"><span class="prop-label-wide">배경색</span><div class="color-swatch" style="background:${bgColor}"><input type="color" class="color-input-native" id="pBgColor" value="${bgColor}"></div></div>`;
-}
-function applyFramePreset(w, h) { frameW = w; frameH = h; resizeFrame(); const fw = document.getElementById('pFrameW'), fh = document.getElementById('pFrameH'); if (fw) fw.value = w; if (fh) fh.value = h; markDirty(); }
-
-function getNodeDisplayDims(node) {
-  if (node instanceof Konva.Circle) return { w: node.radius() * 2 * node.scaleX(), h: node.radius() * 2 * node.scaleY() };
-  if (node instanceof Konva.RegularPolygon) return { w: node.radius() * 2 * node.scaleX(), h: node.radius() * 2 * node.scaleY() };
-  if (node instanceof Konva.Star) return { w: node.outerRadius() * 2 * node.scaleX(), h: node.outerRadius() * 2 * node.scaleY() };
-  if (node instanceof Konva.Line) {
-    const pts = node.points() || [];
-    if (pts.length < 2) return { w: 0, h: 0 };
-    const xs = pts.filter((_, i) => i % 2 === 0); const ys = pts.filter((_, i) => i % 2 === 1);
-    return { w: (Math.max(...xs) - Math.min(...xs)) * node.scaleX(), h: (Math.max(...ys) - Math.min(...ys)) * node.scaleY() };
-  }
-  return { w: (node.width ? node.width() : 0) * node.scaleX(), h: (node.height ? node.height() : 0) * node.scaleY() };
-}
-function makeTransformProps(node) {
-  const x = Math.round(node.x ? node.x() : 0), y = Math.round(node.y ? node.y() : 0);
-  const { w, h } = getNodeDisplayDims(node); const r = Math.round(node.rotation ? node.rotation() : 0);
-  return `<div class="prop-row-2"><div class="prop-group"><span class="prop-label">X</span><input class="prop-input" id="pX" type="number" value="${x}"></div><div class="prop-group"><span class="prop-label">Y</span><input class="prop-input" id="pY" type="number" value="${y}"></div></div>
-  <div class="prop-row-2"><div class="prop-group"><span class="prop-label">W</span><input class="prop-input" id="pW" type="number" value="${Math.round(w)}"></div><div class="prop-group"><span class="prop-label">H</span><input class="prop-input" id="pH" type="number" value="${Math.round(h)}"></div></div>
-  <div class="prop-row"><span class="prop-label">R</span><input class="prop-input" id="pRot" type="number" value="${r}" style="width:70px"><span style="font-size:11px;color:var(--text-muted)">°</span></div>`;
-}
-function setNodeDims(node, newW, newH) {
-  if (node instanceof Konva.Circle) { node.radius(newW / 2); node.scaleX(1); node.scaleY(1); }
-  else if (node instanceof Konva.RegularPolygon) { node.radius(newW / 2); node.scaleX(1); node.scaleY(1); }
-  else if (node instanceof Konva.Star) { const ratio = node.innerRadius() / node.outerRadius(); node.outerRadius(newW / 2); node.innerRadius(newW / 2 * ratio); node.scaleX(1); node.scaleY(1); }
-  else if (node instanceof Konva.Line) {
-    const pts = node.points() || [];
-    if (pts.length >= 2) {
-      const xs = pts.filter((_, i) => i % 2 === 0), ys = pts.filter((_, i) => i % 2 === 1);
-      const origW = Math.max(...xs) - Math.min(...xs), origH = Math.max(...ys) - Math.min(...ys);
-      if (origW > 0) node.scaleX(newW / origW); if (origH > 0) node.scaleY(newH / origH);
-    }
-  } else {
-    const baseW = node.width ? node.width() : 1, baseH = node.height ? node.height() : 1;
-    if (baseW > 0) node.scaleX(newW / baseW); if (baseH > 0) node.scaleY(newH / baseH);
-  }
-}
-
-function makeFillProps(node, isText) {
-  const fillMode = node._fillMode || 'solid';
-  const currentFill = isText ? (node.fill() || '#222831') : (node.fill() || '#00ADB5');
-  const hexFill = rgbToHex(currentFill);
-  const stops = gradientStopsMap[node._id] || [{ pos: 0, color: '#00ADB5' }, { pos: 1, color: '#222831' }];
-  const gradDir = node._gradDir || 'lr';
-  return `<div class="fill-tabs" id="fillTabs">
-    <button class="fill-tab ${fillMode==='solid'?'active':''}" onclick="setFillMode('solid')">단색</button>
-    <button class="fill-tab ${fillMode==='gradient'?'active':''}" onclick="setFillMode('gradient')">그라디언트</button>
-    <button class="fill-tab ${fillMode==='none'?'active':''}" onclick="setFillMode('none')">없음</button>
-  </div>
-  <div id="fillSolid" style="display:${fillMode==='solid'?'block':'none'}">
-    <div class="color-picker-wrap"><div class="color-swatch" style="background:${hexFill}"><input type="color" class="color-input-native" id="pFillColor" value="${hexFill}"></div><span style="font-size:12px;color:var(--text-muted);font-family:'DM Mono'">${hexFill.toUpperCase()}</span></div>
-  </div>
-  <div id="fillGradient" style="display:${fillMode==='gradient'?'block':'none'}">
-    <div class="gradient-dir-btns" id="gradDirBtns">
-      <div class="gradient-dir-btn ${gradDir==='lr'?'active':''}" onclick="setGradDir(this,'lr')">→</div>
-      <div class="gradient-dir-btn ${gradDir==='tb'?'active':''}" onclick="setGradDir(this,'tb')">↓</div>
-      <div class="gradient-dir-btn ${gradDir==='diag'?'active':''}" onclick="setGradDir(this,'diag')">↘</div>
-      <div class="gradient-dir-btn ${gradDir==='radial'?'active':''}" onclick="setGradDir(this,'radial')">◎</div>
-    </div>
-    <div class="gradient-bar-wrap" id="gradBarWrap"><div class="gradient-bar" id="gradBar"></div></div>
-    <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
-      <div class="color-swatch" id="gradStopSwatch" style="background:${stops[0].color}"><input type="color" class="color-input-native" id="gradStopColor" value="${stops[0].color}"></div>
-      <input class="prop-input" id="gradStopPos" type="number" min="0" max="100" value="${Math.round(stops[0].pos*100)}" style="width:55px">
-      <span style="font-size:11px;color:var(--text-muted)">%</span>
-      <button onclick="addGradStop()" style="background:var(--bg-primary);border:1px solid var(--border);border-radius:4px;color:var(--text-muted);padding:3px 7px;cursor:pointer;font-size:11px">+</button>
-      <button onclick="removeGradStop()" style="background:var(--bg-primary);border:1px solid var(--border);border-radius:4px;color:var(--text-muted);padding:3px 7px;cursor:pointer;font-size:11px">−</button>
-    </div>
-  </div>`;
-}
-function makeOpacityProps(node) { const op = Math.round((node.opacity ? node.opacity() : 1) * 100); return `<div class="slider-wrap"><input type="range" class="prop-slider" id="pOpacity" min="0" max="100" value="${op}"><span class="slider-val" id="pOpacityVal">${op}%</span></div>`; }
-function makeTextProps(node) {
-  return `<div class="prop-row"><span class="prop-label-wide">크기</span><input class="prop-input" id="pFontSize" type="number" value="${node.fontSize()}"></div>
-  <div class="prop-row"><span class="prop-label-wide">스타일</span><select class="prop-input" id="pFontWeight"><option value="normal" ${node.fontStyle()==='normal'?'selected':''}>Normal</option><option value="bold" ${node.fontStyle()==='bold'?'selected':''}>Bold</option><option value="italic" ${node.fontStyle()==='italic'?'selected':''}>Italic</option></select></div>
-  <div class="prop-row"><span class="prop-label-wide">내용</span></div>
-  <textarea id="pText" style="width:100%;background:var(--bg-primary);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:inherit;font-size:12px;padding:6px;outline:none;resize:vertical;min-height:60px">${node.text()}</textarea>`;
-}
-function makeAlignProps() {
-  return `<div class="align-btns">
-    <div class="align-btn" onclick="alignSelected('left')" title="좌측 정렬"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="3" y2="18"/><rect x="5" y="7" width="9" height="4"/><rect x="5" y="13" width="14" height="4"/></svg></div>
-    <div class="align-btn" onclick="alignSelected('center')" title="수평 중앙"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="3" x2="12" y2="21"/><rect x="7" y="7" width="10" height="4"/><rect x="4" y="13" width="16" height="4"/></svg></div>
-    <div class="align-btn" onclick="alignSelected('right')" title="우측 정렬"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="6" x2="21" y2="18"/><rect x="10" y="7" width="9" height="4"/><rect x="5" y="13" width="14" height="4"/></svg></div>
-    <div class="align-btn" onclick="alignSelected('top')" title="상단 정렬"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="3" x2="21" y2="3"/><rect x="7" y="5" width="4" height="9"/><rect x="13" y="5" width="4" height="14"/></svg></div>
-    <div class="align-btn" onclick="alignSelected('middle')" title="수직 중앙"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><rect x="7" y="6" width="4" height="12"/><rect x="13" y="8" width="4" height="8"/></svg></div>
-    <div class="align-btn" onclick="alignSelected('bottom')" title="하단 정렬"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="21" x2="21" y2="21"/><rect x="7" y="10" width="4" height="9"/><rect x="13" y="5" width="4" height="14"/></svg></div>
-  </div>`;
-}
-
-// ========== PROP EVENTS ==========
-function attachPropEvents(node) {
-  const bind = (id, fn) => { const el = document.getElementById(id); if (el) el.addEventListener('change', fn); };
-  const bindInput = (id, fn) => { const el = document.getElementById(id); if (el) el.addEventListener('input', fn); };
-  bind('pFrameW', e => { frameW = parseInt(e.target.value) || 800; resizeFrame(); markDirty(); });
-  bind('pFrameH', e => { frameH = parseInt(e.target.value) || 600; resizeFrame(); markDirty(); });
-  bindInput('pBgColor', e => { bgRect.fill(e.target.value); layer.batchDraw(); markDirty(); });
-  bind('pX', e => { node.x(parseFloat(e.target.value) || 0); layer.batchDraw(); markDirty(); });
-  bind('pY', e => { node.y(parseFloat(e.target.value) || 0); layer.batchDraw(); markDirty(); });
-  bind('pRot', e => { node.rotation(parseFloat(e.target.value) || 0); layer.batchDraw(); markDirty(); });
-  bind('pW', e => { const nw = parseFloat(e.target.value) || 1; const { h } = getNodeDisplayDims(node); setNodeDims(node, nw, h); layer.batchDraw(); markDirty(); });
-  bind('pH', e => { const nh = parseFloat(e.target.value) || 1; const { w } = getNodeDisplayDims(node); setNodeDims(node, w, nh); layer.batchDraw(); markDirty(); });
-  bindInput('pFillColor', e => { applySolidFill(node, e.target.value); markDirty(); });
-  setupGradientBar(node);
-  bindInput('gradStopColor', e => {
-    const stops = gradientStopsMap[node._id];
-    if (stops) { stops[selectedStopIdx].color = e.target.value; document.getElementById('gradStopSwatch').style.background = e.target.value; applyGradient(node); updateGradBar(node); }
-  });
-  bind('gradStopPos', e => { const stops = gradientStopsMap[node._id]; if (stops) { stops[selectedStopIdx].pos = parseFloat(e.target.value) / 100; applyGradient(node); updateGradBar(node); } });
-  bindInput('pOpacity', e => { node.opacity(parseInt(e.target.value) / 100); const v = document.getElementById('pOpacityVal'); if (v) v.textContent = e.target.value + '%'; layer.batchDraw(); markDirty(); });
-  bind('pFontSize', e => { node.fontSize(parseInt(e.target.value) || 12); layer.batchDraw(); markDirty(); });
-  bind('pFontWeight', e => { node.fontStyle(e.target.value); layer.batchDraw(); markDirty(); });
-  bind('pText', e => { node.text(e.target.value); layer.batchDraw(); markDirty(); });
-}
-
-// ========== FILL MODES ==========
-function setFillMode(mode) {
-  if (!selectedNodes.length) return;
-  const node = selectedNodes[0]; node._fillMode = mode;
-  document.querySelectorAll('#fillTabs .fill-tab').forEach(t => t.classList.remove('active'));
-  document.querySelector(`#fillTabs .fill-tab:nth-child(${mode==='solid'?1:mode==='gradient'?2:3})`).classList.add('active');
-  document.getElementById('fillSolid').style.display = mode === 'solid' ? 'block' : 'none';
-  document.getElementById('fillGradient').style.display = mode === 'gradient' ? 'block' : 'none';
-  if (mode === 'none') clearFill(node);
-  else if (mode === 'solid') applySolidFill(node, document.getElementById('pFillColor')?.value || '#00ADB5');
-  else if (mode === 'gradient') {
-    if (!gradientStopsMap[node._id]) gradientStopsMap[node._id] = [{ pos: 0, color: '#00ADB5' }, { pos: 1, color: '#222831' }];
-    applyGradient(node); updateGradBar(node);
-  }
-  layer.batchDraw(); markDirty();
-}
-function clearFill(node) { try { node.fillLinearGradientColorStops(null); } catch(e) {} try { node.fillRadialGradientColorStops(null); } catch(e) {} node.fill('transparent'); }
-function applySolidFill(node, color) {
-  node._fillMode = 'solid';
-  try { node.fillLinearGradientColorStops(null); node.fillLinearGradientStartPoint(null); node.fillLinearGradientEndPoint(null); } catch(e) {}
-  try { node.fillRadialGradientColorStops(null); } catch(e) {}
-  node.fill(color); layer.batchDraw();
-}
-function setGradDir(el, dir) {
-  if (!selectedNodes.length) return;
-  const node = selectedNodes[0]; node._gradDir = dir;
-  document.querySelectorAll('#gradDirBtns .gradient-dir-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active'); applyGradient(node);
-}
-function applyGradient(node) {
-  const stops = gradientStopsMap[node._id]; if (!stops || stops.length < 2) return;
-  const sorted = [...stops].sort((a, b) => a.pos - b.pos);
-  const colorStops = sorted.flatMap(s => [s.pos, s.color]);
-  const dir = node._gradDir || 'lr';
-  const w = node instanceof Konva.Circle ? node.radius() * 2 : (node instanceof Konva.Star ? node.outerRadius() * 2 : (node.width ? node.width() : 100));
-  const h = node instanceof Konva.Circle ? node.radius() * 2 : (node instanceof Konva.Star ? node.outerRadius() * 2 : (node.height ? node.height() : 100));
-  const r = node instanceof Konva.Circle ? node.radius() : (node instanceof Konva.Star ? node.outerRadius() : Math.max(w, h) / 2);
-  try { node.fillLinearGradientColorStops(null); node.fillLinearGradientStartPoint(null); node.fillLinearGradientEndPoint(null); } catch(e) {}
-  try { node.fillRadialGradientColorStops(null); } catch(e) {}
-  node.fill(null);
-  if (dir === 'radial') {
-    const cx = node instanceof Konva.Circle ? 0 : w / 2, cy = node instanceof Konva.Circle ? 0 : h / 2;
-    node.fillRadialGradientStartPoint({ x: cx, y: cy }); node.fillRadialGradientEndPoint({ x: cx, y: cy });
-    node.fillRadialGradientStartRadius(0); node.fillRadialGradientEndRadius(r);
-    node.fillRadialGradientColorStops(colorStops);
-  } else {
-    let sx = 0, sy = 0, ex = w, ey = 0;
-    if (node instanceof Konva.Circle) { sx = -r; ex = r; }
-    if (dir === 'tb') { sx = 0; sy = node instanceof Konva.Circle ? -r : 0; ex = 0; ey = node instanceof Konva.Circle ? r : h; }
-    else if (dir === 'diag') { sx = node instanceof Konva.Circle ? -r : 0; sy = node instanceof Konva.Circle ? -r : 0; ex = node instanceof Konva.Circle ? r : w; ey = node instanceof Konva.Circle ? r : h; }
-    node.fillLinearGradientStartPoint({ x: sx, y: sy }); node.fillLinearGradientEndPoint({ x: ex, y: ey });
-    node.fillLinearGradientColorStops(colorStops);
-  }
-  layer.batchDraw();
-}
-function setupGradientBar(node) { updateGradBar(node); }
-function updateGradBar(node) {
-  const bar = document.getElementById('gradBar'), wrap = document.getElementById('gradBarWrap');
-  if (!bar || !wrap) return;
-  const stops = gradientStopsMap[node._id]; if (!stops) return;
-  const sorted = [...stops].sort((a, b) => a.pos - b.pos);
-  bar.style.background = `linear-gradient(to right,${sorted.map(s => `${s.color} ${s.pos * 100}%`).join(',')})`;
-  wrap.querySelectorAll('.gradient-stop').forEach(el => el.remove());
-  stops.forEach((s, i) => {
-    const handle = document.createElement('div');
-    handle.className = 'gradient-stop' + (i === selectedStopIdx ? ' selected' : '');
-    handle.style.left = (s.pos * 100) + '%'; handle.style.background = s.color;
-    handle.addEventListener('mousedown', ev => {
-      ev.preventDefault(); selectedStopIdx = i;
-      wrap.querySelectorAll('.gradient-stop').forEach(h => h.classList.remove('selected'));
-      handle.classList.add('selected');
-      const gcEl = document.getElementById('gradStopColor'), gsEl = document.getElementById('gradStopSwatch'), gpEl = document.getElementById('gradStopPos');
-      if (gcEl) gcEl.value = s.color; if (gsEl) gsEl.style.background = s.color; if (gpEl) gpEl.value = Math.round(s.pos * 100);
-      const onMove = em => {
-        const rect = wrap.getBoundingClientRect();
-        const p = Math.max(0, Math.min(1, (em.clientX - rect.left) / rect.width));
-        stops[i].pos = p; handle.style.left = (p * 100) + '%';
-        if (gpEl) gpEl.value = Math.round(p * 100);
-        applyGradient(node); updateGradBar(node);
-      };
-      const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
-      document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onUp);
-    });
-    wrap.appendChild(handle);
-  });
-}
-function addGradStop() {
-  if (!selectedNodes.length) return; const node = selectedNodes[0];
-  if (!gradientStopsMap[node._id]) gradientStopsMap[node._id] = [{ pos: 0, color: '#00ADB5' }, { pos: 1, color: '#222831' }];
-  gradientStopsMap[node._id].push({ pos: 0.5, color: '#ffffff' }); applyGradient(node); updateGradBar(node);
-}
-function removeGradStop() {
-  if (!selectedNodes.length) return; const node = selectedNodes[0];
-  const stops = gradientStopsMap[node._id]; if (!stops || stops.length <= 2) return;
-  stops.splice(selectedStopIdx, 1); selectedStopIdx = Math.min(selectedStopIdx, stops.length - 1);
-  applyGradient(node); updateGradBar(node);
-}
-
-// ========== ALIGNMENT ==========
-function alignSelected(dir) {
-  if (!selectedNodes.length) return; pushUndo();
-  const nodes = selectedNodes;
-  if (nodes.length === 1) {
-    const n = nodes[0]; const box = n.getClientRect({ relativeTo: layer });
-    if (dir === 'left') n.x(n.x() - box.x);
-    else if (dir === 'right') n.x(frameW - box.width + (n.x() - box.x));
-    else if (dir === 'center') n.x(frameW / 2 - box.width / 2 + (n.x() - box.x));
-    else if (dir === 'top') n.y(n.y() - box.y);
-    else if (dir === 'bottom') n.y(frameH - box.height + (n.y() - box.y));
-    else if (dir === 'middle') n.y(frameH / 2 - box.height / 2 + (n.y() - box.y));
-  } else {
-    const boxes = nodes.map(n => n.getClientRect({ relativeTo: layer }));
-    const minX = Math.min(...boxes.map(b => b.x)), maxX = Math.max(...boxes.map(b => b.x + b.width));
-    const minY = Math.min(...boxes.map(b => b.y)), maxY = Math.max(...boxes.map(b => b.y + b.height));
-    const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
-    nodes.forEach((n, i) => {
-      const box = boxes[i];
-      if (dir === 'left') n.x(minX + (n.x() - box.x));
-      else if (dir === 'right') n.x(maxX - box.width + (n.x() - box.x));
-      else if (dir === 'center') n.x(cx - box.width / 2 + (n.x() - box.x));
-      else if (dir === 'top') n.y(minY + (n.y() - box.y));
-      else if (dir === 'bottom') n.y(maxY - box.height + (n.y() - box.y));
-      else if (dir === 'middle') n.y(cy - box.height / 2 + (n.y() - box.y));
-    });
-  }
-  layer.batchDraw(); updatePropsPanel(); markDirty();
-}
-
-// ========== UNDO/REDO ==========
-function pushUndo() { if (!layer) return; undoStack.push(serializeLayer()); if (undoStack.length > 50) undoStack.shift(); redoStack = []; }
-function undo() { if (!undoStack.length) return; redoStack.push(serializeLayer()); restoreLayer(undoStack.pop()); }
-function redo() { if (!redoStack.length) return; undoStack.push(serializeLayer()); restoreLayer(redoStack.pop()); }
-function serializeLayer() {
-  const nodes = layer.children.filter(n => n.name() !== 'bg' && n.name() !== 'frame' && !(n instanceof Konva.Transformer));
-  return JSON.stringify(nodes.map(n => serializeNode(n)));
-}
-function serializeNode(n) {
-  const base = { type: n.getClassName(), attrs: { ...n.getAttrs() }, _fillMode: n._fillMode, _gradDir: n._gradDir, gradStops: gradientStopsMap[n._id] };
-  if (n instanceof Konva.Image) { try { base.attrs.imageSrc = n.image()?.src; } catch(e) {} delete base.attrs.image; }
-  return base;
-}
-function restoreLayer(json) {
-  const arr = JSON.parse(json); clearSelection();
-  layer.children.filter(n => n.name() !== 'bg' && n.name() !== 'frame' && !(n instanceof Konva.Transformer)).forEach(n => n.destroy());
-  restoreElements(arr);
-}
-function restoreElements(arr) {
-  arr.forEach(data => {
-    const attrs = { ...data.attrs }; delete attrs.image;
-    let node; const type = data.type;
-    if (type === 'Rect') node = new Konva.Rect(attrs);
-    else if (type === 'Circle') node = new Konva.Circle(attrs);
-    else if (type === 'RegularPolygon') node = new Konva.RegularPolygon(attrs);
-    else if (type === 'Star') node = new Konva.Star(attrs);
-    else if (type === 'Text') node = new Konva.Text(attrs);
-    else if (type === 'Line') node = new Konva.Line(attrs);
-    else if (type === 'Image') {
-      node = new Konva.Image({ ...attrs, image: null });
-      if (data.attrs.imageSrc) { const img = new window.Image(); img.onload = () => { node.image(img); layer.batchDraw(); }; img.src = data.attrs.imageSrc; }
-    }
-    if (!node) return;
-    node._fillMode = data._fillMode; node._gradDir = data._gradDir;
-    if (data.gradStops) { gradientStopsMap[node._id] = data.gradStops; if (data._fillMode === 'gradient') applyGradient(node); }
-    if (type === 'Text') node.on('dblclick dbltap', () => editTextInline(node));
-    addDragHandlers(node); node.draggable(true); layer.add(node);
-  });
-  layer.batchDraw(); updateLayers();
-}
-
-// ========== SAVE / EXPORT ==========
-function markDirty() { isDirty = true; }
-
-async function saveProject() {
-  if (!layer || !supabase || !currentUser) return;
-  const title = document.getElementById('projectTitle').value.trim() || '새 디자인';
-  const nodes = layer.children.filter(n => n.name() !== 'bg' && n.name() !== 'frame' && !(n instanceof Konva.Transformer));
-  const elements = nodes.map(n => serializeNode(n));
-  const data = { title, frameW, frameH, bgColor: bgRect.fill(), elements, savedAt: new Date().toISOString() };
-  try {
-    await supabase.from('projects').update({
-      name: title,
-      data: JSON.stringify(data),
-      updated_at: new Date().toISOString()
-    }).eq('id', currentProjectId).eq('user_id', currentUser.id);
-    isDirty = false;
-    // Update local cache
-    const p = projects.find(x => x.id === currentProjectId);
-    if (p) { p.name = title; p.updated_at = new Date().toISOString(); }
-    showToast('저장되었습니다 ✓');
-  } catch(e) { showToast('저장 실패: ' + e.message); }
-}
-
-async function handleDownload() {
-  if (!stage) return;
-  const useTransparent = confirm('투명 배경으로 내보내시겠습니까?\n(취소: 현재 배경색 유지)');
-  const prevFill = bgRect.fill();
-  layer.find('Transformer').forEach(t => t.hide()); frameRect.hide();
-  if (useTransparent) bgRect.fill('transparent');
-  layer.batchDraw();
-  await new Promise(r => setTimeout(r, 60));
-  try {
-    const dataURL = stage.toDataURL({ pixelRatio: 2, mimeType: 'image/png' });
-    const a = document.createElement('a'); a.href = dataURL;
-    a.download = (document.getElementById('projectTitle').value || 'design').replace(/[^a-zA-Z0-9가-힣\-_]/g, '_') + '.png';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    showToast('다운로드 완료!');
-  } catch(err) { showToast('다운로드 실패: ' + err.message); }
-  finally { bgRect.fill(prevFill); frameRect.show(); layer.find('Transformer').forEach(t => t.show()); layer.batchDraw(); }
-}
-
-// ========== DELETE / DUPLICATE ==========
-function deleteSelected() {
-  if (!selectedNodes.length) return; pushUndo();
-  selectedNodes.forEach(n => n.destroy()); selectedNodes = [];
-  layer.batchDraw(); updatePropsPanel(); updateLayers(); markDirty();
-}
-function duplicateSelected() {
-  if (!selectedNodes.length) return; pushUndo();
-  const newNodes = [];
-  selectedNodes.forEach(n => {
-    const clone = n.clone({ x: n.x() + 20, y: n.y() + 20 });
-    if (gradientStopsMap[n._id]) gradientStopsMap[clone._id] = JSON.parse(JSON.stringify(gradientStopsMap[n._id]));
-    clone._fillMode = n._fillMode; clone._gradDir = n._gradDir;
-    addDragHandlers(clone);
-    if (clone instanceof Konva.Text) clone.on('dblclick dbltap', () => editTextInline(clone));
-    layer.add(clone); newNodes.push(clone);
-  });
-  layer.batchDraw(); removeTransformers(); selectedNodes = newNodes; addTransformer(newNodes);
-  updateLayers(); markDirty();
-}
-
-// ========== TOOLS ==========
-function setTool(tool) {
-  currentTool = tool;
-  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-  if (tool === 'select') document.getElementById('toolSelect')?.classList.add('active');
-  if (tool === 'draw') document.getElementById('toolDraw')?.classList.add('active');
-  if (stage) stage.container().style.cursor = tool === 'draw' ? 'crosshair' : 'default';
-}
-function toggleShapePicker() { document.getElementById('shapePicker').classList.toggle('open'); document.getElementById('settingsPopup').classList.remove('open'); }
-function toggleSettings() { document.getElementById('settingsPopup').classList.toggle('open'); document.getElementById('shapePicker').classList.remove('open'); }
-function closeAllPopups() { document.getElementById('shapePicker')?.classList.remove('open'); document.getElementById('settingsPopup')?.classList.remove('open'); document.getElementById('ctxMenu')?.classList.remove('open'); }
-
-// ========== CONTEXT MENU ==========
-function ctxAction(action) {
+function selectNode(node){removeTransformers();selectedNodes=[node];addTransformer([node]);updatePropsPanel();updateLayers();updateMultiInfo();}
+function toggleNodeSelection(node){if(selectedNodes.includes(node))selectedNodes=selectedNodes.filter(n=>n!==node);else selectedNodes.push(node);removeTransformers();if(selectedNodes.length)addTransformer(selectedNodes);updatePropsPanel();updateLayers();updateMultiInfo();}
+function clearSelection(){removeTransformers();selectedNodes=[];updatePropsPanel();updateLayers();updateMultiInfo();}
+function removeTransformers(){layer.find('Transformer').forEach(t=>t.destroy());layer.batchDraw();}
+function addTransformer(nodes){if(!nodes.length)return;const tr=new Konva.Transformer({nodes,borderStroke:'#00ADB5',anchorStroke:'#00ADB5',anchorFill:'#fff',anchorSize:8,rotateAnchorOffset:20});layer.add(tr);nodes.forEach(n=>{n.off('.tr');n.on('dragmove.tr',()=>{if(smartGuides)drawSmartGuides(n);markDirty();});n.on('dragend.tr',()=>{clearSmartGuides();updatePropsPanel();});n.on('transform.tr',()=>{markDirty();updatePropsPanel();});n.on('transformend.tr',()=>{markDirty();updatePropsPanel();updateLayers();});});layer.batchDraw();}
+function updateMultiInfo(){const info=document.getElementById('multiInfo');if(selectedNodes.length>1){info.classList.add('show');document.getElementById('multiCount').textContent=selectedNodes.length+'개 선택됨';}else info.classList.remove('show');}
+let guideLines=[];
+function drawSmartGuides(node){clearSmartGuides();if(!smartGuides)return;const box=node.getClientRect();const area=document.getElementById('canvasArea'),vp=document.getElementById('canvas-viewport');const areaRect=area.getBoundingClientRect(),vpRect=vp.getBoundingClientRect();const t=8,cx=box.x+box.width/2,cy=box.y+box.height/2,fcx=frameW/2,fcy=frameH/2;if(Math.abs(cx-fcx)<t){const g=document.createElement('div');g.className='smart-guide v';g.style.left=(vpRect.left-areaRect.left+fcx*zoomLevel)+'px';area.appendChild(g);guideLines.push(g);if(snapping){node.x(frameW/2-(node.width?node.width()*node.scaleX():0)/2);layer.batchDraw();}}if(Math.abs(cy-fcy)<t){const g=document.createElement('div');g.className='smart-guide h';g.style.top=(vpRect.top-areaRect.top+fcy*zoomLevel)+'px';area.appendChild(g);guideLines.push(g);if(snapping){node.y(frameH/2-(node.height?node.height()*node.scaleY():0)/2);layer.batchDraw();}}}
+function clearSmartGuides(){guideLines.forEach(g=>g.remove());guideLines=[];}
+function addShape(type){closeAllPopups();if(!stage||!layer)return;pushUndo();const cx=frameW/2,cy=frameH/2;let node=null;if(type==='rect')node=new Konva.Rect({x:cx-60,y:cy-40,width:120,height:80,fill:'#00ADB5',draggable:true,cornerRadius:4});else if(type==='circle')node=new Konva.Circle({x:cx,y:cy,radius:60,fill:'#00ADB5',draggable:true});else if(type==='triangle')node=new Konva.RegularPolygon({x:cx,y:cy,sides:3,radius:70,fill:'#00ADB5',draggable:true});else if(type==='line')node=new Konva.Line({points:[cx-80,cy,cx+80,cy],stroke:'#00ADB5',strokeWidth:3,draggable:true,lineCap:'round'});else if(type==='star')node=new Konva.Star({x:cx,y:cy,numPoints:5,innerRadius:35,outerRadius:70,fill:'#00ADB5',draggable:true});if(!node)return;addDragHandlers(node);layer.add(node);layer.batchDraw();selectNode(node);updateLayers();markDirty();}
+function addText(){closeAllPopups();if(!stage||!layer)return;pushUndo();const node=new Konva.Text({x:frameW/2-100,y:frameH/2-16,text:'텍스트를 입력하세요',fontSize:24,fontFamily:'DM Sans, sans-serif',fill:'#222831',draggable:true,width:220});addDragHandlers(node);node.on('dblclick dbltap',()=>editTextInline(node));layer.add(node);layer.batchDraw();selectNode(node);updateLayers();markDirty();}
+function editTextInline(node){const pos=node.absolutePosition();const vp=document.getElementById('canvas-viewport'),area=document.getElementById('canvasArea');const vpRect=vp.getBoundingClientRect(),areaRect=area.getBoundingClientRect();const x=vpRect.left-areaRect.left+pos.x*zoomLevel,y=vpRect.top-areaRect.top+pos.y*zoomLevel;node.hide();layer.batchDraw();const ta=document.createElement('textarea');ta.value=node.text();ta.style.cssText=`position:absolute;left:${x}px;top:${y}px;font-size:${node.fontSize()*zoomLevel}px;font-family:${node.fontFamily()};color:${node.fill()};background:transparent;border:1px dashed var(--accent);outline:none;resize:none;min-width:120px;z-index:200;padding:0;line-height:1.3;width:${(node.width()||200)*zoomLevel}px`;area.appendChild(ta);ta.focus();ta.select();ta.onblur=()=>{node.text(ta.value||'Text');node.show();layer.batchDraw();ta.remove();markDirty();updatePropsPanel();};ta.onkeydown=e=>{if(e.key==='Escape')ta.blur();};}
+function addImageFromFile(){closeAllPopups();document.getElementById('imageFileInput').click();}
+function handleImageFile(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{const img=new window.Image();img.onload=()=>{pushUndo();const maxW=Math.min(img.width,frameW*0.7),maxH=Math.min(img.height,frameH*0.7);const scale=Math.min(maxW/img.width,maxH/img.height);const w=img.width*scale,h=img.height*scale;const kImg=new Konva.Image({x:frameW/2-w/2,y:frameH/2-h/2,image:img,width:w,height:h,draggable:true});addDragHandlers(kImg);layer.add(kImg);layer.batchDraw();selectNode(kImg);updateLayers();markDirty();};img.src=ev.target.result;};reader.readAsDataURL(file);e.target.value='';}
+function addDragHandlers(node){node.on('dragstart',()=>pushUndo());node.on('dragmove',()=>{if(smartGuides)drawSmartGuides(node);markDirty();});node.on('dragend',()=>{clearSmartGuides();updatePropsPanel();});}
+function updateLayers(){const list=document.getElementById('layersList');list.innerHTML='';const children=layer.children.filter(n=>n.name()!=='bg'&&n.name()!=='frame'&&!(n instanceof Konva.Transformer));[...children].reverse().forEach(node=>{const item=document.createElement('div');item.className='layer-item'+(selectedNodes.includes(node)?' selected':'');item.innerHTML=`<span class="layer-icon">${getNodeIcon(node)}</span><span class="layer-name">${getNodeName(node)}</span><span class="layer-vis" onclick="toggleVis(event,${node._id})">${node.visible()?eyeOn():eyeOff()}</span>`;item.onclick=e=>{if(e.target.closest('.layer-vis'))return;if(e.ctrlKey||e.metaKey)toggleNodeSelection(node);else selectNode(node);};list.appendChild(item);});}
+function getNodeIcon(node){if(node instanceof Konva.Text)return`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>`;if(node instanceof Konva.Image)return`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`;if(node instanceof Konva.Line)return`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="5" y1="12" x2="19" y2="12"/></svg>`;return`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`;}
+function getNodeName(node){if(node instanceof Konva.Text)return'텍스트';if(node instanceof Konva.Image)return'이미지';if(node instanceof Konva.Line)return'선';if(node instanceof Konva.Circle)return'원';if(node instanceof Konva.RegularPolygon)return'삼각형';if(node instanceof Konva.Star)return'별';return'사각형';}
+function eyeOn(){return`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;}
+function eyeOff(){return`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="1" y1="1" x2="23" y2="23"/><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/></svg>`;}
+function toggleVis(e,nodeId){e.stopPropagation();const n=layer.findOne(x=>x._id==nodeId);if(n){n.visible(!n.visible());layer.batchDraw();updateLayers();}}
+function moveLayerUp(){if(!selectedNodes.length)return;pushUndo();selectedNodes[0].moveUp();layer.batchDraw();updateLayers();markDirty();}
+function moveLayerDown(){if(!selectedNodes.length)return;pushUndo();selectedNodes[0].moveDown();layer.batchDraw();updateLayers();markDirty();}
+function updatePropsPanel(){const panel=document.getElementById('propsPanel');if(!selectedNodes.length){panel.innerHTML='<div style="color:var(--text-muted);font-size:12px;padding:20px;text-align:center">요소를 선택하세요</div>';return;}const node=selectedNodes[0],isText=node instanceof Konva.Text,isLine=node instanceof Konva.Line;panel.innerHTML=`${makePropSection('프레임',makeFrameProps())}${makePropSection('위치 / 크기',makeTransformProps(node))}${!isLine?makePropSection('채우기',makeFillProps(node,isText)):''}${!isLine?makePropSection('투명도',makeOpacityProps(node)):''}${isText?makePropSection('텍스트',makeTextProps(node)):''}${makePropSection('정렬',makeAlignProps())}`;attachPropEvents(node);if((node._fillMode||'solid')==='gradient')updateGradBar(node);}
+function makePropSection(title,content){return`<div class="prop-section"><div class="prop-section-header" onclick="toggleSection(this)">${title}<span class="chevron">▾</span></div><div class="prop-section-body">${content}</div></div>`;}
+function toggleSection(el){el.parentElement.classList.toggle('collapsed');el.nextElementSibling.classList.toggle('hidden');}
+function makeFrameProps(){const bgColor=bgRect?rgbToHex(bgRect.fill()):'#ffffff';return`<div class="prop-row"><span class="prop-label-wide" style="width:40px">너비</span><input class="prop-input" id="pFrameW" type="number" value="${frameW}"></div><div class="prop-row"><span class="prop-label-wide" style="width:40px">높이</span><input class="prop-input" id="pFrameH" type="number" value="${frameH}"></div><div class="frame-presets"><div class="frame-preset" onclick="applyFramePreset(1920,1080)">1920×1080</div><div class="frame-preset" onclick="applyFramePreset(1080,1080)">1080×1080</div><div class="frame-preset" onclick="applyFramePreset(1080,1920)">Story</div><div class="frame-preset" onclick="applyFramePreset(800,600)">800×600</div></div><div class="prop-row"><span class="prop-label-wide">배경색</span><div class="color-swatch" style="background:${bgColor}"><input type="color" class="color-input-native" id="pBgColor" value="${bgColor}"></div></div>`;}
+function applyFramePreset(w,h){frameW=w;frameH=h;resizeFrame();const fw=document.getElementById('pFrameW'),fh=document.getElementById('pFrameH');if(fw)fw.value=w;if(fh)fh.value=h;markDirty();}
+function getNodeDisplayDims(node){if(node instanceof Konva.Circle)return{w:node.radius()*2*node.scaleX(),h:node.radius()*2*node.scaleY()};if(node instanceof Konva.RegularPolygon)return{w:node.radius()*2*node.scaleX(),h:node.radius()*2*node.scaleY()};if(node instanceof Konva.Star)return{w:node.outerRadius()*2*node.scaleX(),h:node.outerRadius()*2*node.scaleY()};if(node instanceof Konva.Line){const pts=node.points()||[];if(pts.length<2)return{w:0,h:0};const xs=pts.filter((_,i)=>i%2===0),ys=pts.filter((_,i)=>i%2===1);return{w:(Math.max(...xs)-Math.min(...xs))*node.scaleX(),h:(Math.max(...ys)-Math.min(...ys))*node.scaleY()};}return{w:(node.width?node.width():0)*node.scaleX(),h:(node.height?node.height():0)*node.scaleY()};}
+function makeTransformProps(node){const x=Math.round(node.x?node.x():0),y=Math.round(node.y?node.y():0);const{w,h}=getNodeDisplayDims(node),r=Math.round(node.rotation?node.rotation():0);return`<div class="prop-row-2"><div class="prop-group"><span class="prop-label">X</span><input class="prop-input" id="pX" type="number" value="${x}"></div><div class="prop-group"><span class="prop-label">Y</span><input class="prop-input" id="pY" type="number" value="${y}"></div></div><div class="prop-row-2"><div class="prop-group"><span class="prop-label">W</span><input class="prop-input" id="pW" type="number" value="${Math.round(w)}"></div><div class="prop-group"><span class="prop-label">H</span><input class="prop-input" id="pH" type="number" value="${Math.round(h)}"></div></div><div class="prop-row"><span class="prop-label">R</span><input class="prop-input" id="pRot" type="number" value="${r}" style="width:70px"><span style="font-size:11px;color:var(--text-muted)">°</span></div>`;}
+function setNodeDims(node,newW,newH){if(node instanceof Konva.Circle){node.radius(newW/2);node.scaleX(1);node.scaleY(1);}else if(node instanceof Konva.RegularPolygon){node.radius(newW/2);node.scaleX(1);node.scaleY(1);}else if(node instanceof Konva.Star){const ratio=node.innerRadius()/node.outerRadius();node.outerRadius(newW/2);node.innerRadius(newW/2*ratio);node.scaleX(1);node.scaleY(1);}else if(node instanceof Konva.Line){const pts=node.points()||[];if(pts.length>=2){const xs=pts.filter((_,i)=>i%2===0),ys=pts.filter((_,i)=>i%2===1);const origW=Math.max(...xs)-Math.min(...xs),origH=Math.max(...ys)-Math.min(...ys);if(origW>0)node.scaleX(newW/origW);if(origH>0)node.scaleY(newH/origH);}}else{const baseW=node.width?node.width():1,baseH=node.height?node.height():1;if(baseW>0)node.scaleX(newW/baseW);if(baseH>0)node.scaleY(newH/baseH);}}
+function makeFillProps(node,isText){const fillMode=node._fillMode||'solid';const currentFill=isText?(node.fill()||'#222831'):(node.fill()||'#00ADB5');const hexFill=rgbToHex(currentFill);const stops=gradientStopsMap[node._id]||[{pos:0,color:'#00ADB5'},{pos:1,color:'#222831'}];const gradDir=node._gradDir||'lr';return`<div class="fill-tabs" id="fillTabs"><button class="fill-tab ${fillMode==='solid'?'active':''}" onclick="setFillMode('solid')">단색</button><button class="fill-tab ${fillMode==='gradient'?'active':''}" onclick="setFillMode('gradient')">그라디언트</button><button class="fill-tab ${fillMode==='none'?'active':''}" onclick="setFillMode('none')">없음</button></div><div id="fillSolid" style="display:${fillMode==='solid'?'block':'none'}"><div class="color-picker-wrap"><div class="color-swatch" style="background:${hexFill}"><input type="color" class="color-input-native" id="pFillColor" value="${hexFill}"></div><span style="font-size:12px;color:var(--text-muted);font-family:'DM Mono'">${hexFill.toUpperCase()}</span></div></div><div id="fillGradient" style="display:${fillMode==='gradient'?'block':'none'}"><div class="gradient-dir-btns" id="gradDirBtns"><div class="gradient-dir-btn ${gradDir==='lr'?'active':''}" onclick="setGradDir(this,'lr')">→</div><div class="gradient-dir-btn ${gradDir==='tb'?'active':''}" onclick="setGradDir(this,'tb')">↓</div><div class="gradient-dir-btn ${gradDir==='diag'?'active':''}" onclick="setGradDir(this,'diag')">↘</div><div class="gradient-dir-btn ${gradDir==='radial'?'active':''}" onclick="setGradDir(this,'radial')">◎</div></div><div class="gradient-bar-wrap" id="gradBarWrap"><div class="gradient-bar" id="gradBar"></div></div><div style="display:flex;align-items:center;gap:6px;margin-top:6px"><div class="color-swatch" id="gradStopSwatch" style="background:${stops[0].color}"><input type="color" class="color-input-native" id="gradStopColor" value="${stops[0].color}"></div><input class="prop-input" id="gradStopPos" type="number" min="0" max="100" value="${Math.round(stops[0].pos*100)}" style="width:55px"><span style="font-size:11px;color:var(--text-muted)">%</span><button onclick="addGradStop()" style="background:var(--bg-primary);border:1px solid var(--border);border-radius:4px;color:var(--text-muted);padding:3px 7px;cursor:pointer;font-size:11px">+</button><button onclick="removeGradStop()" style="background:var(--bg-primary);border:1px solid var(--border);border-radius:4px;color:var(--text-muted);padding:3px 7px;cursor:pointer;font-size:11px">−</button></div></div>`;}
+function makeOpacityProps(node){const op=Math.round((node.opacity?node.opacity():1)*100);return`<div class="slider-wrap"><input type="range" class="prop-slider" id="pOpacity" min="0" max="100" value="${op}"><span class="slider-val" id="pOpacityVal">${op}%</span></div>`;}
+function makeTextProps(node){return`<div class="prop-row"><span class="prop-label-wide">크기</span><input class="prop-input" id="pFontSize" type="number" value="${node.fontSize()}"></div><div class="prop-row"><span class="prop-label-wide">스타일</span><select class="prop-input" id="pFontWeight"><option value="normal" ${node.fontStyle()==='normal'?'selected':''}>Normal</option><option value="bold" ${node.fontStyle()==='bold'?'selected':''}>Bold</option><option value="italic" ${node.fontStyle()==='italic'?'selected':''}>Italic</option></select></div><div class="prop-row"><span class="prop-label-wide">내용</span></div><textarea id="pText" style="width:100%;background:var(--bg-primary);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:inherit;font-size:12px;padding:6px;outline:none;resize:vertical;min-height:60px">${node.text()}</textarea>`;}
+function makeAlignProps(){return`<div class="align-btns"><div class="align-btn" onclick="alignSelected('left')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="3" y2="18"/><rect x="5" y="7" width="9" height="4"/><rect x="5" y="13" width="14" height="4"/></svg></div><div class="align-btn" onclick="alignSelected('center')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="3" x2="12" y2="21"/><rect x="7" y="7" width="10" height="4"/><rect x="4" y="13" width="16" height="4"/></svg></div><div class="align-btn" onclick="alignSelected('right')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="6" x2="21" y2="18"/><rect x="10" y="7" width="9" height="4"/><rect x="5" y="13" width="14" height="4"/></svg></div><div class="align-btn" onclick="alignSelected('top')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="3" x2="21" y2="3"/><rect x="7" y="5" width="4" height="9"/><rect x="13" y="5" width="4" height="14"/></svg></div><div class="align-btn" onclick="alignSelected('middle')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><rect x="7" y="6" width="4" height="12"/><rect x="13" y="8" width="4" height="8"/></svg></div><div class="align-btn" onclick="alignSelected('bottom')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="21" x2="21" y2="21"/><rect x="7" y="10" width="4" height="9"/><rect x="13" y="5" width="4" height="14"/></svg></div></div>`;}
+function attachPropEvents(node){const bind=(id,fn)=>{const el=document.getElementById(id);if(el)el.addEventListener('change',fn);};const bindInput=(id,fn)=>{const el=document.getElementById(id);if(el)el.addEventListener('input',fn);};bind('pFrameW',e=>{frameW=parseInt(e.target.value)||800;resizeFrame();markDirty();});bind('pFrameH',e=>{frameH=parseInt(e.target.value)||600;resizeFrame();markDirty();});bindInput('pBgColor',e=>{bgRect.fill(e.target.value);layer.batchDraw();markDirty();});bind('pX',e=>{node.x(parseFloat(e.target.value)||0);layer.batchDraw();markDirty();});bind('pY',e=>{node.y(parseFloat(e.target.value)||0);layer.batchDraw();markDirty();});bind('pRot',e=>{node.rotation(parseFloat(e.target.value)||0);layer.batchDraw();markDirty();});bind('pW',e=>{const nw=parseFloat(e.target.value)||1;const{h}=getNodeDisplayDims(node);setNodeDims(node,nw,h);layer.batchDraw();markDirty();});bind('pH',e=>{const nh=parseFloat(e.target.value)||1;const{w}=getNodeDisplayDims(node);setNodeDims(node,w,nh);layer.batchDraw();markDirty();});bindInput('pFillColor',e=>{applySolidFill(node,e.target.value);markDirty();});setupGradientBar(node);bindInput('gradStopColor',e=>{const stops=gradientStopsMap[node._id];if(stops){stops[selectedStopIdx].color=e.target.value;document.getElementById('gradStopSwatch').style.background=e.target.value;applyGradient(node);updateGradBar(node);}});bind('gradStopPos',e=>{const stops=gradientStopsMap[node._id];if(stops){stops[selectedStopIdx].pos=parseFloat(e.target.value)/100;applyGradient(node);updateGradBar(node);}});bindInput('pOpacity',e=>{node.opacity(parseInt(e.target.value)/100);const v=document.getElementById('pOpacityVal');if(v)v.textContent=e.target.value+'%';layer.batchDraw();markDirty();});bind('pFontSize',e=>{node.fontSize(parseInt(e.target.value)||12);layer.batchDraw();markDirty();});bind('pFontWeight',e=>{node.fontStyle(e.target.value);layer.batchDraw();markDirty();});bind('pText',e=>{node.text(e.target.value);layer.batchDraw();markDirty();});}
+function setFillMode(mode){if(!selectedNodes.length)return;const node=selectedNodes[0];node._fillMode=mode;document.querySelectorAll('#fillTabs .fill-tab').forEach(t=>t.classList.remove('active'));document.querySelector(`#fillTabs .fill-tab:nth-child(${mode==='solid'?1:mode==='gradient'?2:3})`).classList.add('active');document.getElementById('fillSolid').style.display=mode==='solid'?'block':'none';document.getElementById('fillGradient').style.display=mode==='gradient'?'block':'none';if(mode==='none')clearFill(node);else if(mode==='solid')applySolidFill(node,document.getElementById('pFillColor')?.value||'#00ADB5');else if(mode==='gradient'){if(!gradientStopsMap[node._id])gradientStopsMap[node._id]=[{pos:0,color:'#00ADB5'},{pos:1,color:'#222831'}];applyGradient(node);updateGradBar(node);}layer.batchDraw();markDirty();}
+function clearFill(node){try{node.fillLinearGradientColorStops(null);}catch(e){}try{node.fillRadialGradientColorStops(null);}catch(e){}node.fill('transparent');}
+function applySolidFill(node,color){node._fillMode='solid';try{node.fillLinearGradientColorStops(null);node.fillLinearGradientStartPoint(null);node.fillLinearGradientEndPoint(null);}catch(e){}try{node.fillRadialGradientColorStops(null);}catch(e){}node.fill(color);layer.batchDraw();}
+function setGradDir(el,dir){if(!selectedNodes.length)return;const node=selectedNodes[0];node._gradDir=dir;document.querySelectorAll('#gradDirBtns .gradient-dir-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');applyGradient(node);}
+function applyGradient(node){const stops=gradientStopsMap[node._id];if(!stops||stops.length<2)return;const sorted=[...stops].sort((a,b)=>a.pos-b.pos);const colorStops=sorted.flatMap(s=>[s.pos,s.color]);const dir=node._gradDir||'lr';const w=node instanceof Konva.Circle?node.radius()*2:(node instanceof Konva.Star?node.outerRadius()*2:(node.width?node.width():100));const h=node instanceof Konva.Circle?node.radius()*2:(node instanceof Konva.Star?node.outerRadius()*2:(node.height?node.height():100));const r=node instanceof Konva.Circle?node.radius():(node instanceof Konva.Star?node.outerRadius():Math.max(w,h)/2);try{node.fillLinearGradientColorStops(null);node.fillLinearGradientStartPoint(null);node.fillLinearGradientEndPoint(null);}catch(e){}try{node.fillRadialGradientColorStops(null);}catch(e){}node.fill(null);if(dir==='radial'){const cx=node instanceof Konva.Circle?0:w/2,cy=node instanceof Konva.Circle?0:h/2;node.fillRadialGradientStartPoint({x:cx,y:cy});node.fillRadialGradientEndPoint({x:cx,y:cy});node.fillRadialGradientStartRadius(0);node.fillRadialGradientEndRadius(r);node.fillRadialGradientColorStops(colorStops);}else{let sx=0,sy=0,ex=w,ey=0;if(node instanceof Konva.Circle){sx=-r;ex=r;}if(dir==='tb'){sx=0;sy=node instanceof Konva.Circle?-r:0;ex=0;ey=node instanceof Konva.Circle?r:h;}else if(dir==='diag'){sx=node instanceof Konva.Circle?-r:0;sy=node instanceof Konva.Circle?-r:0;ex=node instanceof Konva.Circle?r:w;ey=node instanceof Konva.Circle?r:h;}node.fillLinearGradientStartPoint({x:sx,y:sy});node.fillLinearGradientEndPoint({x:ex,y:ey});node.fillLinearGradientColorStops(colorStops);}layer.batchDraw();}
+function setupGradientBar(node){updateGradBar(node);}
+function updateGradBar(node){const bar=document.getElementById('gradBar'),wrap=document.getElementById('gradBarWrap');if(!bar||!wrap)return;const stops=gradientStopsMap[node._id];if(!stops)return;const sorted=[...stops].sort((a,b)=>a.pos-b.pos);bar.style.background=`linear-gradient(to right,${sorted.map(s=>`${s.color} ${s.pos*100}%`).join(',')})`;wrap.querySelectorAll('.gradient-stop').forEach(el=>el.remove());stops.forEach((s,i)=>{const handle=document.createElement('div');handle.className='gradient-stop'+(i===selectedStopIdx?' selected':'');handle.style.left=(s.pos*100)+'%';handle.style.background=s.color;handle.addEventListener('mousedown',ev=>{ev.preventDefault();selectedStopIdx=i;wrap.querySelectorAll('.gradient-stop').forEach(h=>h.classList.remove('selected'));handle.classList.add('selected');const gcEl=document.getElementById('gradStopColor'),gsEl=document.getElementById('gradStopSwatch'),gpEl=document.getElementById('gradStopPos');if(gcEl)gcEl.value=s.color;if(gsEl)gsEl.style.background=s.color;if(gpEl)gpEl.value=Math.round(s.pos*100);const onMove=em=>{const rect=wrap.getBoundingClientRect();const p=Math.max(0,Math.min(1,(em.clientX-rect.left)/rect.width));stops[i].pos=p;handle.style.left=(p*100)+'%';if(gpEl)gpEl.value=Math.round(p*100);applyGradient(node);updateGradBar(node);};const onUp=()=>{document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);};document.addEventListener('mousemove',onMove);document.addEventListener('mouseup',onUp);});wrap.appendChild(handle);});}
+function addGradStop(){if(!selectedNodes.length)return;const node=selectedNodes[0];if(!gradientStopsMap[node._id])gradientStopsMap[node._id]=[{pos:0,color:'#00ADB5'},{pos:1,color:'#222831'}];gradientStopsMap[node._id].push({pos:0.5,color:'#ffffff'});applyGradient(node);updateGradBar(node);}
+function removeGradStop(){if(!selectedNodes.length)return;const node=selectedNodes[0];const stops=gradientStopsMap[node._id];if(!stops||stops.length<=2)return;stops.splice(selectedStopIdx,1);selectedStopIdx=Math.min(selectedStopIdx,stops.length-1);applyGradient(node);updateGradBar(node);}
+function alignSelected(dir){if(!selectedNodes.length)return;pushUndo();const nodes=selectedNodes;if(nodes.length===1){const n=nodes[0];const box=n.getClientRect({relativeTo:layer});if(dir==='left')n.x(n.x()-box.x);else if(dir==='right')n.x(frameW-box.width+(n.x()-box.x));else if(dir==='center')n.x(frameW/2-box.width/2+(n.x()-box.x));else if(dir==='top')n.y(n.y()-box.y);else if(dir==='bottom')n.y(frameH-box.height+(n.y()-box.y));else if(dir==='middle')n.y(frameH/2-box.height/2+(n.y()-box.y));}else{const boxes=nodes.map(n=>n.getClientRect({relativeTo:layer}));const minX=Math.min(...boxes.map(b=>b.x)),maxX=Math.max(...boxes.map(b=>b.x+b.width));const minY=Math.min(...boxes.map(b=>b.y)),maxY=Math.max(...boxes.map(b=>b.y+b.height));const cx=(minX+maxX)/2,cy=(minY+maxY)/2;nodes.forEach((n,i)=>{const box=boxes[i];if(dir==='left')n.x(minX+(n.x()-box.x));else if(dir==='right')n.x(maxX-box.width+(n.x()-box.x));else if(dir==='center')n.x(cx-box.width/2+(n.x()-box.x));else if(dir==='top')n.y(minY+(n.y()-box.y));else if(dir==='bottom')n.y(maxY-box.height+(n.y()-box.y));else if(dir==='middle')n.y(cy-box.height/2+(n.y()-box.y));});}layer.batchDraw();updatePropsPanel();markDirty();}
+function pushUndo(){if(!layer)return;undoStack.push(serializeLayer());if(undoStack.length>50)undoStack.shift();redoStack=[];}
+function undo(){if(!undoStack.length)return;redoStack.push(serializeLayer());restoreLayer(undoStack.pop());}
+function redo(){if(!redoStack.length)return;undoStack.push(serializeLayer());restoreLayer(redoStack.pop());}
+function serializeLayer(){const nodes=layer.children.filter(n=>n.name()!=='bg'&&n.name()!=='frame'&&!(n instanceof Konva.Transformer));return JSON.stringify(nodes.map(n=>serializeNode(n)));}
+function serializeNode(n){const base={type:n.getClassName(),attrs:{...n.getAttrs()},_fillMode:n._fillMode,_gradDir:n._gradDir,gradStops:gradientStopsMap[n._id]};if(n instanceof Konva.Image){try{base.attrs.imageSrc=n.image()?.src;}catch(e){}delete base.attrs.image;}return base;}
+function restoreLayer(json){const arr=JSON.parse(json);clearSelection();layer.children.filter(n=>n.name()!=='bg'&&n.name()!=='frame'&&!(n instanceof Konva.Transformer)).forEach(n=>n.destroy());restoreElements(arr);}
+function restoreElements(arr){arr.forEach(data=>{const attrs={...data.attrs};delete attrs.image;let node;const type=data.type;if(type==='Rect')node=new Konva.Rect(attrs);else if(type==='Circle')node=new Konva.Circle(attrs);else if(type==='RegularPolygon')node=new Konva.RegularPolygon(attrs);else if(type==='Star')node=new Konva.Star(attrs);else if(type==='Text')node=new Konva.Text(attrs);else if(type==='Line')node=new Konva.Line(attrs);else if(type==='Image'){node=new Konva.Image({...attrs,image:null});if(data.attrs.imageSrc){const img=new window.Image();img.onload=()=>{node.image(img);layer.batchDraw();};img.src=data.attrs.imageSrc;}}if(!node)return;node._fillMode=data._fillMode;node._gradDir=data._gradDir;if(data.gradStops){gradientStopsMap[node._id]=data.gradStops;if(data._fillMode==='gradient')applyGradient(node);}if(type==='Text')node.on('dblclick dbltap',()=>editTextInline(node));addDragHandlers(node);node.draggable(true);layer.add(node);});layer.batchDraw();updateLayers();}
+function markDirty(){isDirty=true;}
+async function saveProject(){if(!layer||!sbClient||!currentUser)return;const title=document.getElementById('projectTitle').value.trim()||'새 디자인';const nodes=layer.children.filter(n=>n.name()!=='bg'&&n.name()!=='frame'&&!(n instanceof Konva.Transformer));const elements=nodes.map(n=>serializeNode(n));const data={title,frameW,frameH,bgColor:bgRect.fill(),elements,savedAt:new Date().toISOString()};try{await sbClient.from('projects').update({name:title,data:JSON.stringify(data),updated_at:new Date().toISOString()}).eq('id',currentProjectId).eq('user_id',currentUser.id);isDirty=false;const p=projects.find(x=>x.id===currentProjectId);if(p){p.name=title;p.updated_at=new Date().toISOString();}showToast('저장되었습니다 ✓');}catch(e){showToast('저장 실패: '+e.message);}}
+async function handleDownload(){if(!stage)return;const useTransparent=confirm('투명 배경으로 내보내시겠습니까?\n(취소: 현재 배경색 유지)');const prevFill=bgRect.fill();layer.find('Transformer').forEach(t=>t.hide());frameRect.hide();if(useTransparent)bgRect.fill('transparent');layer.batchDraw();await new Promise(r=>setTimeout(r,60));try{const dataURL=stage.toDataURL({pixelRatio:2,mimeType:'image/png'});const a=document.createElement('a');a.href=dataURL;a.download=(document.getElementById('projectTitle').value||'design').replace(/[^a-zA-Z0-9가-힣\-_]/g,'_')+'.png';document.body.appendChild(a);a.click();document.body.removeChild(a);showToast('다운로드 완료!');}catch(err){showToast('다운로드 실패: '+err.message);}finally{bgRect.fill(prevFill);frameRect.show();layer.find('Transformer').forEach(t=>t.show());layer.batchDraw();}}
+function deleteSelected(){if(!selectedNodes.length)return;pushUndo();selectedNodes.forEach(n=>n.destroy());selectedNodes=[];layer.batchDraw();updatePropsPanel();updateLayers();markDirty();}
+function duplicateSelected(){if(!selectedNodes.length)return;pushUndo();const newNodes=[];selectedNodes.forEach(n=>{const clone=n.clone({x:n.x()+20,y:n.y()+20});if(gradientStopsMap[n._id])gradientStopsMap[clone._id]=JSON.parse(JSON.stringify(gradientStopsMap[n._id]));clone._fillMode=n._fillMode;clone._gradDir=n._gradDir;addDragHandlers(clone);if(clone instanceof Konva.Text)clone.on('dblclick dbltap',()=>editTextInline(clone));layer.add(clone);newNodes.push(clone);});layer.batchDraw();removeTransformers();selectedNodes=newNodes;addTransformer(newNodes);updateLayers();markDirty();}
+function setTool(tool){currentTool=tool;document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active'));if(tool==='select')document.getElementById('toolSelect')?.classList.add('active');if(tool==='draw')document.getElementById('toolDraw')?.classList.add('active');if(stage)stage.container().style.cursor=tool==='draw'?'crosshair':'default';}
+function toggleShapePicker(){document.getElementById('shapePicker').classList.toggle('open');document.getElementById('settingsPopup').classList.remove('open');}
+function toggleSettings(){document.getElementById('settingsPopup').classList.toggle('open');document.getElementById('shapePicker').classList.remove('open');}
+function closeAllPopups(){document.getElementById('shapePicker')?.classList.remove('open');document.getElementById('settingsPopup')?.classList.remove('open');document.getElementById('ctxMenu')?.classList.remove('open');}
+function ctxAction(action){closeAllPopups();if(action==='duplicate')duplicateSelected();else if(action==='delete')deleteSelected();else if(action==='bringFront'){if(selectedNodes[0]){selectedNodes[0].moveToTop();frameRect.moveToTop();layer.batchDraw();updateLayers();}}else if(action==='sendBack'){if(selectedNodes[0]){selectedNodes[0].moveToBottom();bgRect.moveToTop();layer.batchDraw();updateLayers();}}}
+document.addEventListener('click',e=>{
+  if (e.target.closest('#ctxMenu')) return;
+  if (e.target.closest('.bottom-toolbar')) return;
   closeAllPopups();
-  if (action === 'duplicate') duplicateSelected();
-  else if (action === 'delete') deleteSelected();
-  else if (action === 'bringFront') { if (selectedNodes[0]) { selectedNodes[0].moveToTop(); frameRect.moveToTop(); layer.batchDraw(); updateLayers(); } }
-  else if (action === 'sendBack') { if (selectedNodes[0]) { selectedNodes[0].moveToBottom(); bgRect.moveToTop(); layer.batchDraw(); updateLayers(); } }
-}
-document.addEventListener('click', e => { if (!e.target.closest('#ctxMenu')) closeAllPopups(); });
-
-// ========== TOAST ==========
-function showToast(msg) {
-  const t = document.createElement('div');
-  t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);color:#fff;font-size:12px;padding:8px 16px;border-radius:8px;z-index:9999;opacity:0;transition:opacity .2s;border:1px solid rgba(255,255,255,0.1);pointer-events:none';
-  t.textContent = msg; document.body.appendChild(t);
-  setTimeout(() => t.style.opacity = '1', 10);
-  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2500);
-}
-
-// ========== UTIL ==========
-function rgbToHex(color) {
-  if (!color || color === 'transparent') return '#000000';
-  if (color.startsWith('#')) return color.length === 7 ? color : '#000000';
-  const m = color.match(/\d+/g);
-  if (!m || m.length < 3) return '#000000';
-  return '#' + m.slice(0, 3).map(x => parseInt(x).toString(16).padStart(2, '0')).join('');
-}
-
-// ========== SETTINGS ==========
-document.getElementById('smartGuidesToggle')?.addEventListener('change', e => { smartGuides = e.target.checked; });
-document.getElementById('snappingToggle')?.addEventListener('change', e => { snapping = e.target.checked; });
-
-// ========== START ==========
-window.addEventListener('load', startup);
+});
+function showToast(msg){const t=document.createElement('div');t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);color:#fff;font-size:12px;padding:8px 16px;border-radius:8px;z-index:9999;opacity:0;transition:opacity .2s;border:1px solid rgba(255,255,255,0.1);pointer-events:none';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.style.opacity='1',10);setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300);},2500);}
+function rgbToHex(color){if(!color||color==='transparent')return'#000000';if(color.startsWith('#'))return color.length===7?color:'#000000';const m=color.match(/\d+/g);if(!m||m.length<3)return'#000000';return'#'+m.slice(0,3).map(x=>parseInt(x).toString(16).padStart(2,'0')).join('');}
+document.getElementById('smartGuidesToggle')?.addEventListener('change',e=>{smartGuides=e.target.checked;});
+document.getElementById('snappingToggle')?.addEventListener('change',e=>{snapping=e.target.checked;});
+window.addEventListener('load',startup);
 </script>
 </body>
 </html>
