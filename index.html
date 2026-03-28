@@ -17,11 +17,13 @@
   body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
 
   /* ── LOADING ── */
-  #loadingScreen{position:fixed;inset:0;background:var(--bg);z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
-  #loadingScreen .logo{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:700;letter-spacing:-.5px;}
-  #loadingScreen .logo svg{width:30px;height:30px;}
-  #loadingScreen .status{font-size:12px;color:var(--muted);}
-  #loadingScreen.hidden{display:none;}
+  #loadingScreen{position:fixed;inset:0;background:var(--bg);z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .4s;}
+  #loadingScreen.hidden{opacity:0;pointer-events:none;}
+  #loadingScreen .logo{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:700;letter-spacing:-.5px;animation:fadeUp .6s ease both;}
+  #loadingScreen .logo svg{width:30px;height:30px;animation:spin 1.5s ease-in-out infinite alternate;}
+  #loadingScreen .status{font-size:12px;color:var(--muted);animation:fadeUp .6s .1s ease both;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  @keyframes spin{from{transform:rotate(-15deg)}to{transform:rotate(15deg)}}
 
   /* ── CONFIG ERROR ── */
   #configError{position:fixed;inset:0;background:var(--bg);z-index:3000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:32px;}
@@ -31,10 +33,28 @@
   #configError code{background:var(--bg2);padding:2px 7px;border-radius:4px;font-size:12px;color:var(--acc);}
   #configError pre{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;font-size:12px;color:var(--txt);text-align:left;line-height:1.8;}
 
+  /* ── CUSTOM MODAL ── */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .22s;}
+  .modal-overlay.active{opacity:1;pointer-events:all;}
+  .modal-box{background:var(--bg2);border:1px solid rgba(255,255,255,0.10);border-radius:16px;padding:28px 28px 20px;width:360px;max-width:90vw;box-shadow:0 24px 64px rgba(0,0,0,.7);transform:translateY(18px) scale(0.97);transition:transform .22s, opacity .22s;opacity:0;display:flex;flex-direction:column;gap:14px;}
+  .modal-overlay.active .modal-box{transform:none;opacity:1;}
+  .modal-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 2px;}
+  .modal-icon.warn{background:rgba(255,91,91,0.12);color:var(--danger);}
+  .modal-icon.info{background:rgba(0,194,204,0.12);color:var(--acc);}
+  .modal-title{font-size:15px;font-weight:600;text-align:center;}
+  .modal-body{font-size:13px;color:var(--muted);text-align:center;line-height:1.7;}
+  .modal-btns{display:flex;gap:8px;margin-top:4px;}
+  .modal-btn{flex:1;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;border:1px solid var(--border);background:var(--bg3);color:var(--muted);transition:all .17s;}
+  .modal-btn:hover{border-color:var(--acc);color:var(--txt);}
+  .modal-btn.primary{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .modal-btn.primary:hover{background:var(--acc2);}
+  .modal-btn.danger{background:rgba(255,91,91,0.1);color:var(--danger);border-color:rgba(255,91,91,0.25);}
+  .modal-btn.danger:hover{background:var(--danger);color:#fff;}
+
   /* ── LOGIN ── */
   #loginScreen{position:fixed;inset:0;background:var(--bg);z-index:1500;display:none;align-items:center;justify-content:center;}
   #loginScreen.active{display:flex;}
-  .login-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:44px 38px;width:380px;max-width:90vw;display:flex;flex-direction:column;align-items:center;gap:22px;box-shadow:0 24px 64px rgba(0,0,0,0.6);}
+  .login-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:44px 38px;width:380px;max-width:90vw;display:flex;flex-direction:column;align-items:center;gap:22px;animation:fadeUp .5s ease both;}
   .login-logo{display:flex;align-items:center;gap:10px;font-size:24px;font-weight:700;letter-spacing:-.5px;}
   .login-logo svg{width:34px;height:34px;}
   .login-desc{font-size:13px;color:var(--muted);text-align:center;line-height:1.65;}
@@ -58,28 +78,28 @@
   .login-error{font-size:12px;color:var(--danger);text-align:center;min-height:16px;}
 
   /* ── DASHBOARD ── */
-  #dashboard{flex:1;overflow-y:auto;padding:40px;display:none;flex-direction:column;gap:28px;}
+  #dashboard{flex:1;overflow-y:auto;padding:40px;display:none;flex-direction:column;gap:28px;animation:fadeUp .4s ease both;}
   #dashboard.active{display:flex;}
   .dash-header{display:flex;align-items:center;justify-content:space-between;}
   .dash-user{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);}
   .dash-avatar{width:30px;height:30px;border-radius:50%;background:var(--acc);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;}
   .section-title{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;}
   .projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px;}
-  .project-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative;}
-  .project-card:hover{border-color:var(--acc);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,194,204,.13);}
+  .project-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .22s;position:relative;animation:fadeUp .4s ease both;}
+  .project-card:hover{border-color:var(--acc);transform:translateY(-3px);box-shadow:0 10px 32px rgba(0,194,204,.15);}
   .project-thumb{height:130px;background:var(--bg);display:flex;align-items:center;justify-content:center;}
   .project-info{padding:11px 13px;}
   .project-name{font-size:13px;font-weight:500;margin-bottom:3px;}
   .project-meta{font-size:11px;color:var(--muted);}
   .project-del-btn{position:absolute;top:7px;right:7px;background:rgba(0,0,0,.55);border:none;border-radius:5px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;opacity:0;transition:opacity .2s;}
   .project-card:hover .project-del-btn{opacity:1;}
-  .new-project-card{border:2px dashed var(--border);border-radius:12px;height:188px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;cursor:pointer;color:var(--muted);font-size:13px;transition:all .2s;}
-  .new-project-card:hover{border-color:var(--acc);color:var(--acc);}
+  .new-project-card{border:2px dashed var(--border);border-radius:12px;height:188px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;cursor:pointer;color:var(--muted);font-size:13px;transition:all .22s;}
+  .new-project-card:hover{border-color:var(--acc);color:var(--acc);transform:translateY(-3px);}
   .logo-mark{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;letter-spacing:-.3px;}
 
   /* ── EDITOR SHELL ── */
   #editor{display:none;flex:1;flex-direction:column;overflow:hidden;}
-  #editor.active{display:flex;}
+  #editor.active{display:flex;animation:fadeUp .3s ease both;}
 
   /* ── TOPBAR ── */
   .topbar{height:var(--topbar);background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0;z-index:50;}
@@ -93,7 +113,10 @@
   .topbar-btn{padding:5px 11px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;border:1px solid var(--border);background:transparent;color:var(--muted);transition:all .2s;display:flex;align-items:center;gap:5px;}
   .topbar-btn:hover{border-color:var(--acc);color:var(--acc);}
   .topbar-btn.save{background:var(--acc);color:#fff;border-color:var(--acc);}
-  .topbar-btn.save:hover{background:var(--acc2);}
+  .topbar-btn.save:hover{background:var(--acc2);transform:translateY(-1px);}
+  .save-indicator{width:6px;height:6px;border-radius:50%;background:var(--danger);display:none;margin-left:2px;}
+  .save-indicator.show{display:inline-block;animation:pulse 1.5s ease infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
   /* ── EDITOR BODY ── */
   .editor-body{flex:1;display:flex;overflow:hidden;position:relative;}
@@ -131,7 +154,6 @@
   .chevron{transition:transform .2s;font-size:10px;}
   .collapsed .chevron{transform:rotate(-90deg);}
 
-  /* props */
   .prop-row{display:flex;align-items:center;gap:6px;}
   .prop-label{font-size:10px;color:var(--muted);width:26px;flex-shrink:0;text-align:center;}
   .prop-label-w{font-size:10px;color:var(--muted);width:54px;flex-shrink:0;}
@@ -142,16 +164,13 @@
   .prop-group{display:grid;grid-template-columns:18px 1fr;align-items:center;gap:4px;}
   .prop-group .prop-label{width:auto;font-size:10px;}
   .prop-group .prop-input{text-align:right;}
-
   .color-wrap{display:flex;align-items:center;gap:7px;}
   .color-swatch{width:22px;height:22px;border-radius:4px;border:1px solid var(--border);cursor:pointer;position:relative;flex-shrink:0;}
   .color-native{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
   .color-hex{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;}
-
   .fill-tabs{display:flex;gap:2px;background:var(--bg);border-radius:6px;padding:2px;}
   .fill-tab{flex:1;padding:4px 5px;text-align:center;border-radius:4px;font-size:10px;cursor:pointer;color:var(--muted);transition:all .15s;border:none;background:transparent;font-family:inherit;}
   .fill-tab.active{background:var(--bg2);color:var(--txt);}
-
   .grad-bar-wrap{position:relative;height:18px;border-radius:4px;overflow:visible;margin:3px 0;cursor:crosshair;}
   .grad-bar{position:absolute;inset:0;border-radius:4px;border:1px solid var(--border);}
   .grad-stop{position:absolute;top:50%;transform:translate(-50%,-50%);width:13px;height:13px;border-radius:50%;border:2px solid #fff;cursor:grab;box-shadow:0 0 0 1px rgba(0,0,0,.4),0 2px 5px rgba(0,0,0,.4);z-index:5;}
@@ -159,25 +178,19 @@
   .grad-dir-btns{display:flex;gap:3px;}
   .grad-dir-btn{width:26px;height:26px;background:var(--bg);border:1px solid var(--border);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .15s;font-size:13px;}
   .grad-dir-btn.active{border-color:var(--acc);color:var(--acc);}
-
   .slider-wrap{display:flex;align-items:center;gap:7px;}
   .prop-slider{flex:1;-webkit-appearance:none;height:3px;border-radius:2px;background:var(--bg);outline:none;cursor:pointer;}
   .prop-slider::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--acc);cursor:pointer;border:2px solid var(--bg);box-shadow:0 0 0 1px var(--acc);}
   .slider-val{font-size:10px;color:var(--muted);width:26px;text-align:right;font-family:'DM Mono',monospace;}
-
   .align-btns{display:flex;gap:3px;flex-wrap:wrap;}
   .align-btn{width:26px;height:26px;background:var(--bg);border:1px solid var(--border);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .15s;}
   .align-btn:hover{border-color:var(--acc);color:var(--acc);}
   .align-btn svg{width:13px;height:13px;}
-
   .frame-presets{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px;}
   .frame-preset{padding:3px 7px;background:var(--bg);border:1px solid var(--border);border-radius:4px;font-size:10px;cursor:pointer;color:var(--muted);transition:all .15s;}
   .frame-preset:hover{border-color:var(--acc);color:var(--acc);}
-
-  /* image fill section */
   .img-fill-btn{width:100%;padding:7px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:11px;cursor:pointer;text-align:center;transition:all .15s;font-family:inherit;}
   .img-fill-btn:hover{border-color:var(--acc);color:var(--acc);}
-  .img-fill-preview{width:100%;height:60px;border-radius:5px;border:1px solid var(--border);object-fit:cover;display:none;}
 
   /* ── TOOLBAR ── */
   .bottom-toolbar{height:var(--toolbar);background:var(--bg2);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:center;gap:5px;padding:0 16px;flex-shrink:0;z-index:50;position:relative;}
@@ -191,14 +204,14 @@
 
   /* shape picker */
   .shape-picker{position:absolute;bottom:calc(var(--toolbar) + 8px);left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:10px;display:none;gap:6px;z-index:200;box-shadow:var(--shadow);flex-wrap:wrap;width:200px;}
-  .shape-picker.open{display:flex;}
+  .shape-picker.open{display:flex;animation:fadeUp .18s ease both;}
   .shape-opt{width:56px;height:50px;background:var(--bg);border:1px solid var(--border);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:all .15s;flex-direction:column;gap:2px;font-size:10px;}
-  .shape-opt:hover{border-color:var(--acc);color:var(--acc);}
+  .shape-opt:hover{border-color:var(--acc);color:var(--acc);transform:translateY(-2px);}
   .shape-opt svg{width:18px;height:18px;}
 
   /* settings popup */
   .settings-popup{position:absolute;bottom:calc(var(--toolbar) + 8px);right:16px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px;display:none;z-index:200;box-shadow:var(--shadow);width:190px;}
-  .settings-popup.open{display:block;}
+  .settings-popup.open{display:block;animation:fadeUp .18s ease both;}
   .settings-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;}
   .settings-row:last-child{border-bottom:none;}
   .toggle{position:relative;width:32px;height:17px;}
@@ -210,7 +223,7 @@
 
   /* ── CONTEXT MENU ── */
   .ctx-menu{position:fixed;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:5px;z-index:600;box-shadow:var(--shadow);min-width:170px;display:none;}
-  .ctx-menu.open{display:block;}
+  .ctx-menu.open{display:block;animation:fadeUp .15s ease both;}
   .ctx-item{padding:6px 11px;font-size:12px;cursor:pointer;border-radius:5px;color:var(--muted);transition:all .15s;display:flex;align-items:center;gap:8px;}
   .ctx-item:hover{background:var(--bg3);color:var(--txt);}
   .ctx-item.danger:hover{color:var(--danger);}
@@ -219,9 +232,23 @@
 
   /* multi select */
   .multi-info{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--acc-border);border-radius:7px;padding:5px 13px;font-size:12px;color:var(--acc);display:none;gap:10px;z-index:90;align-items:center;}
-  .multi-info.show{display:flex;}
+  .multi-info.show{display:flex;animation:fadeUp .18s ease both;}
   .multi-align-btn{padding:3px 9px;background:var(--acc-dim);border:1px solid var(--acc-border);border-radius:4px;color:var(--acc);font-size:10px;cursor:pointer;transition:all .15s;}
   .multi-align-btn:hover{background:var(--acc);color:#fff;}
+
+  /* ── CROP MODAL ── */
+  .crop-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:2000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+  .crop-overlay.active{display:flex;animation:fadeUp .22s ease both;}
+  .crop-header{font-size:14px;font-weight:600;color:var(--txt);}
+  .crop-desc{font-size:12px;color:var(--muted);}
+  .crop-canvas-wrap{position:relative;background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden;cursor:crosshair;}
+  #cropCanvas{display:block;}
+  .crop-selection{position:absolute;border:2px solid var(--acc);box-shadow:0 0 0 9999px rgba(0,0,0,.5);pointer-events:none;}
+  .crop-btns{display:flex;gap:10px;}
+  .crop-btn{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;border:1px solid var(--border);background:var(--bg2);color:var(--muted);transition:all .18s;}
+  .crop-btn.primary{background:var(--acc);color:#fff;border-color:var(--acc);}
+  .crop-btn:hover{border-color:var(--acc);color:var(--txt);}
+  .crop-btn.primary:hover{background:var(--acc2);}
 
   ::-webkit-scrollbar{width:4px;}
   ::-webkit-scrollbar-track{background:transparent;}
@@ -247,6 +274,32 @@ SUPABASE_KEY = your-anon-key</pre>
     DesignFlow
   </div>
   <div class="status" id="loadStatus">초기화 중...</div>
+</div>
+
+<!-- CUSTOM MODAL -->
+<div class="modal-overlay" id="customModal">
+  <div class="modal-box">
+    <div class="modal-icon" id="modalIcon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-btns" id="modalBtns"></div>
+  </div>
+</div>
+
+<!-- CROP MODAL -->
+<div class="crop-overlay" id="cropOverlay">
+  <div class="crop-header">이미지 자르기</div>
+  <div class="crop-desc">드래그하여 자를 영역을 선택하세요</div>
+  <div class="crop-canvas-wrap" id="cropCanvasWrap">
+    <canvas id="cropCanvas"></canvas>
+    <div class="crop-selection" id="cropSelection" style="display:none"></div>
+  </div>
+  <div class="crop-btns">
+    <button class="crop-btn" onclick="cancelCrop()">취소</button>
+    <button class="crop-btn primary" onclick="applyCrop()">자르기 적용</button>
+  </div>
 </div>
 
 <!-- LOGIN -->
@@ -300,6 +353,7 @@ SUPABASE_KEY = your-anon-key</pre>
     </div>
     <div class="topbar-center">
       <input type="text" class="project-title-input" id="projectTitle" value="새 디자인" onchange="markDirty()"/>
+      <span class="save-indicator" id="saveIndicator"></span>
     </div>
     <div class="topbar-right">
       <button class="topbar-btn" onclick="handleDownload()">
@@ -314,7 +368,6 @@ SUPABASE_KEY = your-anon-key</pre>
   </div>
 
   <div class="editor-body">
-    <!-- LEFT -->
     <div class="left-panel">
       <div class="panel-header">
         레이어
@@ -330,7 +383,6 @@ SUPABASE_KEY = your-anon-key</pre>
       </div>
     </div>
 
-    <!-- CANVAS -->
     <div class="canvas-area" id="canvasArea">
       <div id="canvas-viewport"><div id="konva-container"></div></div>
       <div class="zoom-info" id="zoomInfo">100%</div>
@@ -345,7 +397,6 @@ SUPABASE_KEY = your-anon-key</pre>
       </div>
     </div>
 
-    <!-- RIGHT -->
     <div class="right-panel">
       <div class="panel-header">속성</div>
       <div class="right-panel-scroll" id="propsPanel">
@@ -354,7 +405,6 @@ SUPABASE_KEY = your-anon-key</pre>
     </div>
   </div>
 
-  <!-- BOTTOM TOOLBAR -->
   <div class="bottom-toolbar">
     <div class="shape-picker" id="shapePicker">
       <div class="shape-opt" onclick="addShape('rect')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg><span>사각형</span></div>
@@ -416,6 +466,9 @@ SUPABASE_KEY = your-anon-key</pre>
   <div class="ctx-item" onclick="ctxDo('copy')">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>복사
   </div>
+  <div class="ctx-item" onclick="ctxDo('crop')" id="ctxCropBtn">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 2 6 22"/><polyline points="18 22 18 2"/><path d="M2 6h20"/><path d="M2 18h20"/></svg>이미지 자르기
+  </div>
   <div class="ctx-sep"></div>
   <div class="ctx-group-label">순서</div>
   <div class="ctx-item" onclick="ctxDo('bringToFront')">맨 앞으로 가져오기</div>
@@ -432,6 +485,136 @@ SUPABASE_KEY = your-anon-key</pre>
 <input type="file" id="fillImageInput" accept="image/*" style="display:none" onchange="handleFillImageFile(event)"/>
 
 <script>
+// ═══════════════════════════════════════════════════
+// CUSTOM MODAL SYSTEM
+// ═══════════════════════════════════════════════════
+function showModal({ icon='info', title='', body='', buttons=[] }) {
+  const overlay = document.getElementById('customModal');
+  const iconEl = document.getElementById('modalIcon');
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').textContent = body;
+  iconEl.className = 'modal-icon ' + icon;
+  iconEl.innerHTML = icon === 'warn'
+    ? `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`
+    : `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+  const btns = document.getElementById('modalBtns');
+  btns.innerHTML = '';
+  buttons.forEach(b => {
+    const el = document.createElement('button');
+    el.className = 'modal-btn ' + (b.cls || '');
+    el.textContent = b.label;
+    el.onclick = () => { closeModal(); if (b.action) b.action(); };
+    btns.appendChild(el);
+  });
+  overlay.classList.add('active');
+  return new Promise(res => { overlay._resolve = res; });
+}
+function closeModal() {
+  const overlay = document.getElementById('customModal');
+  overlay.classList.remove('active');
+  if (overlay._resolve) { overlay._resolve(); overlay._resolve = null; }
+}
+
+// ═══════════════════════════════════════════════════
+// CROP SYSTEM
+// ═══════════════════════════════════════════════════
+let cropNode = null, cropOrigSrc = null;
+let cropDrag = false, cropStart = {x:0,y:0}, cropRect = {x:0,y:0,w:0,h:0};
+let cropOriginalImageSrc = null; // always keep the FULL original for multi-crop
+
+function openCrop(node) {
+  const src = node._cropOrigSrc || node._fillImageSrc || (node instanceof Konva.Image && node.image()?.src);
+  if (!src) { showToast('이미지가 없습니다'); return; }
+  cropNode = node;
+  cropOriginalImageSrc = node._cropOrigSrc || src;
+
+  const overlay = document.getElementById('cropOverlay');
+  const canvas = document.getElementById('cropCanvas');
+  const sel = document.getElementById('cropSelection');
+  sel.style.display = 'none'; cropRect = {x:0,y:0,w:0,h:0};
+
+  const img = new window.Image();
+  img.onload = () => {
+    const maxW = Math.min(img.width, window.innerWidth * 0.72);
+    const maxH = Math.min(img.height, window.innerHeight * 0.55);
+    const scale = Math.min(maxW / img.width, maxH / img.height, 1);
+    canvas.width = Math.round(img.width * scale);
+    canvas.height = Math.round(img.height * scale);
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    canvas._scale = scale; canvas._img = img;
+    overlay.classList.add('active');
+  };
+  img.src = cropOriginalImageSrc;
+
+  const wrap = document.getElementById('cropCanvasWrap');
+  canvas.onmousedown = ev => {
+    const r = canvas.getBoundingClientRect();
+    cropStart = { x: ev.clientX - r.left, y: ev.clientY - r.top };
+    cropDrag = true; sel.style.display = 'block';
+    cropRect = { x: cropStart.x, y: cropStart.y, w: 0, h: 0 };
+    updateCropSel(canvas, sel, cropRect);
+  };
+  canvas.onmousemove = ev => {
+    if (!cropDrag) return;
+    const r = canvas.getBoundingClientRect();
+    const cx = Math.max(0, Math.min(canvas.width, ev.clientX - r.left));
+    const cy = Math.max(0, Math.min(canvas.height, ev.clientY - r.top));
+    cropRect = { x: Math.min(cropStart.x, cx), y: Math.min(cropStart.y, cy), w: Math.abs(cx - cropStart.x), h: Math.abs(cy - cropStart.y) };
+    updateCropSel(canvas, sel, cropRect);
+  };
+  canvas.onmouseup = () => { cropDrag = false; };
+}
+
+function updateCropSel(canvas, sel, rect) {
+  const r = canvas.getBoundingClientRect();
+  const wrapR = document.getElementById('cropCanvasWrap').getBoundingClientRect();
+  sel.style.left   = (r.left - wrapR.left + rect.x) + 'px';
+  sel.style.top    = (r.top  - wrapR.top  + rect.y) + 'px';
+  sel.style.width  = rect.w + 'px';
+  sel.style.height = rect.h + 'px';
+}
+
+function applyCrop() {
+  const canvas = document.getElementById('cropCanvas');
+  if (!cropNode || cropRect.w < 4 || cropRect.h < 4) { cancelCrop(); return; }
+  const scale = canvas._scale, img = canvas._img;
+  const sx = cropRect.x / scale, sy = cropRect.y / scale;
+  const sw = cropRect.w / scale, sh = cropRect.h / scale;
+  const out = document.createElement('canvas'); out.width = Math.round(sw); out.height = Math.round(sh);
+  out.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+  const croppedSrc = out.toDataURL();
+
+  // Store original for re-crop
+  if (!cropNode._cropOrigSrc) cropNode._cropOrigSrc = cropOriginalImageSrc;
+
+  if (cropNode instanceof Konva.Image) {
+    const newImg = new window.Image();
+    newImg.onload = () => {
+      cropNode.image(newImg);
+      cropNode.width(sw); cropNode.height(sh);
+      cropNode._croppedSrc = croppedSrc;
+      layer.batchDraw(); updatePropsPanel(); markDirty();
+    };
+    newImg.src = croppedSrc;
+  } else {
+    // Fill image crop
+    cropNode._fillImageSrc = croppedSrc;
+    const newImg = new window.Image();
+    newImg.onload = () => { applyImageFill(cropNode, newImg); updatePropsPanel(); markDirty(); };
+    newImg.src = croppedSrc;
+  }
+  cancelCrop();
+  showToast('이미지가 잘렸습니다 ✓');
+}
+
+function cancelCrop() {
+  document.getElementById('cropOverlay').classList.remove('active');
+  const canvas = document.getElementById('cropCanvas');
+  canvas.onmousedown = canvas.onmousemove = canvas.onmouseup = null;
+  cropNode = null;
+}
+
 // ═══════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════
@@ -451,9 +634,7 @@ let gradStopsMap = {};
 let selStopIdx = 0;
 let isSignUp = false;
 let clipboard = null;
-// pan state
 let isPanning = false, panStart = {}, panStartOff = {};
-// right-click drag threshold
 let rightDownPos = null, rightDragStarted = false;
 
 // ═══════════════════════════════════════════════════
@@ -518,10 +699,7 @@ function toggleAuthMode() {
 async function loginWithGoogle() {
   if (!sbClient) return;
   document.getElementById('authError').textContent = '';
-  const { error } = await sbClient.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: window.location.origin }
-  });
+  const { error } = await sbClient.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } });
   if (error) document.getElementById('authError').textContent = error.message;
 }
 async function handleEmailAuth() {
@@ -579,9 +757,10 @@ async function loadProjects() {
 function renderProjects() {
   const grid = document.getElementById('projectsGrid');
   grid.innerHTML = `<div class="new-project-card" onclick="createNewProject()"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>새 디자인 만들기</div>`;
-  projects.forEach(p => {
+  projects.forEach((p, i) => {
     const card = document.createElement('div'); card.className = 'project-card';
-    card.innerHTML = `<div class="project-thumb" style="background:${p.thumb_bg||'#2a2f3a'}"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div><div class="project-info"><div class="project-name">${p.name||'제목 없음'}</div><div class="project-meta">${formatDate(p.updated_at||p.created_at)}</div></div><button class="project-del-btn" onclick="deleteProject('${p.id}',event)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>`;
+    card.style.animationDelay = (i * 0.04) + 's';
+    card.innerHTML = `<div class="project-thumb" style="background:${p.thumb_bg||'#2a2f3a'}"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div><div class="project-info"><div class="project-name">${p.name||'제목 없음'}</div><div class="project-meta">${formatDate(p.updated_at||p.created_at)}</div></div><button class="project-del-btn" onclick="deleteProjectPrompt('${p.id}',event)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>`;
     card.onclick = e => { if (e.target.closest('.project-del-btn')) return; openProject(p.id); };
     grid.appendChild(card);
   });
@@ -593,11 +772,20 @@ function formatDate(d) {
   const hrs = Math.floor(mins/60); if (hrs < 24) return `${hrs}시간 전`;
   return `${Math.floor(hrs/24)}일 전`;
 }
-async function deleteProject(id, e) {
-  e.stopPropagation(); if (!confirm('프로젝트를 삭제하시겠습니까?')) return;
-  projects = projects.filter(p => p.id !== id);
-  try { await sbClient.from('projects').delete().eq('id', id).eq('user_id', currentUser.id); } catch(err) {}
-  renderProjects();
+async function deleteProjectPrompt(id, e) {
+  e.stopPropagation();
+  showModal({
+    icon: 'warn', title: '프로젝트 삭제',
+    body: '이 프로젝트를 삭제하시겠습니까? 되돌릴 수 없습니다.',
+    buttons: [
+      { label: '취소', cls: '' },
+      { label: '삭제', cls: 'danger', action: async () => {
+        projects = projects.filter(p => p.id !== id);
+        try { await sbClient.from('projects').delete().eq('id', id).eq('user_id', currentUser.id); } catch(err) {}
+        renderProjects();
+      }}
+    ]
+  });
 }
 async function createNewProject() {
   if (!sbClient || !currentUser) return;
@@ -615,13 +803,27 @@ function openProject(id) {
   initEditor(id);
 }
 function goToDashboard() {
-  if (isDirty && !confirm('저장되지 않은 변경사항이 있습니다. 나가시겠습니까?')) return;
+  if (isDirty) {
+    showModal({
+      icon: 'warn', title: '저장되지 않은 변경사항',
+      body: '저장하지 않고 나가면 변경사항이 사라집니다. 나가시겠습니까?',
+      buttons: [
+        { label: '계속 편집' },
+        { label: '저장 후 나가기', cls: 'primary', action: async () => { await saveProject(); doGoBack(); } },
+        { label: '저장 없이 나가기', cls: 'danger', action: doGoBack }
+      ]
+    });
+    return;
+  }
+  doGoBack();
+}
+function doGoBack() {
   if (stage) { stage.destroy(); stage = null; layer = null; }
   showDashboard();
 }
 
 // ═══════════════════════════════════════════════════
-// EDITOR INIT
+// EDITOR INIT — Fix: proper stage + layer reset
 // ═══════════════════════════════════════════════════
 function initEditor(projectId) {
   if (typeof Konva === 'undefined') {
@@ -635,21 +837,29 @@ function initEditor(projectId) {
       document.head.appendChild(s2);
     };
     document.head.appendChild(s);
-  } else setupStage(projectId);
+  } else { setupStage(projectId); }
 }
 
 function setupStage(projectId) {
-  if (stage) stage.destroy();
+  if (stage) { stage.destroy(); stage = null; layer = null; }
   selectedNodes = []; undoStack = []; redoStack = []; gradStopsMap = {};
   zoomLevel = 1; panX = 0; panY = 0;
-  document.getElementById('konva-container').innerHTML = '';
+
+  const container = document.getElementById('konva-container');
+  container.innerHTML = '';
 
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   stage = new Konva.Stage({ container: 'konva-container', width: frameW, height: frameH, pixelRatio: dpr });
   layer = new Konva.Layer(); stage.add(layer);
 
-  bgRect = new Konva.Rect({ x:0, y:0, width:frameW, height:frameH, fill:'#ffffff', listening:false, name:'bg' }); layer.add(bgRect);
-  frameRect = new Konva.Rect({ x:0, y:0, width:frameW, height:frameH, stroke:'#00c2cc', strokeWidth:1.5, listening:false, fill:'transparent', name:'frame' }); layer.add(frameRect);
+  // bg white fill
+  bgRect = new Konva.Rect({ x:0, y:0, width:frameW, height:frameH, fill:'#ffffff', listening:false, name:'bg' });
+  layer.add(bgRect);
+
+  // frame border — on top
+  frameRect = new Konva.Rect({ x:0, y:0, width:frameW, height:frameH, stroke:'rgba(0,194,204,0.7)', strokeWidth:1.5, listening:false, fill:'transparent', name:'frame' });
+  layer.add(frameRect);
+
   layer.draw();
 
   const area = document.getElementById('canvasArea');
@@ -662,6 +872,16 @@ function setupStage(projectId) {
   setupPanZoom();
   updateLayers();
   isDirty = false;
+  updateSaveIndicator(false);
+}
+
+// ── Ensure Konva container has correct pixel ratio canvas ──
+// Konva by default attaches a <canvas>; the viewport div clips the stage.
+// We fix the stage container style so DPR doesn't offset.
+function fixStageCSS() {
+  if (!stage) return;
+  const cv = stage.container().querySelector('canvas');
+  if (cv) { cv.style.width = frameW + 'px'; cv.style.height = frameH + 'px'; }
 }
 
 async function loadProjectData(projectId) {
@@ -691,14 +911,16 @@ function resetView() {
   applyView();
 }
 function resizeFrame() {
+  if (!stage) return;
   stage.width(frameW); stage.height(frameH);
   bgRect.width(frameW); bgRect.height(frameH);
   frameRect.width(frameW); frameRect.height(frameH);
+  fixStageCSS();
   layer.batchDraw();
 }
 
 // ═══════════════════════════════════════════════════
-// PAN / ZOOM  — right-click drag to pan
+// PAN / ZOOM
 // ═══════════════════════════════════════════════════
 function setupPanZoom() {
   const area = document.getElementById('canvasArea');
@@ -731,13 +953,11 @@ function setupPanZoom() {
     if (e.button !== 2) return;
     if (isPanning) area.style.cursor = '';
     isPanning = false;
-    // if didn't drag: let contextmenu fire naturally
     rightDownPos = null;
   });
 
   area.addEventListener('contextmenu', e => {
     if (rightDragStarted) { e.preventDefault(); return; }
-    // Delegate to stage contextmenu handler
   });
 
   area.addEventListener('wheel', e => {
@@ -772,7 +992,6 @@ function setupStageEvents() {
     if (e.key === 'Escape') { setTool('select'); closeAllPopups(); }
   });
 
-  // left click select
   stage.on('click tap', e => {
     closeAllPopups();
     if (e.target === stage || e.target === bgRect || e.target === frameRect) {
@@ -784,32 +1003,31 @@ function setupStageEvents() {
     else selectNode(e.target);
   });
 
-  // right-click context menu on elements
   stage.on('contextmenu', e => {
-    if (rightDragStarted) return; // was a pan drag
+    if (rightDragStarted) return;
     e.evt.preventDefault();
     if (e.target === stage || e.target === bgRect || e.target === frameRect) return;
     if (e.target instanceof Konva.Transformer) return;
     if (!selectedNodes.includes(e.target)) selectNode(e.target);
+    // Show/hide crop button
+    const isImg = selectedNodes[0] instanceof Konva.Image;
+    const hasFillImg = selectedNodes[0]?._fillMode === 'image';
+    document.getElementById('ctxCropBtn').style.display = (isImg || hasFillImg) ? 'flex' : 'none';
     showCtxMenu(e.evt.clientX, e.evt.clientY);
   });
 
-  // draw tool
   stage.on('mousedown', e => {
     if (currentTool !== 'draw') return;
-    const pos = getRelativePointer();
-    if (!pos) return;
+    const pos = stage.getPointerPosition(); if (!pos) return;
     isDrawing = true;
     drawPoints = [pos.x, pos.y];
     drawLine = new Konva.Line({ points: drawPoints, stroke: '#00c2cc', strokeWidth: 2, lineCap: 'round', lineJoin: 'round', draggable: true });
-    addDragHandlers(drawLine);
-    pushUndo();
-    layer.add(drawLine);
-    layer.batchDraw();
+    addDragHandlers(drawLine); pushUndo();
+    layer.add(drawLine); layer.batchDraw();
   });
-  stage.on('mousemove', e => {
+  stage.on('mousemove', () => {
     if (!isDrawing || currentTool !== 'draw') return;
-    const pos = getRelativePointer(); if (!pos) return;
+    const pos = stage.getPointerPosition(); if (!pos) return;
     drawPoints = drawPoints.concat([pos.x, pos.y]);
     drawLine.points(drawPoints); layer.batchDraw();
   });
@@ -819,34 +1037,56 @@ function setupStageEvents() {
   });
 }
 
-function getRelativePointer() {
-  const pos = stage.getPointerPosition(); return pos;
-}
+// ═══════════════════════════════════════════════════
+// SELECTION — using Konva.Transformer properly
+// ═══════════════════════════════════════════════════
+let activeTr = null;
 
-// ═══════════════════════════════════════════════════
-// SELECTION
-// ═══════════════════════════════════════════════════
-function selectNode(node) { removeTrs(); selectedNodes = [node]; addTr([node]); updatePropsPanel(); updateLayers(); updateMultiInfo(); }
+function selectNode(node) {
+  destroyTr();
+  selectedNodes = [node];
+  createTr([node]);
+  updatePropsPanel(); updateLayers(); updateMultiInfo();
+}
 function toggleNodeSel(node) {
   if (selectedNodes.includes(node)) selectedNodes = selectedNodes.filter(n => n !== node);
   else selectedNodes.push(node);
-  removeTrs();
-  if (selectedNodes.length) addTr(selectedNodes);
+  destroyTr();
+  if (selectedNodes.length) createTr(selectedNodes);
   updatePropsPanel(); updateLayers(); updateMultiInfo();
 }
-function clearSelection() { removeTrs(); selectedNodes = []; updatePropsPanel(); updateLayers(); updateMultiInfo(); }
-function removeTrs() { layer.find('Transformer').forEach(t => t.destroy()); layer.batchDraw(); }
-function addTr(nodes) {
-  if (!nodes.length) return;
-  const tr = new Konva.Transformer({ nodes, borderStroke: '#00c2cc', anchorStroke: '#00c2cc', anchorFill: '#fff', anchorSize: 8, rotateAnchorOffset: 20 });
-  layer.add(tr);
+function clearSelection() {
+  destroyTr();
+  selectedNodes = [];
+  updatePropsPanel(); updateLayers(); updateMultiInfo();
+}
+function destroyTr() {
+  if (activeTr) { activeTr.destroy(); activeTr = null; }
+  layer.batchDraw();
+}
+function createTr(nodes) {
+  if (!nodes.length || !layer) return;
+  activeTr = new Konva.Transformer({
+    nodes,
+    borderStroke: '#00c2cc',
+    borderStrokeWidth: 1.5,
+    anchorStroke: '#00c2cc',
+    anchorFill: '#ffffff',
+    anchorSize: 9,
+    anchorCornerRadius: 2,
+    rotateAnchorOffset: 22,
+    keepRatio: false,
+    enabledAnchors: ['top-left','top-center','top-right','middle-right','bottom-right','bottom-center','bottom-left','middle-left'],
+  });
+  layer.add(activeTr);
   nodes.forEach(n => {
     n.off('.tr');
-    n.on('dragmove.tr', () => { if (smartGuides) drawGuides(n); markDirty(); });
+    n.on('dragmove.tr', () => { if (smartGuides) drawGuides(n); markDirty(); updatePropsPanel(); });
     n.on('dragend.tr', () => { clearGuides(); updatePropsPanel(); });
     n.on('transform.tr', () => { markDirty(); updatePropsPanel(); });
     n.on('transformend.tr', () => { markDirty(); updatePropsPanel(); updateLayers(); });
   });
+  frameRect.moveToTop();
   layer.batchDraw();
 }
 function updateMultiInfo() {
@@ -880,7 +1120,7 @@ function drawGuides(node) {
 function clearGuides() { guideLines.forEach(g => g.remove()); guideLines = []; }
 
 // ═══════════════════════════════════════════════════
-// SHAPES — FIXED
+// SHAPES
 // ═══════════════════════════════════════════════════
 function addShape(type) {
   closeAllPopups();
@@ -896,7 +1136,7 @@ function addShape(type) {
   if (!node) return;
   addDragHandlers(node);
   layer.add(node);
-  frameRect.moveToTop(); // keep frame border on top
+  frameRect.moveToTop();
   layer.batchDraw();
   selectNode(node);
   updateLayers();
@@ -944,6 +1184,9 @@ function handleImageFile(e) {
       const scale = Math.min(maxW/img.width, maxH/img.height);
       const w = img.width * scale, h = img.height * scale;
       const kImg = new Konva.Image({ x: frameW/2-w/2, y: frameH/2-h/2, image: img, width: w, height: h, draggable: true });
+      // Store original src for re-crop
+      kImg._cropOrigSrc = ev.target.result;
+      kImg._croppedSrc = ev.target.result;
       addDragHandlers(kImg);
       layer.add(kImg);
       frameRect.moveToTop();
@@ -959,7 +1202,7 @@ function handleImageFile(e) {
 }
 
 // ═══════════════════════════════════════════════════
-// IMAGE FILL (clipping mask style)
+// IMAGE FILL
 // ═══════════════════════════════════════════════════
 function triggerFillImage() { document.getElementById('fillImageInput').click(); }
 function handleFillImageFile(e) {
@@ -971,8 +1214,8 @@ function handleFillImageFile(e) {
     const img = new window.Image();
     img.onload = () => {
       pushUndo();
-      // Store fill image src for serialization
       node._fillImageSrc = ev.target.result;
+      if (!node._cropOrigSrc) node._cropOrigSrc = ev.target.result;
       node._fillMode = 'image';
       applyImageFill(node, img);
       updatePropsPanel();
@@ -985,45 +1228,29 @@ function handleFillImageFile(e) {
 }
 
 function applyImageFill(node, img) {
-  // Get node dimensions
   let w, h;
   if (node instanceof Konva.Circle) { w = node.radius()*2; h = node.radius()*2; }
   else if (node instanceof Konva.RegularPolygon || node instanceof Konva.Star) { const r = node instanceof Konva.Star ? node.outerRadius() : node.radius(); w = r*2; h = r*2; }
   else { w = (node.width ? node.width() : 100) * (node.scaleX ? node.scaleX() : 1); h = (node.height ? node.height() : 100) * (node.scaleY ? node.scaleY() : 1); }
-
-  // cover: scale image so it covers the node area, then center crop
-  const imgAspect = img.width / img.height;
-  const nodeAspect = w / h;
+  const imgAspect = img.width / img.height, nodeAspect = w / h;
   let sw, sh, sx, sy;
-  if (imgAspect > nodeAspect) {
-    sh = img.height; sw = sh * nodeAspect; sx = (img.width - sw) / 2; sy = 0;
-  } else {
-    sw = img.width; sh = sw / nodeAspect; sx = 0; sy = (img.height - sh) / 2;
-  }
-
-  // Create offscreen canvas for the cropped region
+  if (imgAspect > nodeAspect) { sh = img.height; sw = sh * nodeAspect; sx = (img.width - sw) / 2; sy = 0; }
+  else { sw = img.width; sh = sw / nodeAspect; sx = 0; sy = (img.height - sh) / 2; }
   const cv = document.createElement('canvas'); cv.width = Math.round(w); cv.height = Math.round(h);
-  const ctx = cv.getContext('2d');
-  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, w, h);
-
-  // Apply as fill pattern
+  cv.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, w, h);
   const patternImg = new window.Image(); patternImg.src = cv.toDataURL();
   patternImg.onload = () => {
-    // Clear solid fill / gradient
     try { node.fill(null); node.fillLinearGradientColorStops(null); } catch(e2) {}
     node.fillPatternImage(patternImg);
     node.fillPatternScale({ x: 1 / (node.scaleX ? node.scaleX() : 1), y: 1 / (node.scaleY ? node.scaleY() : 1) });
     if (node instanceof Konva.Circle) node.fillPatternOffset({ x: -node.radius(), y: -node.radius() });
-    else if (node instanceof Konva.RegularPolygon || node instanceof Konva.Star) {
-      const r = node instanceof Konva.Star ? node.outerRadius() : node.radius();
-      node.fillPatternOffset({ x: -r, y: -r });
-    }
+    else if (node instanceof Konva.RegularPolygon || node instanceof Konva.Star) { const r = node instanceof Konva.Star ? node.outerRadius() : node.radius(); node.fillPatternOffset({ x: -r, y: -r }); }
     layer.batchDraw();
   };
 }
 
 function clearImageFill(node) {
-  node._fillImageSrc = null; node._fillMode = 'solid';
+  node._fillImageSrc = null; node._fillMode = 'solid'; node._cropOrigSrc = null;
   try { node.fillPatternImage(null); } catch(e) {}
   node.fill('#00c2cc');
   layer.batchDraw();
@@ -1040,6 +1267,7 @@ function addDragHandlers(node) {
 // ═══════════════════════════════════════════════════
 function updateLayers() {
   const list = document.getElementById('layersList'); list.innerHTML = '';
+  if (!layer) return;
   const children = layer.children.filter(n => n.name() !== 'bg' && n.name() !== 'frame' && !(n instanceof Konva.Transformer));
   [...children].reverse().forEach(node => {
     const item = document.createElement('div');
@@ -1086,6 +1314,7 @@ function updatePropsPanel() {
     !isLine ? makeSec('채우기', fillProps(node, isText, isImage)) : '',
     !isLine ? makeSec('투명도', opacityProps(node)) : '',
     isText ? makeSec('텍스트', textProps(node)) : '',
+    isImage ? makeSec('이미지', imageProps(node)) : '',
     makeSec('정렬', alignProps()),
   ].join('');
   attachProps(node);
@@ -1093,6 +1322,26 @@ function updatePropsPanel() {
 }
 function makeSec(title, content) { return `<div class="prop-section"><div class="prop-section-header" onclick="toggleSec(this)">${title}<span class="chevron">▾</span></div><div class="prop-section-body">${content}</div></div>`; }
 function toggleSec(el) { el.parentElement.classList.toggle('collapsed'); el.nextElementSibling.classList.toggle('hidden'); }
+
+function imageProps(node) {
+  return `<button class="img-fill-btn" onclick="openCrop(selectedNodes[0])">✂ 이미지 자르기</button>
+  ${node._cropOrigSrc ? `<button class="img-fill-btn" style="margin-top:4px" onclick="resetCrop(selectedNodes[0])">↺ 원본으로 복원</button>` : ''}`;
+}
+
+function resetCrop(node) {
+  if (!node._cropOrigSrc) return;
+  const img = new window.Image();
+  img.onload = () => {
+    node.image(img);
+    const maxW = Math.min(img.width, frameW*0.7), maxH = Math.min(img.height, frameH*0.7);
+    const s = Math.min(maxW/img.width, maxH/img.height);
+    node.width(img.width*s); node.height(img.height*s);
+    node._croppedSrc = node._cropOrigSrc;
+    layer.batchDraw(); updatePropsPanel(); markDirty();
+  };
+  img.src = node._cropOrigSrc;
+  showToast('원본 이미지로 복원됐습니다');
+}
 
 function frameProps() {
   const bg = bgRect ? toHex(bgRect.fill()) : '#ffffff';
@@ -1151,7 +1400,6 @@ function fillProps(node, isText, isImage) {
   const stops = gradStopsMap[node._id] || [{ pos:0, color:'#00c2cc' }, { pos:1, color:'#1a1d23' }];
   const dir = node._gradDir || 'lr';
   const hasFillImg = node._fillMode === 'image';
-
   return `
     <div class="fill-tabs" id="fillTabs">
       <button class="fill-tab ${mode==='solid'?'active':''}" onclick="setFillMode('solid')">단색</button>
@@ -1182,8 +1430,9 @@ function fillProps(node, isText, isImage) {
       </div>
     </div>
     <div id="fillImage" style="display:${mode==='image'?'block':'none'}">
-      ${hasFillImg ? `<img class="img-fill-preview" src="${node._fillImageSrc}" style="display:block;width:100%;height:60px;border-radius:5px;border:1px solid var(--border);object-fit:cover;margin-bottom:6px">` : ''}
+      ${hasFillImg ? `<img src="${node._fillImageSrc}" style="display:block;width:100%;height:60px;border-radius:5px;border:1px solid var(--border);object-fit:cover;margin-bottom:6px">` : ''}
       <button class="img-fill-btn" onclick="triggerFillImage()">${hasFillImg ? '이미지 변경' : '이미지 선택'}</button>
+      ${hasFillImg ? `<button class="img-fill-btn" onclick="openCrop(selectedNodes[0])" style="margin-top:4px">✂ 이미지 자르기</button>` : ''}
       ${hasFillImg ? `<button class="img-fill-btn" onclick="clearImageFill(selectedNodes[0]);updatePropsPanel()" style="margin-top:4px;color:var(--danger)">이미지 제거</button>` : ''}
     </div>`;
 }
@@ -1217,7 +1466,6 @@ function alignProps() {
 function attachProps(node) {
   const b = (id, fn) => { const el = document.getElementById(id); if (el) el.addEventListener('change', fn); };
   const bi = (id, fn) => { const el = document.getElementById(id); if (el) el.addEventListener('input', fn); };
-
   b('pFW', e => { frameW=parseInt(e.target.value)||800; resizeFrame(); markDirty(); });
   b('pFH', e => { frameH=parseInt(e.target.value)||600; resizeFrame(); markDirty(); });
   bi('pBgColor', e => { bgRect.fill(e.target.value); layer.batchDraw(); markDirty(); });
@@ -1248,10 +1496,10 @@ function setFillMode(mode) {
   document.getElementById('fillSolid').style.display = mode==='solid'?'block':'none';
   document.getElementById('fillGradient').style.display = mode==='gradient'?'block':'none';
   document.getElementById('fillImage').style.display = mode==='image'?'block':'none';
-  if (mode === 'none') { clearAllFill(node); }
+  if (mode === 'none') clearAllFill(node);
   else if (mode === 'solid') applySolid(node, document.getElementById('pFillColor')?.value || '#00c2cc');
   else if (mode === 'gradient') { if (!gradStopsMap[node._id]) gradStopsMap[node._id]=[{pos:0,color:'#00c2cc'},{pos:1,color:'#1a1d23'}]; applyGrad(node); updateGradBar(node); }
-  else if (mode === 'image') { triggerFillImage(); }
+  else if (mode === 'image') triggerFillImage();
   layer.batchDraw(); markDirty();
 }
 function clearAllFill(node) {
@@ -1265,8 +1513,7 @@ function applySolid(node, color) {
   try { node.fillLinearGradientColorStops(null); node.fillLinearGradientStartPoint(null); node.fillLinearGradientEndPoint(null); } catch(e) {}
   try { node.fillRadialGradientColorStops(null); } catch(e) {}
   try { node.fillPatternImage(null); } catch(e) {}
-  node.fill(color);
-  layer.batchDraw();
+  node.fill(color); layer.batchDraw();
 }
 
 // ═══════════════════════════════════════════════════
@@ -1288,24 +1535,21 @@ function applyGrad(node) {
   else if (node instanceof Konva.Star) { r = node.outerRadius(); w = r*2; h = r*2; }
   else if (node instanceof Konva.RegularPolygon) { r = node.radius(); w = r*2; h = r*2; }
   else { w = node.width?node.width():100; h = node.height?node.height():100; r = Math.max(w,h)/2; }
-
   try { node.fillLinearGradientColorStops(null); node.fillLinearGradientStartPoint(null); node.fillLinearGradientEndPoint(null); } catch(e) {}
   try { node.fillRadialGradientColorStops(null); } catch(e) {}
   try { node.fillPatternImage(null); } catch(e) {}
   node.fill(null);
-
   if (dir === 'radial') {
-    const cx = (node instanceof Konva.Circle || node instanceof Konva.Star || node instanceof Konva.RegularPolygon) ? 0 : w/2;
-    const cy = (node instanceof Konva.Circle || node instanceof Konva.Star || node instanceof Konva.RegularPolygon) ? 0 : h/2;
+    const cx=(node instanceof Konva.Circle||node instanceof Konva.Star||node instanceof Konva.RegularPolygon)?0:w/2;
+    const cy=(node instanceof Konva.Circle||node instanceof Konva.Star||node instanceof Konva.RegularPolygon)?0:h/2;
     node.fillRadialGradientStartPoint({x:cx,y:cy}); node.fillRadialGradientEndPoint({x:cx,y:cy});
     node.fillRadialGradientStartRadius(0); node.fillRadialGradientEndRadius(r);
     node.fillRadialGradientColorStops(cs);
   } else {
-    const isCenter = node instanceof Konva.Circle || node instanceof Konva.Star || node instanceof Konva.RegularPolygon;
-    let sx=isCenter?-r:0, sy=isCenter?-r:0, ex=isCenter?r:w, ey=isCenter?r:h;
-    if (dir==='tb') { sx=0; sy=isCenter?-r:0; ex=0; ey=isCenter?r:h; }
-    else if (dir==='diag') { /* keep diagonal */ }
-    else { sy=0; ey=0; } // lr
+    const isC=node instanceof Konva.Circle||node instanceof Konva.Star||node instanceof Konva.RegularPolygon;
+    let sx=isC?-r:0,sy=isC?-r:0,ex=isC?r:w,ey=isC?r:h;
+    if(dir==='tb'){sx=0;sy=isC?-r:0;ex=0;ey=isC?r:h;}
+    else if(dir==='lr'){sy=0;ey=0;}
     node.fillLinearGradientStartPoint({x:sx,y:sy}); node.fillLinearGradientEndPoint({x:ex,y:ey});
     node.fillLinearGradientColorStops(cs);
   }
@@ -1325,17 +1569,17 @@ function updateGradBar(node) {
     h.addEventListener('mousedown', ev => {
       ev.preventDefault(); selStopIdx = i;
       wrap.querySelectorAll('.grad-stop').forEach(x => x.classList.remove('selected')); h.classList.add('selected');
-      const gc = document.getElementById('gradStopColor'), gs = document.getElementById('gradStopSwatch'), gp = document.getElementById('gradStopPos');
-      if (gc) gc.value = s.color; if (gs) gs.style.background = s.color; if (gp) gp.value = Math.round(s.pos*100);
-      const onM = em => { const rect = wrap.getBoundingClientRect(); const p = Math.max(0,Math.min(1,(em.clientX-rect.left)/rect.width)); stops[i].pos=p; h.style.left=(p*100)+'%'; if(gp)gp.value=Math.round(p*100); applyGrad(node); updateGradBar(node); };
-      const onU = () => { document.removeEventListener('mousemove',onM); document.removeEventListener('mouseup',onU); };
-      document.addEventListener('mousemove',onM); document.addEventListener('mouseup',onU);
+      const gc=document.getElementById('gradStopColor'),gs=document.getElementById('gradStopSwatch'),gp=document.getElementById('gradStopPos');
+      if(gc)gc.value=s.color;if(gs)gs.style.background=s.color;if(gp)gp.value=Math.round(s.pos*100);
+      const onM=em=>{const rect=wrap.getBoundingClientRect();const p=Math.max(0,Math.min(1,(em.clientX-rect.left)/rect.width));stops[i].pos=p;h.style.left=(p*100)+'%';if(gp)gp.value=Math.round(p*100);applyGrad(node);updateGradBar(node);};
+      const onU=()=>{document.removeEventListener('mousemove',onM);document.removeEventListener('mouseup',onU);};
+      document.addEventListener('mousemove',onM);document.addEventListener('mouseup',onU);
     });
     wrap.appendChild(h);
   });
 }
-function addGradStop() { if(!selectedNodes.length)return; const n=selectedNodes[0]; if(!gradStopsMap[n._id])gradStopsMap[n._id]=[{pos:0,color:'#00c2cc'},{pos:1,color:'#1a1d23'}]; gradStopsMap[n._id].push({pos:0.5,color:'#ffffff'}); applyGrad(n); updateGradBar(n); }
-function removeGradStop() { if(!selectedNodes.length)return; const n=selectedNodes[0]; const s=gradStopsMap[n._id]; if(!s||s.length<=2)return; s.splice(selStopIdx,1); selStopIdx=Math.min(selStopIdx,s.length-1); applyGrad(n); updateGradBar(n); }
+function addGradStop(){if(!selectedNodes.length)return;const n=selectedNodes[0];if(!gradStopsMap[n._id])gradStopsMap[n._id]=[{pos:0,color:'#00c2cc'},{pos:1,color:'#1a1d23'}];gradStopsMap[n._id].push({pos:0.5,color:'#ffffff'});applyGrad(n);updateGradBar(n);}
+function removeGradStop(){if(!selectedNodes.length)return;const n=selectedNodes[0];const s=gradStopsMap[n._id];if(!s||s.length<=2)return;s.splice(selStopIdx,1);selStopIdx=Math.min(selStopIdx,s.length-1);applyGrad(n);updateGradBar(n);}
 
 // ═══════════════════════════════════════════════════
 // ALIGN
@@ -1344,41 +1588,42 @@ function alignSelected(dir) {
   if (!selectedNodes.length) return; pushUndo();
   const nodes = selectedNodes;
   if (nodes.length === 1) {
-    const n = nodes[0]; const box = n.getClientRect({relativeTo:layer});
-    if (dir==='left') n.x(n.x()-box.x);
-    else if (dir==='right') n.x(frameW-box.width+(n.x()-box.x));
-    else if (dir==='center') n.x(frameW/2-box.width/2+(n.x()-box.x));
-    else if (dir==='top') n.y(n.y()-box.y);
-    else if (dir==='bottom') n.y(frameH-box.height+(n.y()-box.y));
-    else if (dir==='middle') n.y(frameH/2-box.height/2+(n.y()-box.y));
+    const n=nodes[0];const box=n.getClientRect({relativeTo:layer});
+    if(dir==='left')n.x(n.x()-box.x);
+    else if(dir==='right')n.x(frameW-box.width+(n.x()-box.x));
+    else if(dir==='center')n.x(frameW/2-box.width/2+(n.x()-box.x));
+    else if(dir==='top')n.y(n.y()-box.y);
+    else if(dir==='bottom')n.y(frameH-box.height+(n.y()-box.y));
+    else if(dir==='middle')n.y(frameH/2-box.height/2+(n.y()-box.y));
   } else {
-    const boxes = nodes.map(n => n.getClientRect({relativeTo:layer}));
-    const minX=Math.min(...boxes.map(b=>b.x)), maxX=Math.max(...boxes.map(b=>b.x+b.width));
-    const minY=Math.min(...boxes.map(b=>b.y)), maxY=Math.max(...boxes.map(b=>b.y+b.height));
-    const cx=(minX+maxX)/2, cy=(minY+maxY)/2;
-    nodes.forEach((n,i) => {
-      const box=boxes[i];
-      if (dir==='left') n.x(minX+(n.x()-box.x));
-      else if (dir==='right') n.x(maxX-box.width+(n.x()-box.x));
-      else if (dir==='center') n.x(cx-box.width/2+(n.x()-box.x));
-      else if (dir==='top') n.y(minY+(n.y()-box.y));
-      else if (dir==='bottom') n.y(maxY-box.height+(n.y()-box.y));
-      else if (dir==='middle') n.y(cy-box.height/2+(n.y()-box.y));
+    const boxes=nodes.map(n=>n.getClientRect({relativeTo:layer}));
+    const minX=Math.min(...boxes.map(b=>b.x)),maxX=Math.max(...boxes.map(b=>b.x+b.width));
+    const minY=Math.min(...boxes.map(b=>b.y)),maxY=Math.max(...boxes.map(b=>b.y+b.height));
+    const cx=(minX+maxX)/2,cy=(minY+maxY)/2;
+    nodes.forEach((n,i)=>{const box=boxes[i];
+      if(dir==='left')n.x(minX+(n.x()-box.x));
+      else if(dir==='right')n.x(maxX-box.width+(n.x()-box.x));
+      else if(dir==='center')n.x(cx-box.width/2+(n.x()-box.x));
+      else if(dir==='top')n.y(minY+(n.y()-box.y));
+      else if(dir==='bottom')n.y(maxY-box.height+(n.y()-box.y));
+      else if(dir==='middle')n.y(cy-box.height/2+(n.y()-box.y));
     });
   }
   layer.batchDraw(); updatePropsPanel(); markDirty();
 }
 
 // ═══════════════════════════════════════════════════
-// UNDO / REDO
+// UNDO / REDO — fixed serialization for loaded projects
 // ═══════════════════════════════════════════════════
 function pushUndo() { if (!layer) return; undoStack.push(serializeL()); if (undoStack.length>60) undoStack.shift(); redoStack=[]; }
 function undo() { if (!undoStack.length) return; redoStack.push(serializeL()); restoreL(undoStack.pop()); }
 function redo() { if (!redoStack.length) return; undoStack.push(serializeL()); restoreL(redoStack.pop()); }
-function serializeL() { return JSON.stringify(layer.children.filter(n=>n.name()!=='bg'&&n.name()!=='frame'&&!(n instanceof Konva.Transformer)).map(n=>serNode(n))); }
+function serializeL() {
+  return JSON.stringify(layer.children.filter(n=>n.name()!=='bg'&&n.name()!=='frame'&&!(n instanceof Konva.Transformer)).map(n=>serNode(n)));
+}
 function serNode(n) {
-  const base = { type:n.getClassName(), attrs:{...n.getAttrs()}, _fillMode:n._fillMode, _gradDir:n._gradDir, gradStops:gradStopsMap[n._id], _fillImageSrc:n._fillImageSrc };
-  if (n instanceof Konva.Image) { try{base.attrs.imageSrc=n.image()?.src;}catch(e){} delete base.attrs.image; }
+  const base = { type:n.getClassName(), attrs:{...n.getAttrs()}, _fillMode:n._fillMode, _gradDir:n._gradDir, gradStops:gradStopsMap[n._id], _fillImageSrc:n._fillImageSrc, _cropOrigSrc:n._cropOrigSrc, _croppedSrc:n._croppedSrc };
+  if (n instanceof Konva.Image) { try{base.attrs.imageSrc=n._croppedSrc||n._cropOrigSrc||n.image()?.src;}catch(e){} delete base.attrs.image; }
   return base;
 }
 function restoreL(json) {
@@ -1386,7 +1631,10 @@ function restoreL(json) {
   layer.children.filter(n=>n.name()!=='bg'&&n.name()!=='frame'&&!(n instanceof Konva.Transformer)).forEach(n=>n.destroy());
   restoreElements(arr);
 }
+
+// ── KEY FIX: restore with correct pixel ratio canvas styling ──
 function restoreElements(arr) {
+  if (!Array.isArray(arr)) return;
   arr.forEach(data => {
     const attrs = {...data.attrs}; delete attrs.image;
     let node;
@@ -1398,15 +1646,15 @@ function restoreElements(arr) {
     else if (data.type==='Line') node=new Konva.Line(attrs);
     else if (data.type==='Image') {
       node=new Konva.Image({...attrs,image:null});
-      if (data.attrs.imageSrc) { const img=new window.Image(); img.onload=()=>{node.image(img);layer.batchDraw();}; img.src=data.attrs.imageSrc; }
+      const imgSrc=data._croppedSrc||data.attrs?.imageSrc||data._cropOrigSrc;
+      if(imgSrc){const img=new window.Image();img.onload=()=>{node.image(img);layer.batchDraw();};img.src=imgSrc;}
     }
     if (!node) return;
-    node._fillMode=data._fillMode; node._gradDir=data._gradDir; node._fillImageSrc=data._fillImageSrc;
-    if (data.gradStops) { gradStopsMap[node._id]=data.gradStops; if(data._fillMode==='gradient') applyGrad(node); }
-    if (data._fillMode==='image' && data._fillImageSrc) {
-      const img=new window.Image(); img.onload=()=>{ applyImageFill(node, img); }; img.src=data._fillImageSrc;
-    }
-    if (data.type==='Text') node.on('dblclick dbltap', ()=>editTextInline(node));
+    node._fillMode=data._fillMode; node._gradDir=data._gradDir;
+    node._fillImageSrc=data._fillImageSrc; node._cropOrigSrc=data._cropOrigSrc; node._croppedSrc=data._croppedSrc;
+    if (data.gradStops){gradStopsMap[node._id]=data.gradStops;if(data._fillMode==='gradient')applyGrad(node);}
+    if (data._fillMode==='image'&&data._fillImageSrc){const img=new window.Image();img.onload=()=>applyImageFill(node,img);img.src=data._fillImageSrc;}
+    if (data.type==='Text') node.on('dblclick dbltap',()=>editTextInline(node));
     addDragHandlers(node); node.draggable(true); layer.add(node);
   });
   frameRect.moveToTop();
@@ -1416,100 +1664,104 @@ function restoreElements(arr) {
 // ═══════════════════════════════════════════════════
 // COPY / PASTE / DUPLICATE / DELETE
 // ═══════════════════════════════════════════════════
-function copySelected() { if (!selectedNodes.length) return; clipboard = selectedNodes.map(n=>serNode(n)); showToast('복사됨'); }
-function pasteClipboard() {
-  if (!clipboard) return; pushUndo();
-  const newNodes = [];
-  clipboard.forEach(data => {
-    const attrs = {...data.attrs}; delete attrs.image; attrs.x=(attrs.x||0)+20; attrs.y=(attrs.y||0)+20;
+function copySelected(){if(!selectedNodes.length)return;clipboard=selectedNodes.map(n=>serNode(n));showToast('복사됨');}
+function pasteClipboard(){
+  if(!clipboard)return;pushUndo();const newNodes=[];
+  clipboard.forEach(data=>{
+    const attrs={...data.attrs};delete attrs.image;attrs.x=(attrs.x||0)+20;attrs.y=(attrs.y||0)+20;
     let node;
-    if (data.type==='Rect') node=new Konva.Rect(attrs);
-    else if (data.type==='Circle') node=new Konva.Circle(attrs);
-    else if (data.type==='RegularPolygon') node=new Konva.RegularPolygon(attrs);
-    else if (data.type==='Star') node=new Konva.Star(attrs);
-    else if (data.type==='Text') node=new Konva.Text(attrs);
-    else if (data.type==='Line') node=new Konva.Line(attrs);
-    else if (data.type==='Image') {
+    if(data.type==='Rect')node=new Konva.Rect(attrs);
+    else if(data.type==='Circle')node=new Konva.Circle(attrs);
+    else if(data.type==='RegularPolygon')node=new Konva.RegularPolygon(attrs);
+    else if(data.type==='Star')node=new Konva.Star(attrs);
+    else if(data.type==='Text')node=new Konva.Text(attrs);
+    else if(data.type==='Line')node=new Konva.Line(attrs);
+    else if(data.type==='Image'){
       node=new Konva.Image({...attrs,image:null});
-      if (data.attrs.imageSrc) { const img=new window.Image(); img.onload=()=>{node.image(img);layer.batchDraw();}; img.src=data.attrs.imageSrc; }
+      const imgSrc=data._croppedSrc||data.attrs?.imageSrc;
+      if(imgSrc){const img=new window.Image();img.onload=()=>{node.image(img);layer.batchDraw();};img.src=imgSrc;}
     }
-    if (!node) return;
-    node._fillMode=data._fillMode; node._gradDir=data._gradDir; node._fillImageSrc=data._fillImageSrc;
-    if (data.gradStops) { gradStopsMap[node._id]=JSON.parse(JSON.stringify(data.gradStops)); if(data._fillMode==='gradient') applyGrad(node); }
-    if (data._fillMode==='image' && data._fillImageSrc) { const img=new window.Image(); img.onload=()=>applyImageFill(node,img); img.src=data._fillImageSrc; }
-    if (data.type==='Text') node.on('dblclick dbltap', ()=>editTextInline(node));
-    addDragHandlers(node); node.draggable(true); layer.add(node); newNodes.push(node);
+    if(!node)return;
+    node._fillMode=data._fillMode;node._gradDir=data._gradDir;node._fillImageSrc=data._fillImageSrc;node._cropOrigSrc=data._cropOrigSrc;node._croppedSrc=data._croppedSrc;
+    if(data.gradStops){gradStopsMap[node._id]=JSON.parse(JSON.stringify(data.gradStops));if(data._fillMode==='gradient')applyGrad(node);}
+    if(data._fillMode==='image'&&data._fillImageSrc){const img=new window.Image();img.onload=()=>applyImageFill(node,img);img.src=data._fillImageSrc;}
+    if(data.type==='Text')node.on('dblclick dbltap',()=>editTextInline(node));
+    addDragHandlers(node);node.draggable(true);layer.add(node);newNodes.push(node);
   });
-  frameRect.moveToTop(); layer.batchDraw();
-  removeTrs(); selectedNodes=newNodes; if(newNodes.length) addTr(newNodes);
-  updateLayers(); markDirty();
+  frameRect.moveToTop();layer.batchDraw();
+  destroyTr();selectedNodes=newNodes;if(newNodes.length)createTr(newNodes);
+  updateLayers();markDirty();
 }
-function duplicateSelected() {
-  if (!selectedNodes.length) return; pushUndo();
-  const newNodes = [];
-  selectedNodes.forEach(n => {
-    const clone = n.clone({ x:n.x()+20, y:n.y()+20 });
-    if (gradStopsMap[n._id]) gradStopsMap[clone._id] = JSON.parse(JSON.stringify(gradStopsMap[n._id]));
-    clone._fillMode=n._fillMode; clone._gradDir=n._gradDir; clone._fillImageSrc=n._fillImageSrc;
+function duplicateSelected(){
+  if(!selectedNodes.length)return;pushUndo();const newNodes=[];
+  selectedNodes.forEach(n=>{
+    const clone=n.clone({x:n.x()+20,y:n.y()+20});
+    if(gradStopsMap[n._id])gradStopsMap[clone._id]=JSON.parse(JSON.stringify(gradStopsMap[n._id]));
+    clone._fillMode=n._fillMode;clone._gradDir=n._gradDir;clone._fillImageSrc=n._fillImageSrc;clone._cropOrigSrc=n._cropOrigSrc;clone._croppedSrc=n._croppedSrc;
     addDragHandlers(clone);
-    if (clone instanceof Konva.Text) clone.on('dblclick dbltap', ()=>editTextInline(clone));
-    if (n._fillMode==='image' && n._fillImageSrc) { const img=new window.Image(); img.onload=()=>applyImageFill(clone,img); img.src=n._fillImageSrc; }
-    layer.add(clone); newNodes.push(clone);
+    if(clone instanceof Konva.Text)clone.on('dblclick dbltap',()=>editTextInline(clone));
+    if(n._fillMode==='image'&&n._fillImageSrc){const img=new window.Image();img.onload=()=>applyImageFill(clone,img);img.src=n._fillImageSrc;}
+    layer.add(clone);newNodes.push(clone);
   });
-  frameRect.moveToTop(); layer.batchDraw();
-  removeTrs(); selectedNodes=newNodes; addTr(newNodes); updateLayers(); markDirty();
+  frameRect.moveToTop();layer.batchDraw();
+  destroyTr();selectedNodes=newNodes;createTr(newNodes);updateLayers();markDirty();
 }
-function deleteSelected() {
-  if (!selectedNodes.length) return; pushUndo();
-  selectedNodes.forEach(n => n.destroy()); selectedNodes=[];
-  layer.batchDraw(); updatePropsPanel(); updateLayers(); markDirty();
+function deleteSelected(){
+  if(!selectedNodes.length)return;pushUndo();
+  selectedNodes.forEach(n=>n.destroy());selectedNodes=[];
+  destroyTr();layer.batchDraw();updatePropsPanel();updateLayers();markDirty();
 }
 
 // ═══════════════════════════════════════════════════
 // CONTEXT MENU
 // ═══════════════════════════════════════════════════
-function showCtxMenu(x, y) {
-  const menu = document.getElementById('ctxMenu');
-  menu.style.left = x + 'px'; menu.style.top = y + 'px';
-  menu.classList.add('open');
-}
-function ctxDo(action) {
+function showCtxMenu(x,y){const menu=document.getElementById('ctxMenu');menu.style.left=x+'px';menu.style.top=y+'px';menu.classList.add('open');}
+function ctxDo(action){
   closeAllPopups();
-  if (action === 'duplicate') duplicateSelected();
-  else if (action === 'copy') copySelected();
-  else if (action === 'delete') deleteSelected();
-  else if (action === 'bringToFront') { selectedNodes.forEach(n=>{n.moveToTop();}); frameRect.moveToTop(); layer.batchDraw(); updateLayers(); }
-  else if (action === 'bringForward') { selectedNodes.forEach(n=>n.moveUp()); frameRect.moveToTop(); layer.batchDraw(); updateLayers(); }
-  else if (action === 'sendBackward') { selectedNodes.forEach(n=>n.moveDown()); layer.batchDraw(); updateLayers(); }
-  else if (action === 'sendToBack') { selectedNodes.forEach(n=>n.moveToBottom()); bgRect.moveToTop(); layer.batchDraw(); updateLayers(); }
+  if(action==='duplicate')duplicateSelected();
+  else if(action==='copy')copySelected();
+  else if(action==='delete')deleteSelected();
+  else if(action==='crop'){if(selectedNodes.length)openCrop(selectedNodes[0]);}
+  else if(action==='bringToFront'){selectedNodes.forEach(n=>{n.moveToTop();});frameRect.moveToTop();layer.batchDraw();updateLayers();}
+  else if(action==='bringForward'){selectedNodes.forEach(n=>n.moveUp());frameRect.moveToTop();layer.batchDraw();updateLayers();}
+  else if(action==='sendBackward'){selectedNodes.forEach(n=>n.moveDown());layer.batchDraw();updateLayers();}
+  else if(action==='sendToBack'){selectedNodes.forEach(n=>n.moveToBottom());bgRect.moveToTop();layer.batchDraw();updateLayers();}
   markDirty();
 }
 
 // ═══════════════════════════════════════════════════
-// TOOL / POPUPS
+// TOOLS / POPUPS
 // ═══════════════════════════════════════════════════
-function setTool(tool) {
-  currentTool = tool;
-  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-  if (tool==='select') document.getElementById('toolSelect')?.classList.add('active');
-  if (tool==='draw') document.getElementById('toolDraw')?.classList.add('active');
-  if (stage) stage.container().style.cursor = tool==='draw'?'crosshair':'default';
+function setTool(tool){
+  currentTool=tool;
+  document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active'));
+  if(tool==='select')document.getElementById('toolSelect')?.classList.add('active');
+  if(tool==='draw')document.getElementById('toolDraw')?.classList.add('active');
+  if(stage)stage.container().style.cursor=tool==='draw'?'crosshair':'default';
 }
-function toggleShapePicker() { document.getElementById('shapePicker').classList.toggle('open'); document.getElementById('settingsPopup').classList.remove('open'); }
-function toggleSettings() { document.getElementById('settingsPopup').classList.toggle('open'); document.getElementById('shapePicker').classList.remove('open'); }
-function closeAllPopups() {
+function toggleShapePicker(){document.getElementById('shapePicker').classList.toggle('open');document.getElementById('settingsPopup').classList.remove('open');}
+function toggleSettings(){document.getElementById('settingsPopup').classList.toggle('open');document.getElementById('shapePicker').classList.remove('open');}
+function closeAllPopups(){
   document.getElementById('shapePicker')?.classList.remove('open');
   document.getElementById('settingsPopup')?.classList.remove('open');
   document.getElementById('ctxMenu')?.classList.remove('open');
 }
-document.addEventListener('click', e => {
-  if (e.target.closest('#ctxMenu') || e.target.closest('.bottom-toolbar') || e.target.closest('.shape-picker') || e.target.closest('.settings-popup')) return;
+document.addEventListener('click',e=>{
+  if(e.target.closest('#ctxMenu')||e.target.closest('.bottom-toolbar')||e.target.closest('.shape-picker')||e.target.closest('.settings-popup'))return;
   document.getElementById('ctxMenu')?.classList.remove('open');
-  if (!e.target.closest('.bottom-toolbar')) { document.getElementById('shapePicker')?.classList.remove('open'); document.getElementById('settingsPopup')?.classList.remove('open'); }
+  if(!e.target.closest('.bottom-toolbar')){document.getElementById('shapePicker')?.classList.remove('open');document.getElementById('settingsPopup')?.classList.remove('open');}
 });
 
 // ═══════════════════════════════════════════════════
-// SAVE / EXPORT
+// SAVE INDICATOR
+// ═══════════════════════════════════════════════════
+function updateSaveIndicator(dirty) {
+  const ind = document.getElementById('saveIndicator');
+  if (ind) ind.classList.toggle('show', dirty);
+}
+
+// ═══════════════════════════════════════════════════
+// SAVE / EXPORT — with custom download modal
 // ═══════════════════════════════════════════════════
 async function saveProject() {
   if (!layer || !sbClient || !currentUser) return;
@@ -1519,28 +1771,46 @@ async function saveProject() {
   const data = { title, frameW, frameH, bgColor:bgRect.fill(), elements, savedAt:new Date().toISOString() };
   try {
     await sbClient.from('projects').update({ name:title, data:JSON.stringify(data), updated_at:new Date().toISOString() }).eq('id',currentProjectId).eq('user_id',currentUser.id);
-    isDirty=false; const p=projects.find(x=>x.id===currentProjectId); if(p){p.name=title;p.updated_at=new Date().toISOString();}
+    isDirty=false; updateSaveIndicator(false);
+    const p=projects.find(x=>x.id===currentProjectId); if(p){p.name=title;p.updated_at=new Date().toISOString();}
     showToast('저장됨 ✓');
   } catch(e) { showToast('저장 실패: '+e.message); }
 }
+
 async function handleDownload() {
   if (!stage) return;
-  const useTransp = confirm('투명 배경으로 내보내시겠습니까?\n(취소: 현재 배경색 유지)');
+  showModal({
+    icon: 'info', title: '내보내기',
+    body: '배경을 어떻게 처리할까요?',
+    buttons: [
+      { label: '현재 배경색 유지', cls: 'primary', action: () => doExport(false) },
+      { label: '투명 배경으로', cls: '', action: () => doExport(true) },
+    ]
+  });
+}
+
+async function doExport(transparent) {
   const prevFill = bgRect.fill();
-  layer.find('Transformer').forEach(t=>t.hide()); frameRect.hide();
-  if (useTransp) bgRect.fill('transparent');
+  if (activeTr) activeTr.visible(false);
+  frameRect.visible(false);
+  if (transparent) bgRect.fill('transparent');
   layer.batchDraw();
-  await new Promise(r=>setTimeout(r,60));
+  await new Promise(r=>setTimeout(r,80));
   try {
-    const url = stage.toDataURL({pixelRatio:2,mimeType:'image/png'});
+    const url = stage.toDataURL({ pixelRatio:2, mimeType:'image/png' });
     const a = document.createElement('a'); a.href=url;
     a.download=(document.getElementById('projectTitle').value||'design').replace(/[^a-zA-Z0-9가-힣\-_]/g,'_')+'.png';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    showToast('다운로드 완료!');
-  } catch(err) { showToast('다운로드 실패: '+err.message); }
-  finally { bgRect.fill(prevFill); frameRect.show(); layer.find('Transformer').forEach(t=>t.show()); layer.batchDraw(); }
+    showToast('다운로드 완료! ✓');
+  } catch(err) { showToast('내보내기 실패: '+err.message); }
+  finally {
+    bgRect.fill(prevFill); frameRect.visible(true);
+    if (activeTr) activeTr.visible(true);
+    layer.batchDraw();
+  }
 }
-function markDirty() { isDirty = true; }
+
+function markDirty() { isDirty = true; updateSaveIndicator(true); }
 
 // ═══════════════════════════════════════════════════
 // UTILS
@@ -1553,13 +1823,14 @@ function toHex(color) {
 }
 function showToast(msg) {
   const t=document.createElement('div');
-  t.style.cssText='position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.88);color:#fff;font-size:12px;padding:7px 15px;border-radius:7px;z-index:9999;opacity:0;transition:opacity .2s;border:1px solid rgba(255,255,255,0.1);pointer-events:none';
+  t.style.cssText='position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:rgba(10,12,18,0.95);color:#e8ecf2;font-size:12px;padding:8px 16px;border-radius:8px;z-index:9999;opacity:0;transition:opacity .2s;border:1px solid rgba(0,194,204,0.25);pointer-events:none;backdrop-filter:blur(8px);white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.4)';
   t.textContent=msg; document.body.appendChild(t);
   setTimeout(()=>t.style.opacity='1',10);
   setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300);},2200);
 }
-document.getElementById('smartGuidesToggle')?.addEventListener('change', e=>{smartGuides=e.target.checked;});
-document.getElementById('snappingToggle')?.addEventListener('change', e=>{snapping=e.target.checked;});
+
+document.getElementById('smartGuidesToggle')?.addEventListener('change',e=>{smartGuides=e.target.checked;});
+document.getElementById('snappingToggle')?.addEventListener('change',e=>{snapping=e.target.checked;});
 window.addEventListener('load', startup);
 </script>
 </body>
