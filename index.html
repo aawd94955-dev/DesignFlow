@@ -35,6 +35,62 @@
   #loadingScreen .status { font-size:13px; color:var(--text-muted); }
   #loadingScreen.hidden { display:none; }
 
+  /* ===== LOGIN SCREEN ===== */
+  #loginScreen {
+    position:fixed; inset:0; background:var(--bg-primary); z-index:1500;
+    display:none; flex-direction:column; align-items:center; justify-content:center; gap:0;
+  }
+  #loginScreen.active { display:flex; }
+  .login-card {
+    background:var(--bg-secondary); border:1px solid var(--border);
+    border-radius:20px; padding:48px 40px; width:400px; max-width:90vw;
+    display:flex; flex-direction:column; align-items:center; gap:28px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .login-logo { display:flex; align-items:center; gap:10px; }
+  .login-logo svg { width:36px; height:36px; }
+  .login-logo span { font-size:26px; font-weight:700; letter-spacing:-0.5px; color:var(--text); }
+  .login-desc { font-size:13px; color:var(--text-muted); text-align:center; line-height:1.6; }
+  .login-divider { display:flex; align-items:center; gap:12px; width:100%; }
+  .login-divider::before, .login-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+  .login-divider span { font-size:11px; color:var(--text-muted); }
+
+  .btn-google {
+    width:100%; display:flex; align-items:center; justify-content:center; gap:12px;
+    padding:12px 20px; background:#fff; color:#1a1a1a;
+    border:none; border-radius:10px; cursor:pointer;
+    font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600;
+    transition:all .2s; box-shadow:0 2px 8px rgba(0,0,0,0.2);
+  }
+  .btn-google:hover { background:#f0f0f0; transform:translateY(-1px); box-shadow:0 4px 16px rgba(0,0,0,0.25); }
+  .btn-google svg { width:20px; height:20px; flex-shrink:0; }
+
+  /* Email/Password form */
+  .login-form { width:100%; display:flex; flex-direction:column; gap:12px; }
+  .form-group { display:flex; flex-direction:column; gap:6px; }
+  .form-label { font-size:12px; font-weight:500; color:var(--text-muted); }
+  .form-input {
+    background:var(--bg-primary); border:1px solid var(--border);
+    border-radius:8px; padding:10px 14px; color:var(--text);
+    font-family:'DM Sans',sans-serif; font-size:13px; outline:none;
+    transition:border-color .2s;
+  }
+  .form-input:focus { border-color:var(--accent); }
+  .form-input::placeholder { color:var(--text-muted); }
+
+  .btn-primary {
+    width:100%; padding:11px 20px; background:var(--accent); color:#fff;
+    border:none; border-radius:8px; cursor:pointer;
+    font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600;
+    transition:all .2s;
+  }
+  .btn-primary:hover { background:var(--accent-hover); }
+  .btn-primary:disabled { opacity:.5; cursor:not-allowed; }
+
+  .login-toggle { font-size:12px; color:var(--text-muted); text-align:center; }
+  .login-toggle a { color:var(--accent); cursor:pointer; text-decoration:underline; }
+  .login-error { font-size:12px; color:#ff6b6b; text-align:center; min-height:16px; }
+
   .btn { display:inline-flex; align-items:center; gap:8px; padding:10px 18px; border-radius:8px; border:none; cursor:pointer; font-family:inherit; font-size:13px; font-weight:500; transition:all .2s; }
   .btn-accent { background:var(--accent); color:#fff; }
   .btn-accent:hover { background:var(--accent-hover); }
@@ -204,7 +260,7 @@
 
   /* FRAME PRESETS */
   .frame-presets { display:flex; gap:4px; flex-wrap:wrap; margin-top:4px; }
-  .frame-preset { padding:3px 8px; background:var(--bg-primary); border:1px solid var(--border); border-radius:4px; font-size:10px; cursor:pointer; color:var(--text-muted); transition:all .15s; }
+  .frame-preset { padding:3px 8px; background:var(--bg-primary); border:1px solid var(--border); border-radius:4px; font-size:10px; cursor:pointer; color:var(--text-muted); transition:all .15px; }
   .frame-preset:hover { border-color:var(--accent); color:var(--accent); }
 
   ::-webkit-scrollbar { width:4px; }
@@ -215,9 +271,32 @@
   .logo-mark { display:flex; align-items:center; gap:8px; }
   .logo-mark svg { width:22px; height:22px; }
   .logo-mark span { font-size:15px; font-weight:700; letter-spacing:-0.3px; }
+
+  /* Config error screen */
+  #configError {
+    position:fixed; inset:0; background:var(--bg-primary); z-index:3000;
+    display:none; flex-direction:column; align-items:center; justify-content:center; gap:16px;
+    text-align:center; padding:32px;
+  }
+  #configError.active { display:flex; }
+  #configError h2 { font-size:20px; color:#ff6b6b; }
+  #configError p { font-size:13px; color:var(--text-muted); max-width:440px; line-height:1.7; }
+  #configError code { background:var(--bg-secondary); padding:2px 8px; border-radius:4px; font-size:12px; color:var(--accent); }
 </style>
 </head>
 <body>
+
+<!-- CONFIG ERROR -->
+<div id="configError">
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+  <h2>설정 파일 오류</h2>
+  <p>
+    <code>config.txt</code> 파일을 찾을 수 없거나 Supabase 설정이 올바르지 않습니다.<br><br>
+    같은 폴더에 <code>config.txt</code> 파일을 만들고 아래 내용을 입력하세요:
+  </p>
+  <pre style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;padding:16px;font-size:12px;color:var(--text);text-align:left;line-height:1.8">SUPABASE_URL = https://your-project.supabase.co
+SUPABASE_KEY = your-anon-key</pre>
+</div>
 
 <!-- LOADING SCREEN -->
 <div id="loadingScreen">
@@ -230,6 +309,47 @@
   <div class="status" id="loadStatus">초기화 중...</div>
 </div>
 
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+      <span>DesignFlow</span>
+    </div>
+    <p class="login-desc">디자인을 시작하려면 로그인하세요.<br>계정이 없어도 바로 가입할 수 있습니다.</p>
+
+    <!-- Google OAuth -->
+    <button class="btn-google" onclick="loginWithGoogle()">
+      <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Google로 계속하기
+    </button>
+
+    <div class="login-divider"><span>또는 이메일로</span></div>
+
+    <!-- Email/Password -->
+    <div class="login-form">
+      <div class="form-group">
+        <label class="form-label">이메일</label>
+        <input class="form-input" type="email" id="authEmail" placeholder="you@example.com" autocomplete="email"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">비밀번호</label>
+        <input class="form-input" type="password" id="authPassword" placeholder="비밀번호 (6자 이상)" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter') handleEmailAuth()"/>
+      </div>
+      <div class="login-error" id="authError"></div>
+      <button class="btn-primary" id="authSubmitBtn" onclick="handleEmailAuth()">로그인</button>
+    </div>
+
+    <div class="login-toggle">
+      <span id="authToggleText">계정이 없으신가요?</span>
+      <a onclick="toggleAuthMode()"> <span id="authToggleLink">회원가입</span></a>
+    </div>
+  </div>
+</div>
+
 <!-- DASHBOARD -->
 <div id="dashboard">
   <div class="dash-header">
@@ -240,9 +360,9 @@
       <span>DesignFlow</span>
     </div>
     <div class="dash-user">
-      <span id="dashUserEmail">로컬 모드</span>
-      <div class="dash-avatar" id="dashAvatar">L</div>
-      <button class="btn btn-ghost" id="logoutBtn" onclick="handleLogout()" style="font-size:12px;padding:6px 12px;display:none">로그아웃</button>
+      <span id="dashUserEmail"></span>
+      <div class="dash-avatar" id="dashAvatar">?</div>
+      <button class="btn btn-ghost" onclick="handleLogout()" style="font-size:12px;padding:6px 12px;">로그아웃</button>
     </div>
   </div>
   <div><div class="section-title">프로젝트</div></div>
@@ -426,38 +546,35 @@ let frameW = 800, frameH = 600;
 let frameRect = null, bgRect = null;
 let gradientStopsMap = {};
 let selectedStopIdx = 0;
+let isSignUp = false; // toggle login/signup mode
 
-// ========== STARTUP: Load config.txt ==========
+// ========== STARTUP ==========
 async function startup() {
   setStatus('설정 불러오는 중...');
   try {
     const res = await fetch('./config.txt');
-    if (res.ok) {
-      const text = await res.text();
-      let sbUrl = '', sbKey = '';
-      text.split('\n').forEach(line => {
-        const idx = line.indexOf('=');
-        if (idx < 0) return;
-        const k = line.slice(0, idx).trim();
-        const v = line.slice(idx + 1).trim();
-        if (k === 'SUPABASE_URL') sbUrl = v;
-        if (k === 'SUPABASE_KEY') sbKey = v;
-      });
-      if (sbUrl && sbKey) {
-        setStatus('Supabase 연결 중...');
-        await loadSupabase(sbUrl, sbKey);
-        return;
-      }
-    }
-  } catch(e) {}
-  // No config or failed → local mode
-  setStatus('로컬 모드로 실행 중...');
-  await delay(400);
-  showDashboard();
+    if (!res.ok) throw new Error('config.txt not found');
+    const text = await res.text();
+    let sbUrl = '', sbKey = '';
+    text.split('\n').forEach(line => {
+      const idx = line.indexOf('=');
+      if (idx < 0) return;
+      const k = line.slice(0, idx).trim();
+      const v = line.slice(idx + 1).trim();
+      if (k === 'SUPABASE_URL') sbUrl = v;
+      if (k === 'SUPABASE_KEY') sbKey = v;
+    });
+    if (!sbUrl || !sbKey) throw new Error('Missing SUPABASE_URL or SUPABASE_KEY');
+    setStatus('Supabase 연결 중...');
+    await loadSupabase(sbUrl, sbKey);
+  } catch(e) {
+    console.error('Config error:', e);
+    document.getElementById('loadingScreen').classList.add('hidden');
+    document.getElementById('configError').classList.add('active');
+  }
 }
 
 function setStatus(msg) { document.getElementById('loadStatus').textContent = msg; }
-function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 async function loadSupabase(url, key) {
   return new Promise(resolve => {
@@ -466,19 +583,120 @@ async function loadSupabase(url, key) {
     s.onload = async () => {
       try {
         supabase = window.supabase.createClient(url, key);
+
+        // Listen for auth state changes (handles OAuth redirect)
+        supabase.auth.onAuthStateChange(async (event, session) => {
+          if (session) {
+            currentUser = session.user;
+            if (document.getElementById('loginScreen').classList.contains('active')) {
+              showDashboard();
+            }
+          } else {
+            currentUser = null;
+          }
+        });
+
         const { data: { session } } = await supabase.auth.getSession();
-        if (session) currentUser = session.user;
-      } catch(e) { supabase = null; }
-      showDashboard();
+        document.getElementById('loadingScreen').classList.add('hidden');
+        if (session) {
+          currentUser = session.user;
+          showDashboard();
+        } else {
+          showLoginScreen();
+        }
+      } catch(e) {
+        console.error('Supabase init error:', e);
+        document.getElementById('loadingScreen').classList.add('hidden');
+        document.getElementById('configError').classList.add('active');
+      }
       resolve();
     };
-    s.onerror = () => { showDashboard(); resolve(); };
+    s.onerror = () => {
+      document.getElementById('loadingScreen').classList.add('hidden');
+      document.getElementById('configError').classList.add('active');
+      resolve();
+    };
     document.head.appendChild(s);
   });
 }
 
+// ========== AUTH UI ==========
+function showLoginScreen() {
+  document.getElementById('loginScreen').classList.add('active');
+  document.getElementById('dashboard').classList.remove('active');
+  document.getElementById('editor').classList.remove('active');
+}
+
+function toggleAuthMode() {
+  isSignUp = !isSignUp;
+  document.getElementById('authSubmitBtn').textContent = isSignUp ? '회원가입' : '로그인';
+  document.getElementById('authToggleText').textContent = isSignUp ? '이미 계정이 있으신가요?' : '계정이 없으신가요?';
+  document.getElementById('authToggleLink').textContent = isSignUp ? '로그인' : '회원가입';
+  document.getElementById('authError').textContent = '';
+}
+
+async function loginWithGoogle() {
+  if (!supabase) return;
+  setAuthError('');
+  try {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.href }
+    });
+    if (error) setAuthError(error.message);
+  } catch(e) { setAuthError('Google 로그인 중 오류가 발생했습니다.'); }
+}
+
+async function handleEmailAuth() {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  if (!email || !password) { setAuthError('이메일과 비밀번호를 입력하세요.'); return; }
+
+  const btn = document.getElementById('authSubmitBtn');
+  btn.disabled = true;
+  btn.textContent = '처리 중...';
+  setAuthError('');
+
+  try {
+    let result;
+    if (isSignUp) {
+      result = await supabase.auth.signUp({ email, password });
+      if (result.error) { setAuthError(result.error.message); }
+      else if (result.data?.user?.identities?.length === 0) {
+        setAuthError('이미 가입된 이메일입니다. 로그인을 시도하세요.');
+      } else {
+        // Check if email confirmation required
+        if (!result.data.session) {
+          setAuthError('');
+          showToast('인증 이메일을 발송했습니다. 이메일을 확인해 주세요.');
+        } else {
+          currentUser = result.data.user;
+          showDashboard();
+        }
+      }
+    } else {
+      result = await supabase.auth.signInWithPassword({ email, password });
+      if (result.error) { setAuthError('이메일 또는 비밀번호가 올바르지 않습니다.'); }
+      else { currentUser = result.data.user; showDashboard(); }
+    }
+  } catch(e) { setAuthError('오류가 발생했습니다. 다시 시도하세요.'); }
+
+  btn.disabled = false;
+  btn.textContent = isSignUp ? '회원가입' : '로그인';
+}
+
+function setAuthError(msg) { document.getElementById('authError').textContent = msg; }
+
+async function handleLogout() {
+  if (supabase) await supabase.auth.signOut();
+  currentUser = null;
+  document.getElementById('dashboard').classList.remove('active');
+  showLoginScreen();
+}
+
 // ========== DASHBOARD ==========
 function showDashboard() {
+  document.getElementById('loginScreen').classList.remove('active');
   document.getElementById('loadingScreen').classList.add('hidden');
   document.getElementById('dashboard').classList.add('active');
   document.getElementById('editor').classList.remove('active');
@@ -489,31 +707,24 @@ function showDashboard() {
 function updateDashboardUser() {
   const email = document.getElementById('dashUserEmail');
   const avatar = document.getElementById('dashAvatar');
-  const logoutBtn = document.getElementById('logoutBtn');
   if (currentUser) {
-    email.textContent = currentUser.email;
-    avatar.textContent = currentUser.email[0].toUpperCase();
-    logoutBtn.style.display = 'flex';
-  } else {
-    email.textContent = supabase ? '로그인 필요' : '로컬 모드';
-    avatar.textContent = 'L';
-    logoutBtn.style.display = 'none';
+    const displayEmail = currentUser.email || currentUser.user_metadata?.full_name || '사용자';
+    email.textContent = displayEmail;
+    avatar.textContent = displayEmail[0].toUpperCase();
   }
 }
 
-async function handleLogout() {
-  if (supabase) await supabase.auth.signOut();
-  currentUser = null;
-  updateDashboardUser();
-}
-
 async function loadProjects() {
-  projects = JSON.parse(localStorage.getItem('df_projects') || '[]');
+  projects = [];
   if (supabase && currentUser) {
     try {
-      const { data } = await supabase.from('projects').select('*').eq('user_id', currentUser.id).order('updated_at', { ascending: false });
-      if (data) projects = data;
-    } catch(e) {}
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('updated_at', { ascending: false });
+      if (!error && data) projects = data;
+    } catch(e) { console.error('loadProjects error:', e); }
   }
   renderProjects();
 }
@@ -558,19 +769,20 @@ async function deleteProject(id, e) {
   e.stopPropagation();
   if (!confirm('프로젝트를 삭제하시겠습니까?')) return;
   projects = projects.filter(p => p.id !== id);
-  saveProjectsMeta();
-  localStorage.removeItem('df_pdata_' + id);
-  if (supabase && currentUser) await supabase.from('projects').delete().eq('id', id);
+  if (supabase && currentUser) {
+    try { await supabase.from('projects').delete().eq('id', id).eq('user_id', currentUser.id); } catch(err) {}
+  }
   renderProjects();
 }
 
-function saveProjectsMeta() { localStorage.setItem('df_projects', JSON.stringify(projects)); }
-
-function createNewProject() {
+async function createNewProject() {
+  if (!supabase || !currentUser) return;
   const id = 'p_' + Date.now();
-  const p = { id, name: '새 디자인', created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
+  const p = { id, user_id: currentUser.id, name: '새 디자인', created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
+  try {
+    await supabase.from('projects').insert(p);
+  } catch(e) { console.error(e); }
   projects.unshift(p);
-  saveProjectsMeta();
   openProject(id);
 }
 
@@ -611,7 +823,6 @@ function setupStage(projectId) {
   if (stage) stage.destroy();
   selectedNodes = []; undoStack = []; redoStack = []; gradientStopsMap = {};
   zoomLevel = 1; panX = 0; panY = 0;
-
   document.getElementById('konva-container').innerHTML = '';
 
   stage = new Konva.Stage({ container: 'konva-container', width: frameW, height: frameH });
@@ -624,28 +835,31 @@ function setupStage(projectId) {
   layer.add(frameRect);
   layer.draw();
 
-  // Center canvas
   const area = document.getElementById('canvasArea');
   panX = Math.max(40, (area.clientWidth - frameW) / 2);
   panY = Math.max(40, (area.clientHeight - frameH) / 2);
   applyViewTransform();
 
-  // Load saved
-  const saved = localStorage.getItem('df_pdata_' + projectId);
-  if (saved) {
-    try {
-      const data = JSON.parse(saved);
-      if (data.title) document.getElementById('projectTitle').value = data.title;
-      if (data.frameW) { frameW = data.frameW; frameH = data.frameH; resizeFrame(); }
-      if (data.bgColor) bgRect.fill(data.bgColor);
-      restoreElements(data.elements || []);
-    } catch(e) { console.error(e); }
-  }
-
+  // Load from Supabase
+  loadProjectData(projectId);
   setupStageEvents();
   setupPanZoom();
   updateLayers();
   isDirty = false;
+}
+
+async function loadProjectData(projectId) {
+  if (!supabase || !currentUser) return;
+  try {
+    const { data, error } = await supabase.from('projects').select('data').eq('id', projectId).single();
+    if (!error && data && data.data) {
+      const saved = typeof data.data === 'string' ? JSON.parse(data.data) : data.data;
+      if (saved.title) document.getElementById('projectTitle').value = saved.title;
+      if (saved.frameW) { frameW = saved.frameW; frameH = saved.frameH; resizeFrame(); }
+      if (saved.bgColor) bgRect.fill(saved.bgColor);
+      restoreElements(saved.elements || []);
+    }
+  } catch(e) { console.error('loadProjectData error:', e); }
 }
 
 function applyViewTransform() {
@@ -673,30 +887,12 @@ function resizeFrame() {
 function setupPanZoom() {
   const area = document.getElementById('canvasArea');
   let isPanning = false, panStart = {}, panStartOffset = {};
-
   area.addEventListener('mousedown', e => {
-    if (e.button === 2) {
-      isPanning = true;
-      panStart = { x: e.clientX, y: e.clientY };
-      panStartOffset = { x: panX, y: panY };
-      area.classList.add('grabbing');
-      e.preventDefault();
-    }
+    if (e.button === 2) { isPanning = true; panStart = { x: e.clientX, y: e.clientY }; panStartOffset = { x: panX, y: panY }; area.classList.add('grabbing'); e.preventDefault(); }
   });
-
-  window.addEventListener('mousemove', e => {
-    if (!isPanning) return;
-    panX = panStartOffset.x + (e.clientX - panStart.x);
-    panY = panStartOffset.y + (e.clientY - panStart.y);
-    applyViewTransform();
-  });
-
-  window.addEventListener('mouseup', e => {
-    if (e.button === 2 && isPanning) { isPanning = false; area.classList.remove('grabbing'); }
-  });
-
+  window.addEventListener('mousemove', e => { if (!isPanning) return; panX = panStartOffset.x + (e.clientX - panStart.x); panY = panStartOffset.y + (e.clientY - panStart.y); applyViewTransform(); });
+  window.addEventListener('mouseup', e => { if (e.button === 2 && isPanning) { isPanning = false; area.classList.remove('grabbing'); } });
   area.addEventListener('contextmenu', e => e.preventDefault());
-
   area.addEventListener('wheel', e => {
     e.preventDefault();
     const rect = area.getBoundingClientRect();
@@ -704,8 +900,7 @@ function setupPanZoom() {
     const cx = (mx - panX) / zoomLevel, cy = (my - panY) / zoomLevel;
     const delta = e.deltaY > 0 ? 0.9 : 1.1;
     zoomLevel = Math.min(5, Math.max(0.1, zoomLevel * delta));
-    panX = mx - cx * zoomLevel;
-    panY = my - cy * zoomLevel;
+    panX = mx - cx * zoomLevel; panY = my - cy * zoomLevel;
     applyViewTransform();
   }, { passive: false });
 }
@@ -726,61 +921,43 @@ function setupStageEvents() {
 
   stage.on('click tap', e => {
     closeAllPopups();
-    if (e.target === stage || e.target === bgRect || e.target === frameRect) {
-      if (!(e.evt.ctrlKey || e.evt.metaKey)) clearSelection();
-      return;
-    }
+    if (e.target === stage || e.target === bgRect || e.target === frameRect) { if (!(e.evt.ctrlKey || e.evt.metaKey)) clearSelection(); return; }
     if (e.target instanceof Konva.Transformer) return;
     if (e.evt.ctrlKey || e.evt.metaKey) toggleNodeSelection(e.target);
     else selectNode(e.target);
   });
 
-  // Draw mode
   stage.on('mousedown', e => {
     if (currentTool !== 'draw') return;
-    const pos = stage.getPointerPosition();
-    if (!pos) return;
+    const pos = stage.getPointerPosition(); if (!pos) return;
     isDrawing = true; drawPoints = [pos.x, pos.y];
     drawLine = new Konva.Line({ points: drawPoints, stroke: '#00ADB5', strokeWidth: 2, lineCap: 'round', lineJoin: 'round', draggable: true });
     addDragHandlers(drawLine); pushUndo(); layer.add(drawLine); layer.batchDraw();
   });
   stage.on('mousemove', e => {
     if (!isDrawing || currentTool !== 'draw') return;
-    const pos = stage.getPointerPosition();
-    if (!pos) return;
-    drawPoints = drawPoints.concat([pos.x, pos.y]);
-    drawLine.points(drawPoints); layer.batchDraw();
+    const pos = stage.getPointerPosition(); if (!pos) return;
+    drawPoints = drawPoints.concat([pos.x, pos.y]); drawLine.points(drawPoints); layer.batchDraw();
   });
   stage.on('mouseup', () => {
-    if (!isDrawing) return;
-    isDrawing = false;
-    if (drawLine) { selectNode(drawLine); updateLayers(); }
-    drawLine = null;
+    if (!isDrawing) return; isDrawing = false;
+    if (drawLine) { selectNode(drawLine); updateLayers(); } drawLine = null;
   });
 }
 
 // ========== SELECTION ==========
-function selectNode(node) {
-  removeTransformers(); selectedNodes = [node];
-  addTransformer([node]); updatePropsPanel(); updateLayers(); updateMultiInfo();
-}
+function selectNode(node) { removeTransformers(); selectedNodes = [node]; addTransformer([node]); updatePropsPanel(); updateLayers(); updateMultiInfo(); }
 function toggleNodeSelection(node) {
   if (selectedNodes.includes(node)) selectedNodes = selectedNodes.filter(n => n !== node);
   else selectedNodes.push(node);
-  removeTransformers();
-  if (selectedNodes.length) addTransformer(selectedNodes);
+  removeTransformers(); if (selectedNodes.length) addTransformer(selectedNodes);
   updatePropsPanel(); updateLayers(); updateMultiInfo();
 }
-function clearSelection() {
-  removeTransformers(); selectedNodes = [];
-  updatePropsPanel(); updateLayers(); updateMultiInfo();
-}
+function clearSelection() { removeTransformers(); selectedNodes = []; updatePropsPanel(); updateLayers(); updateMultiInfo(); }
 function removeTransformers() { layer.find('Transformer').forEach(t => t.destroy()); layer.batchDraw(); }
 function addTransformer(nodes) {
   if (!nodes.length) return;
-  const tr = new Konva.Transformer({
-    nodes, borderStroke: '#00ADB5', anchorStroke: '#00ADB5', anchorFill: '#fff', anchorSize: 8, rotateAnchorOffset: 20
-  });
+  const tr = new Konva.Transformer({ nodes, borderStroke: '#00ADB5', anchorStroke: '#00ADB5', anchorFill: '#fff', anchorSize: 8, rotateAnchorOffset: 20 });
   layer.add(tr);
   nodes.forEach(n => {
     n.off('.tr');
@@ -800,84 +977,49 @@ function updateMultiInfo() {
 // ========== SMART GUIDES ==========
 let guideLines = [];
 function drawSmartGuides(node) {
-  clearSmartGuides();
-  if (!smartGuides) return;
+  clearSmartGuides(); if (!smartGuides) return;
   const box = node.getClientRect();
-  const area = document.getElementById('canvasArea');
-  const vp = document.getElementById('canvas-viewport');
-  const areaRect = area.getBoundingClientRect();
-  const vpRect = vp.getBoundingClientRect();
+  const area = document.getElementById('canvasArea'); const vp = document.getElementById('canvas-viewport');
+  const areaRect = area.getBoundingClientRect(); const vpRect = vp.getBoundingClientRect();
   const threshold = 8;
   const cx = box.x + box.width / 2, cy = box.y + box.height / 2;
   const fcx = frameW / 2, fcy = frameH / 2;
   if (Math.abs(cx - fcx) < threshold) {
-    const g = document.createElement('div');
-    g.className = 'smart-guide v';
-    g.style.left = (vpRect.left - areaRect.left + fcx * zoomLevel) + 'px';
-    area.appendChild(g); guideLines.push(g);
+    const g = document.createElement('div'); g.className = 'smart-guide v'; g.style.left = (vpRect.left - areaRect.left + fcx * zoomLevel) + 'px'; area.appendChild(g); guideLines.push(g);
     if (snapping) { node.x(frameW / 2 - (node.width ? node.width() * node.scaleX() : 0) / 2); layer.batchDraw(); }
   }
   if (Math.abs(cy - fcy) < threshold) {
-    const g = document.createElement('div');
-    g.className = 'smart-guide h';
-    g.style.top = (vpRect.top - areaRect.top + fcy * zoomLevel) + 'px';
-    area.appendChild(g); guideLines.push(g);
+    const g = document.createElement('div'); g.className = 'smart-guide h'; g.style.top = (vpRect.top - areaRect.top + fcy * zoomLevel) + 'px'; area.appendChild(g); guideLines.push(g);
     if (snapping) { node.y(frameH / 2 - (node.height ? node.height() * node.scaleY() : 0) / 2); layer.batchDraw(); }
   }
 }
 function clearSmartGuides() { guideLines.forEach(g => g.remove()); guideLines = []; }
 
-// ========== SHAPES (FIXED) ==========
+// ========== SHAPES ==========
 function addShape(type) {
-  closeAllPopups();
-  if (!stage || !layer) { console.error('Stage not ready'); return; }
-  pushUndo();
-
-  const cx = frameW / 2, cy = frameH / 2;
-  let node = null;
-
-  if (type === 'rect') {
-    node = new Konva.Rect({ x: cx - 60, y: cy - 40, width: 120, height: 80, fill: '#00ADB5', draggable: true, cornerRadius: 4 });
-  } else if (type === 'circle') {
-    node = new Konva.Circle({ x: cx, y: cy, radius: 60, fill: '#00ADB5', draggable: true });
-  } else if (type === 'triangle') {
-    node = new Konva.RegularPolygon({ x: cx, y: cy, sides: 3, radius: 70, fill: '#00ADB5', draggable: true });
-  } else if (type === 'line') {
-    node = new Konva.Line({ points: [cx - 80, cy, cx + 80, cy], stroke: '#00ADB5', strokeWidth: 3, draggable: true, lineCap: 'round' });
-  } else if (type === 'star') {
-    node = new Konva.Star({ x: cx, y: cy, numPoints: 5, innerRadius: 35, outerRadius: 70, fill: '#00ADB5', draggable: true });
-  }
-
+  closeAllPopups(); if (!stage || !layer) return; pushUndo();
+  const cx = frameW / 2, cy = frameH / 2; let node = null;
+  if (type === 'rect') node = new Konva.Rect({ x: cx - 60, y: cy - 40, width: 120, height: 80, fill: '#00ADB5', draggable: true, cornerRadius: 4 });
+  else if (type === 'circle') node = new Konva.Circle({ x: cx, y: cy, radius: 60, fill: '#00ADB5', draggable: true });
+  else if (type === 'triangle') node = new Konva.RegularPolygon({ x: cx, y: cy, sides: 3, radius: 70, fill: '#00ADB5', draggable: true });
+  else if (type === 'line') node = new Konva.Line({ points: [cx - 80, cy, cx + 80, cy], stroke: '#00ADB5', strokeWidth: 3, draggable: true, lineCap: 'round' });
+  else if (type === 'star') node = new Konva.Star({ x: cx, y: cy, numPoints: 5, innerRadius: 35, outerRadius: 70, fill: '#00ADB5', draggable: true });
   if (!node) return;
-  addDragHandlers(node);
-  layer.add(node);
-  layer.batchDraw();
-  selectNode(node);
-  updateLayers();
-  markDirty();
+  addDragHandlers(node); layer.add(node); layer.batchDraw(); selectNode(node); updateLayers(); markDirty();
 }
 
 function addText() {
-  closeAllPopups();
-  if (!stage || !layer) return;
-  pushUndo();
-  const node = new Konva.Text({
-    x: frameW / 2 - 100, y: frameH / 2 - 16,
-    text: '텍스트를 입력하세요', fontSize: 24,
-    fontFamily: 'DM Sans, sans-serif', fill: '#222831', draggable: true, width: 220
-  });
+  closeAllPopups(); if (!stage || !layer) return; pushUndo();
+  const node = new Konva.Text({ x: frameW / 2 - 100, y: frameH / 2 - 16, text: '텍스트를 입력하세요', fontSize: 24, fontFamily: 'DM Sans, sans-serif', fill: '#222831', draggable: true, width: 220 });
   addDragHandlers(node);
   node.on('dblclick dbltap', () => editTextInline(node));
-  layer.add(node); layer.batchDraw();
-  selectNode(node); updateLayers(); markDirty();
+  layer.add(node); layer.batchDraw(); selectNode(node); updateLayers(); markDirty();
 }
 
 function editTextInline(node) {
   const pos = node.absolutePosition();
-  const vp = document.getElementById('canvas-viewport');
-  const area = document.getElementById('canvasArea');
-  const vpRect = vp.getBoundingClientRect();
-  const areaRect = area.getBoundingClientRect();
+  const vp = document.getElementById('canvas-viewport'); const area = document.getElementById('canvasArea');
+  const vpRect = vp.getBoundingClientRect(); const areaRect = area.getBoundingClientRect();
   const x = vpRect.left - areaRect.left + pos.x * zoomLevel;
   const y = vpRect.top - areaRect.top + pos.y * zoomLevel;
   node.hide(); layer.batchDraw();
@@ -890,7 +1032,6 @@ function editTextInline(node) {
 }
 
 function addImageFromFile() { closeAllPopups(); document.getElementById('imageFileInput').click(); }
-
 function handleImageFile(e) {
   const file = e.target.files[0]; if (!file) return;
   const reader = new FileReader();
@@ -902,9 +1043,7 @@ function handleImageFile(e) {
       const scale = Math.min(maxW / img.width, maxH / img.height);
       const w = img.width * scale, h = img.height * scale;
       const kImg = new Konva.Image({ x: frameW / 2 - w / 2, y: frameH / 2 - h / 2, image: img, width: w, height: h, draggable: true });
-      addDragHandlers(kImg);
-      layer.add(kImg); layer.batchDraw();
-      selectNode(kImg); updateLayers(); markDirty();
+      addDragHandlers(kImg); layer.add(kImg); layer.batchDraw(); selectNode(kImg); updateLayers(); markDirty();
     };
     img.src = ev.target.result;
   };
@@ -920,8 +1059,7 @@ function addDragHandlers(node) {
 
 // ========== LAYERS ==========
 function updateLayers() {
-  const list = document.getElementById('layersList');
-  list.innerHTML = '';
+  const list = document.getElementById('layersList'); list.innerHTML = '';
   const children = layer.children.filter(n => n.name() !== 'bg' && n.name() !== 'frame' && !(n instanceof Konva.Transformer));
   [...children].reverse().forEach(node => {
     const item = document.createElement('div');
@@ -931,14 +1069,12 @@ function updateLayers() {
     list.appendChild(item);
   });
 }
-
 function getNodeIcon(node) {
   if (node instanceof Konva.Text) return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>`;
   if (node instanceof Konva.Image) return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`;
   if (node instanceof Konva.Line) return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`;
 }
-
 function getNodeName(node) {
   if (node instanceof Konva.Text) return '텍스트';
   if (node instanceof Konva.Image) return '이미지';
@@ -948,7 +1084,6 @@ function getNodeName(node) {
   if (node instanceof Konva.Star) return '별';
   return '사각형';
 }
-
 function eyeOn() { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`; }
 function eyeOff() { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="1" y1="1" x2="23" y2="23"/><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/></svg>`; }
 function toggleVis(e, nodeId) { e.stopPropagation(); const n = layer.findOne(x => x._id == nodeId); if (n) { n.visible(!n.visible()); layer.batchDraw(); updateLayers(); } }
@@ -973,115 +1108,56 @@ function updatePropsPanel() {
   attachPropEvents(node);
   if ((node._fillMode || 'solid') === 'gradient') updateGradBar(node);
 }
-
-function makePropSection(title, content) {
-  return `<div class="prop-section"><div class="prop-section-header" onclick="toggleSection(this)">${title}<span class="chevron">▾</span></div><div class="prop-section-body">${content}</div></div>`;
-}
+function makePropSection(title, content) { return `<div class="prop-section"><div class="prop-section-header" onclick="toggleSection(this)">${title}<span class="chevron">▾</span></div><div class="prop-section-body">${content}</div></div>`; }
 function toggleSection(el) { el.parentElement.classList.toggle('collapsed'); el.nextElementSibling.classList.toggle('hidden'); }
 
 function makeFrameProps() {
   const bgColor = bgRect ? rgbToHex(bgRect.fill()) : '#ffffff';
-  return `<div class="prop-row">
-      <span class="prop-label-wide" style="width:40px">너비</span>
-      <input class="prop-input" id="pFrameW" type="number" value="${frameW}">
-    </div>
-    <div class="prop-row">
-      <span class="prop-label-wide" style="width:40px">높이</span>
-      <input class="prop-input" id="pFrameH" type="number" value="${frameH}">
-    </div>
+  return `<div class="prop-row"><span class="prop-label-wide" style="width:40px">너비</span><input class="prop-input" id="pFrameW" type="number" value="${frameW}"></div>
+    <div class="prop-row"><span class="prop-label-wide" style="width:40px">높이</span><input class="prop-input" id="pFrameH" type="number" value="${frameH}"></div>
     <div class="frame-presets">
       <div class="frame-preset" onclick="applyFramePreset(1920,1080)">1920×1080</div>
       <div class="frame-preset" onclick="applyFramePreset(1080,1080)">1080×1080</div>
       <div class="frame-preset" onclick="applyFramePreset(1080,1920)">Story</div>
       <div class="frame-preset" onclick="applyFramePreset(800,600)">800×600</div>
     </div>
-    <div class="prop-row">
-      <span class="prop-label-wide">배경색</span>
-      <div class="color-swatch" style="background:${bgColor}"><input type="color" class="color-input-native" id="pBgColor" value="${bgColor}"></div>
-    </div>`;
+    <div class="prop-row"><span class="prop-label-wide">배경색</span><div class="color-swatch" style="background:${bgColor}"><input type="color" class="color-input-native" id="pBgColor" value="${bgColor}"></div></div>`;
 }
+function applyFramePreset(w, h) { frameW = w; frameH = h; resizeFrame(); const fw = document.getElementById('pFrameW'), fh = document.getElementById('pFrameH'); if (fw) fw.value = w; if (fh) fh.value = h; markDirty(); }
 
-function applyFramePreset(w, h) {
-  frameW = w; frameH = h; resizeFrame();
-  const fw = document.getElementById('pFrameW'), fh = document.getElementById('pFrameH');
-  if (fw) fw.value = w; if (fh) fh.value = h;
-  markDirty();
-}
-
-// ====== TRANSFORM PROPS (FIXED: no scale, real pixel values) ======
 function getNodeDisplayDims(node) {
-  // Returns actual pixel width/height as displayed
-  if (node instanceof Konva.Circle) {
-    return { w: node.radius() * 2 * node.scaleX(), h: node.radius() * 2 * node.scaleY() };
-  }
-  if (node instanceof Konva.RegularPolygon) {
-    return { w: node.radius() * 2 * node.scaleX(), h: node.radius() * 2 * node.scaleY() };
-  }
-  if (node instanceof Konva.Star) {
-    return { w: node.outerRadius() * 2 * node.scaleX(), h: node.outerRadius() * 2 * node.scaleY() };
-  }
+  if (node instanceof Konva.Circle) return { w: node.radius() * 2 * node.scaleX(), h: node.radius() * 2 * node.scaleY() };
+  if (node instanceof Konva.RegularPolygon) return { w: node.radius() * 2 * node.scaleX(), h: node.radius() * 2 * node.scaleY() };
+  if (node instanceof Konva.Star) return { w: node.outerRadius() * 2 * node.scaleX(), h: node.outerRadius() * 2 * node.scaleY() };
   if (node instanceof Konva.Line) {
     const pts = node.points() || [];
     if (pts.length < 2) return { w: 0, h: 0 };
-    const xs = pts.filter((_, i) => i % 2 === 0);
-    const ys = pts.filter((_, i) => i % 2 === 1);
-    return {
-      w: (Math.max(...xs) - Math.min(...xs)) * node.scaleX(),
-      h: (Math.max(...ys) - Math.min(...ys)) * node.scaleY()
-    };
+    const xs = pts.filter((_, i) => i % 2 === 0); const ys = pts.filter((_, i) => i % 2 === 1);
+    return { w: (Math.max(...xs) - Math.min(...xs)) * node.scaleX(), h: (Math.max(...ys) - Math.min(...ys)) * node.scaleY() };
   }
-  return {
-    w: (node.width ? node.width() : 0) * node.scaleX(),
-    h: (node.height ? node.height() : 0) * node.scaleY()
-  };
+  return { w: (node.width ? node.width() : 0) * node.scaleX(), h: (node.height ? node.height() : 0) * node.scaleY() };
 }
-
 function makeTransformProps(node) {
-  const x = Math.round(node.x ? node.x() : 0);
-  const y = Math.round(node.y ? node.y() : 0);
-  const { w, h } = getNodeDisplayDims(node);
-  const r = Math.round(node.rotation ? node.rotation() : 0);
-  return `<div class="prop-row-2">
-    <div class="prop-group"><span class="prop-label">X</span><input class="prop-input" id="pX" type="number" value="${x}"></div>
-    <div class="prop-group"><span class="prop-label">Y</span><input class="prop-input" id="pY" type="number" value="${y}"></div>
-  </div>
-  <div class="prop-row-2">
-    <div class="prop-group"><span class="prop-label">W</span><input class="prop-input" id="pW" type="number" value="${Math.round(w)}"></div>
-    <div class="prop-group"><span class="prop-label">H</span><input class="prop-input" id="pH" type="number" value="${Math.round(h)}"></div>
-  </div>
-  <div class="prop-row">
-    <span class="prop-label">R</span>
-    <input class="prop-input" id="pRot" type="number" value="${r}" style="width:70px">
-    <span style="font-size:11px;color:var(--text-muted)">°</span>
-  </div>`;
+  const x = Math.round(node.x ? node.x() : 0), y = Math.round(node.y ? node.y() : 0);
+  const { w, h } = getNodeDisplayDims(node); const r = Math.round(node.rotation ? node.rotation() : 0);
+  return `<div class="prop-row-2"><div class="prop-group"><span class="prop-label">X</span><input class="prop-input" id="pX" type="number" value="${x}"></div><div class="prop-group"><span class="prop-label">Y</span><input class="prop-input" id="pY" type="number" value="${y}"></div></div>
+  <div class="prop-row-2"><div class="prop-group"><span class="prop-label">W</span><input class="prop-input" id="pW" type="number" value="${Math.round(w)}"></div><div class="prop-group"><span class="prop-label">H</span><input class="prop-input" id="pH" type="number" value="${Math.round(h)}"></div></div>
+  <div class="prop-row"><span class="prop-label">R</span><input class="prop-input" id="pRot" type="number" value="${r}" style="width:70px"><span style="font-size:11px;color:var(--text-muted)">°</span></div>`;
 }
-
 function setNodeDims(node, newW, newH) {
-  // Sets actual pixel size without scale drift
-  if (node instanceof Konva.Circle) {
-    node.radius(newW / 2); node.scaleX(1); node.scaleY(1);
-  } else if (node instanceof Konva.RegularPolygon) {
-    node.radius(newW / 2); node.scaleX(1); node.scaleY(1);
-  } else if (node instanceof Konva.Star) {
-    const ratio = node.innerRadius() / node.outerRadius();
-    node.outerRadius(newW / 2); node.innerRadius(newW / 2 * ratio);
-    node.scaleX(1); node.scaleY(1);
-  } else if (node instanceof Konva.Line) {
-    // Scale the line points
+  if (node instanceof Konva.Circle) { node.radius(newW / 2); node.scaleX(1); node.scaleY(1); }
+  else if (node instanceof Konva.RegularPolygon) { node.radius(newW / 2); node.scaleX(1); node.scaleY(1); }
+  else if (node instanceof Konva.Star) { const ratio = node.innerRadius() / node.outerRadius(); node.outerRadius(newW / 2); node.innerRadius(newW / 2 * ratio); node.scaleX(1); node.scaleY(1); }
+  else if (node instanceof Konva.Line) {
     const pts = node.points() || [];
     if (pts.length >= 2) {
-      const xs = pts.filter((_, i) => i % 2 === 0);
-      const ys = pts.filter((_, i) => i % 2 === 1);
-      const origW = Math.max(...xs) - Math.min(...xs);
-      const origH = Math.max(...ys) - Math.min(...ys);
-      if (origW > 0) node.scaleX(newW / origW);
-      if (origH > 0) node.scaleY(newH / origH);
+      const xs = pts.filter((_, i) => i % 2 === 0), ys = pts.filter((_, i) => i % 2 === 1);
+      const origW = Math.max(...xs) - Math.min(...xs), origH = Math.max(...ys) - Math.min(...ys);
+      if (origW > 0) node.scaleX(newW / origW); if (origH > 0) node.scaleY(newH / origH);
     }
   } else {
-    const baseW = node.width ? node.width() : 1;
-    const baseH = node.height ? node.height() : 1;
-    if (baseW > 0) node.scaleX(newW / baseW);
-    if (baseH > 0) node.scaleY(newH / baseH);
+    const baseW = node.width ? node.width() : 1, baseH = node.height ? node.height() : 1;
+    if (baseW > 0) node.scaleX(newW / baseW); if (baseH > 0) node.scaleY(newH / baseH);
   }
 }
 
@@ -1097,10 +1173,7 @@ function makeFillProps(node, isText) {
     <button class="fill-tab ${fillMode==='none'?'active':''}" onclick="setFillMode('none')">없음</button>
   </div>
   <div id="fillSolid" style="display:${fillMode==='solid'?'block':'none'}">
-    <div class="color-picker-wrap">
-      <div class="color-swatch" style="background:${hexFill}"><input type="color" class="color-input-native" id="pFillColor" value="${hexFill}"></div>
-      <span style="font-size:12px;color:var(--text-muted);font-family:'DM Mono'">${hexFill.toUpperCase()}</span>
-    </div>
+    <div class="color-picker-wrap"><div class="color-swatch" style="background:${hexFill}"><input type="color" class="color-input-native" id="pFillColor" value="${hexFill}"></div><span style="font-size:12px;color:var(--text-muted);font-family:'DM Mono'">${hexFill.toUpperCase()}</span></div>
   </div>
   <div id="fillGradient" style="display:${fillMode==='gradient'?'block':'none'}">
     <div class="gradient-dir-btns" id="gradDirBtns">
@@ -1119,25 +1192,13 @@ function makeFillProps(node, isText) {
     </div>
   </div>`;
 }
-
-function makeOpacityProps(node) {
-  const op = Math.round((node.opacity ? node.opacity() : 1) * 100);
-  return `<div class="slider-wrap"><input type="range" class="prop-slider" id="pOpacity" min="0" max="100" value="${op}"><span class="slider-val" id="pOpacityVal">${op}%</span></div>`;
-}
-
+function makeOpacityProps(node) { const op = Math.round((node.opacity ? node.opacity() : 1) * 100); return `<div class="slider-wrap"><input type="range" class="prop-slider" id="pOpacity" min="0" max="100" value="${op}"><span class="slider-val" id="pOpacityVal">${op}%</span></div>`; }
 function makeTextProps(node) {
   return `<div class="prop-row"><span class="prop-label-wide">크기</span><input class="prop-input" id="pFontSize" type="number" value="${node.fontSize()}"></div>
-  <div class="prop-row"><span class="prop-label-wide">스타일</span>
-    <select class="prop-input" id="pFontWeight">
-      <option value="normal" ${node.fontStyle()==='normal'?'selected':''}>Normal</option>
-      <option value="bold" ${node.fontStyle()==='bold'?'selected':''}>Bold</option>
-      <option value="italic" ${node.fontStyle()==='italic'?'selected':''}>Italic</option>
-    </select>
-  </div>
+  <div class="prop-row"><span class="prop-label-wide">스타일</span><select class="prop-input" id="pFontWeight"><option value="normal" ${node.fontStyle()==='normal'?'selected':''}>Normal</option><option value="bold" ${node.fontStyle()==='bold'?'selected':''}>Bold</option><option value="italic" ${node.fontStyle()==='italic'?'selected':''}>Italic</option></select></div>
   <div class="prop-row"><span class="prop-label-wide">내용</span></div>
   <textarea id="pText" style="width:100%;background:var(--bg-primary);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:inherit;font-size:12px;padding:6px;outline:none;resize:vertical;min-height:60px">${node.text()}</textarea>`;
 }
-
 function makeAlignProps() {
   return `<div class="align-btns">
     <div class="align-btn" onclick="alignSelected('left')" title="좌측 정렬"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="3" y2="18"/><rect x="5" y="7" width="9" height="4"/><rect x="5" y="13" width="14" height="4"/></svg></div>
@@ -1153,47 +1214,22 @@ function makeAlignProps() {
 function attachPropEvents(node) {
   const bind = (id, fn) => { const el = document.getElementById(id); if (el) el.addEventListener('change', fn); };
   const bindInput = (id, fn) => { const el = document.getElementById(id); if (el) el.addEventListener('input', fn); };
-
   bind('pFrameW', e => { frameW = parseInt(e.target.value) || 800; resizeFrame(); markDirty(); });
   bind('pFrameH', e => { frameH = parseInt(e.target.value) || 600; resizeFrame(); markDirty(); });
   bindInput('pBgColor', e => { bgRect.fill(e.target.value); layer.batchDraw(); markDirty(); });
-
   bind('pX', e => { node.x(parseFloat(e.target.value) || 0); layer.batchDraw(); markDirty(); });
   bind('pY', e => { node.y(parseFloat(e.target.value) || 0); layer.batchDraw(); markDirty(); });
   bind('pRot', e => { node.rotation(parseFloat(e.target.value) || 0); layer.batchDraw(); markDirty(); });
-
-  bind('pW', e => {
-    const nw = parseFloat(e.target.value) || 1;
-    const { h } = getNodeDisplayDims(node);
-    setNodeDims(node, nw, h);
-    layer.batchDraw(); markDirty();
-  });
-  bind('pH', e => {
-    const nh = parseFloat(e.target.value) || 1;
-    const { w } = getNodeDisplayDims(node);
-    setNodeDims(node, w, nh);
-    layer.batchDraw(); markDirty();
-  });
-
+  bind('pW', e => { const nw = parseFloat(e.target.value) || 1; const { h } = getNodeDisplayDims(node); setNodeDims(node, nw, h); layer.batchDraw(); markDirty(); });
+  bind('pH', e => { const nh = parseFloat(e.target.value) || 1; const { w } = getNodeDisplayDims(node); setNodeDims(node, w, nh); layer.batchDraw(); markDirty(); });
   bindInput('pFillColor', e => { applySolidFill(node, e.target.value); markDirty(); });
-
-  // Gradient
   setupGradientBar(node);
   bindInput('gradStopColor', e => {
     const stops = gradientStopsMap[node._id];
     if (stops) { stops[selectedStopIdx].color = e.target.value; document.getElementById('gradStopSwatch').style.background = e.target.value; applyGradient(node); updateGradBar(node); }
   });
-  bind('gradStopPos', e => {
-    const stops = gradientStopsMap[node._id];
-    if (stops) { stops[selectedStopIdx].pos = parseFloat(e.target.value) / 100; applyGradient(node); updateGradBar(node); }
-  });
-
-  bindInput('pOpacity', e => {
-    node.opacity(parseInt(e.target.value) / 100);
-    const v = document.getElementById('pOpacityVal'); if (v) v.textContent = e.target.value + '%';
-    layer.batchDraw(); markDirty();
-  });
-
+  bind('gradStopPos', e => { const stops = gradientStopsMap[node._id]; if (stops) { stops[selectedStopIdx].pos = parseFloat(e.target.value) / 100; applyGradient(node); updateGradBar(node); } });
+  bindInput('pOpacity', e => { node.opacity(parseInt(e.target.value) / 100); const v = document.getElementById('pOpacityVal'); if (v) v.textContent = e.target.value + '%'; layer.batchDraw(); markDirty(); });
   bind('pFontSize', e => { node.fontSize(parseInt(e.target.value) || 12); layer.batchDraw(); markDirty(); });
   bind('pFontWeight', e => { node.fontStyle(e.target.value); layer.batchDraw(); markDirty(); });
   bind('pText', e => { node.text(e.target.value); layer.batchDraw(); markDirty(); });
@@ -1202,8 +1238,7 @@ function attachPropEvents(node) {
 // ========== FILL MODES ==========
 function setFillMode(mode) {
   if (!selectedNodes.length) return;
-  const node = selectedNodes[0];
-  node._fillMode = mode;
+  const node = selectedNodes[0]; node._fillMode = mode;
   document.querySelectorAll('#fillTabs .fill-tab').forEach(t => t.classList.remove('active'));
   document.querySelector(`#fillTabs .fill-tab:nth-child(${mode==='solid'?1:mode==='gradient'?2:3})`).classList.add('active');
   document.getElementById('fillSolid').style.display = mode === 'solid' ? 'block' : 'none';
@@ -1216,31 +1251,21 @@ function setFillMode(mode) {
   }
   layer.batchDraw(); markDirty();
 }
-
-function clearFill(node) {
-  try { node.fillLinearGradientColorStops(null); } catch(e) {}
-  try { node.fillRadialGradientColorStops(null); } catch(e) {}
-  node.fill('transparent');
-}
-
+function clearFill(node) { try { node.fillLinearGradientColorStops(null); } catch(e) {} try { node.fillRadialGradientColorStops(null); } catch(e) {} node.fill('transparent'); }
 function applySolidFill(node, color) {
   node._fillMode = 'solid';
   try { node.fillLinearGradientColorStops(null); node.fillLinearGradientStartPoint(null); node.fillLinearGradientEndPoint(null); } catch(e) {}
   try { node.fillRadialGradientColorStops(null); } catch(e) {}
   node.fill(color); layer.batchDraw();
 }
-
 function setGradDir(el, dir) {
   if (!selectedNodes.length) return;
   const node = selectedNodes[0]; node._gradDir = dir;
   document.querySelectorAll('#gradDirBtns .gradient-dir-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  applyGradient(node);
+  el.classList.add('active'); applyGradient(node);
 }
-
 function applyGradient(node) {
-  const stops = gradientStopsMap[node._id];
-  if (!stops || stops.length < 2) return;
+  const stops = gradientStopsMap[node._id]; if (!stops || stops.length < 2) return;
   const sorted = [...stops].sort((a, b) => a.pos - b.pos);
   const colorStops = sorted.flatMap(s => [s.pos, s.color]);
   const dir = node._gradDir || 'lr';
@@ -1251,32 +1276,25 @@ function applyGradient(node) {
   try { node.fillRadialGradientColorStops(null); } catch(e) {}
   node.fill(null);
   if (dir === 'radial') {
-    const cx = node instanceof Konva.Circle ? 0 : w / 2;
-    const cy = node instanceof Konva.Circle ? 0 : h / 2;
-    node.fillRadialGradientStartPoint({ x: cx, y: cy });
-    node.fillRadialGradientEndPoint({ x: cx, y: cy });
-    node.fillRadialGradientStartRadius(0);
-    node.fillRadialGradientEndRadius(r);
+    const cx = node instanceof Konva.Circle ? 0 : w / 2, cy = node instanceof Konva.Circle ? 0 : h / 2;
+    node.fillRadialGradientStartPoint({ x: cx, y: cy }); node.fillRadialGradientEndPoint({ x: cx, y: cy });
+    node.fillRadialGradientStartRadius(0); node.fillRadialGradientEndRadius(r);
     node.fillRadialGradientColorStops(colorStops);
   } else {
     let sx = 0, sy = 0, ex = w, ey = 0;
     if (node instanceof Konva.Circle) { sx = -r; ex = r; }
     if (dir === 'tb') { sx = 0; sy = node instanceof Konva.Circle ? -r : 0; ex = 0; ey = node instanceof Konva.Circle ? r : h; }
     else if (dir === 'diag') { sx = node instanceof Konva.Circle ? -r : 0; sy = node instanceof Konva.Circle ? -r : 0; ex = node instanceof Konva.Circle ? r : w; ey = node instanceof Konva.Circle ? r : h; }
-    node.fillLinearGradientStartPoint({ x: sx, y: sy });
-    node.fillLinearGradientEndPoint({ x: ex, y: ey });
+    node.fillLinearGradientStartPoint({ x: sx, y: sy }); node.fillLinearGradientEndPoint({ x: ex, y: ey });
     node.fillLinearGradientColorStops(colorStops);
   }
   layer.batchDraw();
 }
-
 function setupGradientBar(node) { updateGradBar(node); }
-
 function updateGradBar(node) {
   const bar = document.getElementById('gradBar'), wrap = document.getElementById('gradBarWrap');
   if (!bar || !wrap) return;
-  const stops = gradientStopsMap[node._id];
-  if (!stops) return;
+  const stops = gradientStopsMap[node._id]; if (!stops) return;
   const sorted = [...stops].sort((a, b) => a.pos - b.pos);
   bar.style.background = `linear-gradient(to right,${sorted.map(s => `${s.color} ${s.pos * 100}%`).join(',')})`;
   wrap.querySelectorAll('.gradient-stop').forEach(el => el.remove());
@@ -1303,32 +1321,24 @@ function updateGradBar(node) {
     wrap.appendChild(handle);
   });
 }
-
 function addGradStop() {
-  if (!selectedNodes.length) return;
-  const node = selectedNodes[0];
+  if (!selectedNodes.length) return; const node = selectedNodes[0];
   if (!gradientStopsMap[node._id]) gradientStopsMap[node._id] = [{ pos: 0, color: '#00ADB5' }, { pos: 1, color: '#222831' }];
-  gradientStopsMap[node._id].push({ pos: 0.5, color: '#ffffff' });
-  applyGradient(node); updateGradBar(node);
+  gradientStopsMap[node._id].push({ pos: 0.5, color: '#ffffff' }); applyGradient(node); updateGradBar(node);
 }
 function removeGradStop() {
-  if (!selectedNodes.length) return;
-  const node = selectedNodes[0];
-  const stops = gradientStopsMap[node._id];
-  if (!stops || stops.length <= 2) return;
-  stops.splice(selectedStopIdx, 1);
-  selectedStopIdx = Math.min(selectedStopIdx, stops.length - 1);
+  if (!selectedNodes.length) return; const node = selectedNodes[0];
+  const stops = gradientStopsMap[node._id]; if (!stops || stops.length <= 2) return;
+  stops.splice(selectedStopIdx, 1); selectedStopIdx = Math.min(selectedStopIdx, stops.length - 1);
   applyGradient(node); updateGradBar(node);
 }
 
 // ========== ALIGNMENT ==========
 function alignSelected(dir) {
-  if (!selectedNodes.length) return;
-  pushUndo();
+  if (!selectedNodes.length) return; pushUndo();
   const nodes = selectedNodes;
   if (nodes.length === 1) {
-    const n = nodes[0];
-    const box = n.getClientRect({ relativeTo: layer });
+    const n = nodes[0]; const box = n.getClientRect({ relativeTo: layer });
     if (dir === 'left') n.x(n.x() - box.x);
     else if (dir === 'right') n.x(frameW - box.width + (n.x() - box.x));
     else if (dir === 'center') n.x(frameW / 2 - box.width / 2 + (n.x() - box.x));
@@ -1357,7 +1367,6 @@ function alignSelected(dir) {
 function pushUndo() { if (!layer) return; undoStack.push(serializeLayer()); if (undoStack.length > 50) undoStack.shift(); redoStack = []; }
 function undo() { if (!undoStack.length) return; redoStack.push(serializeLayer()); restoreLayer(undoStack.pop()); }
 function redo() { if (!redoStack.length) return; undoStack.push(serializeLayer()); restoreLayer(redoStack.pop()); }
-
 function serializeLayer() {
   const nodes = layer.children.filter(n => n.name() !== 'bg' && n.name() !== 'frame' && !(n instanceof Konva.Transformer));
   return JSON.stringify(nodes.map(n => serializeNode(n)));
@@ -1368,16 +1377,14 @@ function serializeNode(n) {
   return base;
 }
 function restoreLayer(json) {
-  const arr = JSON.parse(json);
-  clearSelection();
+  const arr = JSON.parse(json); clearSelection();
   layer.children.filter(n => n.name() !== 'bg' && n.name() !== 'frame' && !(n instanceof Konva.Transformer)).forEach(n => n.destroy());
   restoreElements(arr);
 }
 function restoreElements(arr) {
   arr.forEach(data => {
     const attrs = { ...data.attrs }; delete attrs.image;
-    let node;
-    const type = data.type;
+    let node; const type = data.type;
     if (type === 'Rect') node = new Konva.Rect(attrs);
     else if (type === 'Circle') node = new Konva.Circle(attrs);
     else if (type === 'RegularPolygon') node = new Konva.RegularPolygon(attrs);
@@ -1401,56 +1408,51 @@ function restoreElements(arr) {
 function markDirty() { isDirty = true; }
 
 async function saveProject() {
-  if (!layer) return;
+  if (!layer || !supabase || !currentUser) return;
   const title = document.getElementById('projectTitle').value.trim() || '새 디자인';
   const nodes = layer.children.filter(n => n.name() !== 'bg' && n.name() !== 'frame' && !(n instanceof Konva.Transformer));
   const elements = nodes.map(n => serializeNode(n));
   const data = { title, frameW, frameH, bgColor: bgRect.fill(), elements, savedAt: new Date().toISOString() };
-  localStorage.setItem('df_pdata_' + currentProjectId, JSON.stringify(data));
-  const p = projects.find(x => x.id === currentProjectId);
-  if (p) { p.name = title; p.updated_at = new Date().toISOString(); saveProjectsMeta(); }
-  if (supabase && currentUser) {
-    try { await supabase.from('projects').upsert({ id: currentProjectId, user_id: currentUser.id, name: title, data: JSON.stringify(data), updated_at: new Date().toISOString() }); } catch(e) {}
-  }
-  isDirty = false; showToast('저장되었습니다 ✓');
+  try {
+    await supabase.from('projects').update({
+      name: title,
+      data: JSON.stringify(data),
+      updated_at: new Date().toISOString()
+    }).eq('id', currentProjectId).eq('user_id', currentUser.id);
+    isDirty = false;
+    // Update local cache
+    const p = projects.find(x => x.id === currentProjectId);
+    if (p) { p.name = title; p.updated_at = new Date().toISOString(); }
+    showToast('저장되었습니다 ✓');
+  } catch(e) { showToast('저장 실패: ' + e.message); }
 }
 
 async function handleDownload() {
   if (!stage) return;
   const useTransparent = confirm('투명 배경으로 내보내시겠습니까?\n(취소: 현재 배경색 유지)');
   const prevFill = bgRect.fill();
-  layer.find('Transformer').forEach(t => t.hide());
-  frameRect.hide();
+  layer.find('Transformer').forEach(t => t.hide()); frameRect.hide();
   if (useTransparent) bgRect.fill('transparent');
   layer.batchDraw();
   await new Promise(r => setTimeout(r, 60));
   try {
     const dataURL = stage.toDataURL({ pixelRatio: 2, mimeType: 'image/png' });
-    const a = document.createElement('a');
-    a.href = dataURL;
+    const a = document.createElement('a'); a.href = dataURL;
     a.download = (document.getElementById('projectTitle').value || 'design').replace(/[^a-zA-Z0-9가-힣\-_]/g, '_') + '.png';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     showToast('다운로드 완료!');
-  } catch(err) {
-    showToast('다운로드 실패: ' + err.message);
-  } finally {
-    bgRect.fill(prevFill); frameRect.show();
-    layer.find('Transformer').forEach(t => t.show());
-    layer.batchDraw();
-  }
+  } catch(err) { showToast('다운로드 실패: ' + err.message); }
+  finally { bgRect.fill(prevFill); frameRect.show(); layer.find('Transformer').forEach(t => t.show()); layer.batchDraw(); }
 }
 
 // ========== DELETE / DUPLICATE ==========
 function deleteSelected() {
-  if (!selectedNodes.length) return;
-  pushUndo();
-  selectedNodes.forEach(n => n.destroy());
-  selectedNodes = [];
+  if (!selectedNodes.length) return; pushUndo();
+  selectedNodes.forEach(n => n.destroy()); selectedNodes = [];
   layer.batchDraw(); updatePropsPanel(); updateLayers(); markDirty();
 }
 function duplicateSelected() {
-  if (!selectedNodes.length) return;
-  pushUndo();
+  if (!selectedNodes.length) return; pushUndo();
   const newNodes = [];
   selectedNodes.forEach(n => {
     const clone = n.clone({ x: n.x() + 20, y: n.y() + 20 });
@@ -1460,8 +1462,7 @@ function duplicateSelected() {
     if (clone instanceof Konva.Text) clone.on('dblclick dbltap', () => editTextInline(clone));
     layer.add(clone); newNodes.push(clone);
   });
-  layer.batchDraw();
-  removeTransformers(); selectedNodes = newNodes; addTransformer(newNodes);
+  layer.batchDraw(); removeTransformers(); selectedNodes = newNodes; addTransformer(newNodes);
   updateLayers(); markDirty();
 }
 
@@ -1493,7 +1494,7 @@ function showToast(msg) {
   t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);color:#fff;font-size:12px;padding:8px 16px;border-radius:8px;z-index:9999;opacity:0;transition:opacity .2s;border:1px solid rgba(255,255,255,0.1);pointer-events:none';
   t.textContent = msg; document.body.appendChild(t);
   setTimeout(() => t.style.opacity = '1', 10);
-  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2000);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2500);
 }
 
 // ========== UTIL ==========
@@ -1505,7 +1506,7 @@ function rgbToHex(color) {
   return '#' + m.slice(0, 3).map(x => parseInt(x).toString(16).padStart(2, '0')).join('');
 }
 
-// ========== SETTINGS TOGGLES ==========
+// ========== SETTINGS ==========
 document.getElementById('smartGuidesToggle')?.addEventListener('change', e => { smartGuides = e.target.checked; });
 document.getElementById('snappingToggle')?.addEventListener('change', e => { snapping = e.target.checked; });
 
