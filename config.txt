@@ -1,0 +1,9 @@
+# DesignFlow 설정 파일
+# 아래 값을 Supabase 프로젝트의 실제 값으로 교체하세요
+# Supabase 대시보드 → Project Settings → API 에서 확인 가능
+
+# Supabase 프로젝트 URL (예: https://abcdefghijkl.supabase.co)
+SUPABASE_URL = YOUR_SUPABASE_PROJECT_URL
+
+# Supabase anon/public 키 (공개 키, 노출되어도 안전)
+SUPABASE_KEY = YOUR_SUPABASE_ANON_KEY
