@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DesignFlow</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap');
   :root {
-    --bg:#1a1d23;--bg2:#22262f;--bg3:#2a2f3a;--bg4:#313748;
-    --acc:#00c2cc;--acc2:#00e5f0;--acc-dim:rgba(0,194,204,0.12);--acc-border:rgba(0,194,204,0.35);
-    --txt:#e8ecf2;--muted:#6b7590;--border:rgba(255,255,255,0.07);
+    --bg:#0f1117;--bg2:#181c24;--bg3:#1e2330;--bg4:#252c3d;
+    --acc:#00c2cc;--acc2:#00e5f0;--acc-dim:rgba(0,194,204,0.10);--acc-border:rgba(0,194,204,0.30);
+    --txt:#e8ecf2;--muted:#5a6480;--border:rgba(255,255,255,0.06);
     --danger:#ff5b5b;--panel:240px;--toolbar:52px;--topbar:46px;
-    --shadow:0 8px 32px rgba(0,0,0,0.5);
+    --shadow:0 8px 32px rgba(0,0,0,0.6);
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
@@ -19,7 +19,7 @@
   /* ── LOADING ── */
   #loadingScreen{position:fixed;inset:0;background:var(--bg);z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .4s;}
   #loadingScreen.hidden{opacity:0;pointer-events:none;}
-  #loadingScreen .logo{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:700;letter-spacing:-.5px;animation:fadeUp .6s ease both;}
+  #loadingScreen .logo{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:700;letter-spacing:-.5px;animation:fadeUp .6s ease both;font-family:'Syne',sans-serif;}
   #loadingScreen .logo svg{width:30px;height:30px;animation:spin 1.5s ease-in-out infinite alternate;}
   #loadingScreen .status{font-size:12px;color:var(--muted);animation:fadeUp .6s .1s ease both;}
   @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
@@ -34,10 +34,12 @@
   #configError pre{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;font-size:12px;color:var(--txt);text-align:left;line-height:1.8;}
 
   /* ── CUSTOM MODAL ── */
-  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .22s;}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .22s;backdrop-filter:blur(4px);}
   .modal-overlay.active{opacity:1;pointer-events:all;}
-  .modal-box{background:var(--bg2);border:1px solid rgba(255,255,255,0.10);border-radius:16px;padding:28px 28px 20px;width:360px;max-width:90vw;box-shadow:0 24px 64px rgba(0,0,0,.7);transform:translateY(18px) scale(0.97);transition:transform .22s, opacity .22s;opacity:0;display:flex;flex-direction:column;gap:14px;}
+  .modal-box{background:var(--bg2);border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:28px 28px 20px;width:380px;max-width:90vw;box-shadow:0 24px 64px rgba(0,0,0,.8);transform:translateY(18px) scale(0.97);transition:transform .22s, opacity .22s;opacity:0;display:flex;flex-direction:column;gap:14px;position:relative;}
   .modal-overlay.active .modal-box{transform:none;opacity:1;}
+  .modal-close-btn{position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .17s;}
+  .modal-close-btn:hover{background:var(--bg4);color:var(--txt);}
   .modal-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 2px;}
   .modal-icon.warn{background:rgba(255,91,91,0.12);color:var(--danger);}
   .modal-icon.info{background:rgba(0,194,204,0.12);color:var(--acc);}
@@ -51,31 +53,226 @@
   .modal-btn.danger{background:rgba(255,91,91,0.1);color:var(--danger);border-color:rgba(255,91,91,0.25);}
   .modal-btn.danger:hover{background:var(--danger);color:#fff;}
 
-  /* ── LOGIN ── */
-  #loginScreen{position:fixed;inset:0;background:var(--bg);z-index:1500;display:none;align-items:center;justify-content:center;}
+  /* ══════════════════════════════════════
+     LOGIN — Redesigned
+  ══════════════════════════════════════ */
+  #loginScreen{
+    position:fixed;inset:0;
+    background:var(--bg);
+    z-index:1500;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
   #loginScreen.active{display:flex;}
-  .login-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:44px 38px;width:380px;max-width:90vw;display:flex;flex-direction:column;align-items:center;gap:22px;animation:fadeUp .5s ease both;}
-  .login-logo{display:flex;align-items:center;gap:10px;font-size:24px;font-weight:700;letter-spacing:-.5px;}
-  .login-logo svg{width:34px;height:34px;}
-  .login-desc{font-size:13px;color:var(--muted);text-align:center;line-height:1.65;}
-  .login-divider{display:flex;align-items:center;gap:12px;width:100%;}
+
+  /* Ambient background */
+  .login-bg{
+    position:absolute;inset:0;overflow:hidden;pointer-events:none;
+  }
+  .login-bg-orb{
+    position:absolute;border-radius:50%;filter:blur(80px);opacity:0.18;
+  }
+  .login-bg-orb:nth-child(1){
+    width:500px;height:500px;
+    background:radial-gradient(circle,#00c2cc,transparent);
+    top:-100px;right:-100px;
+    animation:orbFloat 8s ease-in-out infinite alternate;
+  }
+  .login-bg-orb:nth-child(2){
+    width:400px;height:400px;
+    background:radial-gradient(circle,#0044ff,transparent);
+    bottom:-80px;left:-80px;
+    animation:orbFloat 10s ease-in-out infinite alternate-reverse;
+  }
+  .login-bg-orb:nth-child(3){
+    width:300px;height:300px;
+    background:radial-gradient(circle,#cc00aa,transparent);
+    top:40%;left:40%;
+    animation:orbFloat 12s ease-in-out infinite alternate;
+  }
+  @keyframes orbFloat{from{transform:translate(0,0) scale(1);}to{transform:translate(30px,20px) scale(1.08);}}
+
+  /* Grid pattern overlay */
+  .login-bg-grid{
+    position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(0,194,204,0.04) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,194,204,0.04) 1px,transparent 1px);
+    background-size:40px 40px;
+  }
+
+  /* Split layout */
+  .login-layout{
+    position:relative;z-index:1;
+    display:flex;
+    width:880px;
+    max-width:95vw;
+    min-height:520px;
+    border-radius:24px;
+    overflow:hidden;
+    box-shadow:0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
+    animation:fadeUp .5s ease both;
+  }
+
+  /* Left brand panel */
+  .login-brand{
+    flex:1;
+    background:linear-gradient(145deg, rgba(0,194,204,0.12) 0%, rgba(0,60,80,0.3) 50%, rgba(0,0,0,0.2) 100%);
+    border-right:1px solid rgba(255,255,255,0.06);
+    padding:48px 40px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    backdrop-filter:blur(20px);
+    position:relative;
+    overflow:hidden;
+  }
+  .login-brand::before{
+    content:'';
+    position:absolute;
+    top:-60px;right:-60px;
+    width:280px;height:280px;
+    border-radius:50%;
+    background:radial-gradient(circle,rgba(0,194,204,0.15),transparent 70%);
+    pointer-events:none;
+  }
+  .login-brand-logo{
+    display:flex;align-items:center;gap:10px;
+    font-family:'Syne',sans-serif;
+    font-size:22px;font-weight:800;
+    letter-spacing:-0.5px;
+    color:var(--txt);
+  }
+  .login-brand-logo svg{width:32px;height:32px;}
+  .login-brand-tagline{
+    font-size:13px;
+    color:rgba(232,236,242,0.5);
+    margin-top:8px;
+    letter-spacing:0.01em;
+  }
+  .login-brand-features{
+    display:flex;flex-direction:column;gap:16px;
+    flex:1;justify-content:center;padding:40px 0 20px;
+  }
+  .login-brand-feature{
+    display:flex;align-items:center;gap:12px;
+  }
+  .login-brand-feature-icon{
+    width:36px;height:36px;
+    border-radius:10px;
+    background:rgba(0,194,204,0.12);
+    border:1px solid rgba(0,194,204,0.2);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    color:var(--acc);
+  }
+  .login-brand-feature-text{}
+  .login-brand-feature-title{font-size:13px;font-weight:500;color:var(--txt);}
+  .login-brand-feature-desc{font-size:11px;color:rgba(232,236,242,0.4);margin-top:1px;}
+  .login-brand-bottom{
+    font-size:11px;color:rgba(232,236,242,0.25);
+  }
+
+  /* Right form panel */
+  .login-form-panel{
+    width:360px;
+    flex-shrink:0;
+    background:rgba(24,28,36,0.95);
+    padding:44px 36px;
+    display:flex;flex-direction:column;
+    backdrop-filter:blur(20px);
+  }
+  .login-form-title{
+    font-family:'Syne',sans-serif;
+    font-size:24px;font-weight:700;
+    letter-spacing:-0.5px;
+    color:var(--txt);
+    margin-bottom:6px;
+  }
+  .login-form-subtitle{font-size:13px;color:var(--muted);margin-bottom:28px;}
+
+  .login-google-btn{
+    width:100%;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    padding:11px 18px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:10px;
+    cursor:pointer;
+    font-family:'DM Sans',sans-serif;
+    font-size:13px;font-weight:500;
+    color:var(--txt);
+    transition:all .2s;
+    margin-bottom:20px;
+  }
+  .login-google-btn:hover{background:rgba(255,255,255,0.09);border-color:rgba(255,255,255,0.18);transform:translateY(-1px);}
+  .login-google-btn svg{width:18px;height:18px;flex-shrink:0;}
+
+  .login-divider{
+    display:flex;align-items:center;gap:12px;
+    margin-bottom:20px;
+  }
   .login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--border);}
-  .login-divider span{font-size:11px;color:var(--muted);}
-  .btn-google{width:100%;display:flex;align-items:center;justify-content:center;gap:12px;padding:12px 20px;background:#fff;color:#1a1a1a;border:none;border-radius:10px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.25);}
-  .btn-google:hover{background:#f0f0f0;transform:translateY(-1px);}
-  .btn-google svg{width:20px;height:20px;flex-shrink:0;}
-  .login-form{width:100%;display:flex;flex-direction:column;gap:12px;}
-  .form-group{display:flex;flex-direction:column;gap:5px;}
-  .form-label{font-size:11px;font-weight:500;color:var(--muted);}
-  .form-input{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 13px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s;width:100%;}
-  .form-input:focus{border-color:var(--acc);}
-  .form-input::placeholder{color:var(--muted);}
-  .btn-primary{width:100%;padding:11px;background:var(--acc);color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;transition:all .2s;}
-  .btn-primary:hover{background:var(--acc2);}
-  .btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+  .login-divider span{font-size:11px;color:var(--muted);white-space:nowrap;}
+
+  .login-field{margin-bottom:14px;}
+  .login-field-label{
+    display:block;font-size:11px;font-weight:500;
+    color:var(--muted);margin-bottom:6px;letter-spacing:0.02em;text-transform:uppercase;
+  }
+  .login-field-input{
+    width:100%;
+    background:var(--bg3);
+    border:1px solid var(--border);
+    border-radius:9px;
+    padding:10px 13px;
+    color:var(--txt);
+    font-family:'DM Sans',sans-serif;
+    font-size:13px;
+    outline:none;
+    transition:border-color .2s, background .2s;
+  }
+  .login-field-input:focus{border-color:rgba(0,194,204,0.5);background:var(--bg4);}
+  .login-field-input::placeholder{color:rgba(90,100,128,0.7);}
+
+  .login-error{font-size:12px;color:var(--danger);min-height:16px;margin-bottom:8px;}
+
+  .login-submit-btn{
+    width:100%;
+    padding:12px;
+    background:var(--acc);
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-family:'DM Sans',sans-serif;
+    font-size:14px;font-weight:600;
+    letter-spacing:-0.01em;
+    transition:all .2s;
+    margin-bottom:16px;
+    position:relative;
+    overflow:hidden;
+  }
+  .login-submit-btn::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(to bottom,rgba(255,255,255,0.1),transparent);
+    pointer-events:none;
+  }
+  .login-submit-btn:hover{background:var(--acc2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,194,204,0.35);}
+  .login-submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+
   .login-toggle{font-size:12px;color:var(--muted);text-align:center;}
-  .login-toggle a{color:var(--acc);cursor:pointer;}
-  .login-error{font-size:12px;color:var(--danger);text-align:center;min-height:16px;}
+  .login-toggle a{color:var(--acc);cursor:pointer;font-weight:500;}
+  .login-toggle a:hover{color:var(--acc2);}
+
+  /* Responsive: stack on small screens */
+  @media(max-width:700px){
+    .login-brand{display:none;}
+    .login-form-panel{width:100%;border-radius:24px;}
+    .login-layout{width:95vw;min-height:auto;}
+  }
 
   /* ── DASHBOARD ── */
   #dashboard{flex:1;overflow-y:auto;padding:40px;display:none;flex-direction:column;gap:28px;animation:fadeUp .4s ease both;}
@@ -95,7 +292,7 @@
   .project-card:hover .project-del-btn{opacity:1;}
   .new-project-card{border:2px dashed var(--border);border-radius:12px;height:188px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;cursor:pointer;color:var(--muted);font-size:13px;transition:all .22s;}
   .new-project-card:hover{border-color:var(--acc);color:var(--acc);transform:translateY(-3px);}
-  .logo-mark{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;letter-spacing:-.3px;}
+  .logo-mark{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;letter-spacing:-.3px;font-family:'Syne',sans-serif;}
 
   /* ── EDITOR SHELL ── */
   #editor{display:none;flex:1;flex-direction:column;overflow:hidden;}
@@ -136,7 +333,7 @@
   .layer-action-btn:hover{border-color:var(--acc);color:var(--acc);}
 
   /* ── CANVAS ── */
-  .canvas-area{flex:1;position:relative;overflow:hidden;background:var(--bg);background-image:radial-gradient(circle,rgba(255,255,255,0.035) 1px,transparent 1px);background-size:22px 22px;}
+  .canvas-area{flex:1;position:relative;overflow:hidden;background:var(--bg);background-image:radial-gradient(circle,rgba(255,255,255,0.03) 1px,transparent 1px);background-size:22px 22px;}
   #canvas-viewport{position:absolute;top:0;left:0;transform-origin:0 0;will-change:transform;}
   .zoom-info{position:absolute;bottom:64px;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:3px 9px;font-size:11px;color:var(--muted);pointer-events:none;font-family:'DM Mono',monospace;z-index:10;}
   .smart-guide{position:absolute;pointer-events:none;z-index:100;}
@@ -181,13 +378,12 @@
   .slider-wrap{display:flex;align-items:center;gap:7px;}
   .prop-slider{flex:1;-webkit-appearance:none;height:3px;border-radius:2px;background:var(--bg);outline:none;cursor:pointer;}
   .prop-slider::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--acc);cursor:pointer;border:2px solid var(--bg);box-shadow:0 0 0 1px var(--acc);}
-  .slider-val{font-size:10px;color:var(--muted);width:26px;text-align:right;font-family:'DM Mono',monospace;}
   .align-btns{display:flex;gap:3px;flex-wrap:wrap;}
   .align-btn{width:26px;height:26px;background:var(--bg);border:1px solid var(--border);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .15s;}
   .align-btn:hover{border-color:var(--acc);color:var(--acc);}
   .align-btn svg{width:13px;height:13px;}
   .frame-presets{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px;}
-  .frame-preset{padding:3px 7px;background:var(--bg);border:1px solid var(--border);border-radius:4px;font-size:10px;cursor:pointer;color:var(--muted);transition:all .15s;}
+  .frame-preset{padding:3px 7px;background:var(--bg);border:1px solid var(--border);border-radius:4px;font-size:10px;cursor:pointer;color:var(--muted);transition:all .15px;}
   .frame-preset:hover{border-color:var(--acc);color:var(--acc);}
   .img-fill-btn{width:100%;padding:7px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:11px;cursor:pointer;text-align:center;transition:all .15s;font-family:inherit;}
   .img-fill-btn:hover{border-color:var(--acc);color:var(--acc);}
@@ -202,12 +398,41 @@
   .tool-tip{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);background:#000;color:#fff;font-size:10px;padding:3px 8px;border-radius:4px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:100;}
   .tool-btn:hover .tool-tip{opacity:1;}
 
-  /* shape picker */
-  .shape-picker{position:absolute;bottom:calc(var(--toolbar) + 8px);left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:10px;display:none;gap:6px;z-index:200;box-shadow:var(--shadow);flex-wrap:wrap;width:200px;}
-  .shape-picker.open{display:flex;animation:fadeUp .18s ease both;}
-  .shape-opt{width:56px;height:50px;background:var(--bg);border:1px solid var(--border);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:all .15s;flex-direction:column;gap:2px;font-size:10px;}
-  .shape-opt:hover{border-color:var(--acc);color:var(--acc);transform:translateY(-2px);}
-  .shape-opt svg{width:18px;height:18px;}
+  /* ─── SHAPE PICKER — fixed proportions ─── */
+  .shape-picker{
+    position:absolute;
+    bottom:calc(var(--toolbar) + 10px);
+    left:50%;transform:translateX(-50%);
+    background:var(--bg2);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:14px;
+    padding:12px;
+    display:none;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+    z-index:200;
+    box-shadow:0 16px 48px rgba(0,0,0,.7);
+    width:210px;
+  }
+  .shape-picker.open{display:grid;animation:fadeUp .18s ease both;}
+  .shape-opt{
+    aspect-ratio:1;
+    background:var(--bg3);
+    border:1px solid var(--border);
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    color:var(--muted);
+    transition:all .15s;
+    flex-direction:column;
+    gap:5px;
+    font-size:10px;
+    padding:8px 4px;
+  }
+  .shape-opt:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-dim);transform:translateY(-2px);}
+  .shape-opt svg{width:20px;height:20px;flex-shrink:0;}
 
   /* settings popup */
   .settings-popup{position:absolute;bottom:calc(var(--toolbar) + 8px);right:16px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px;display:none;z-index:200;box-shadow:var(--shadow);width:190px;}
@@ -237,7 +462,7 @@
   .multi-align-btn:hover{background:var(--acc);color:#fff;}
 
   /* ── CROP MODAL ── */
-  .crop-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:2000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+  .crop-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:2000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;backdrop-filter:blur(6px);}
   .crop-overlay.active{display:flex;animation:fadeUp .22s ease both;}
   .crop-header{font-size:14px;font-weight:600;color:var(--txt);}
   .crop-desc{font-size:12px;color:var(--muted);}
@@ -279,6 +504,9 @@ SUPABASE_KEY = your-anon-key</pre>
 <!-- CUSTOM MODAL -->
 <div class="modal-overlay" id="customModal">
   <div class="modal-box">
+    <button class="modal-close-btn" onclick="closeModal()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
     <div class="modal-icon" id="modalIcon">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     </div>
@@ -302,26 +530,88 @@ SUPABASE_KEY = your-anon-key</pre>
   </div>
 </div>
 
-<!-- LOGIN -->
+<!-- LOGIN — Redesigned -->
 <div id="loginScreen">
-  <div class="login-card">
-    <div class="login-logo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2.5" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      DesignFlow
+  <div class="login-bg">
+    <div class="login-bg-orb"></div>
+    <div class="login-bg-orb"></div>
+    <div class="login-bg-orb"></div>
+    <div class="login-bg-grid"></div>
+  </div>
+
+  <div class="login-layout">
+    <!-- Brand panel -->
+    <div class="login-brand">
+      <div>
+        <div class="login-brand-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2.5" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          DesignFlow
+        </div>
+        <div class="login-brand-tagline">디자인을 더 쉽고 빠르게</div>
+      </div>
+
+      <div class="login-brand-features">
+        <div class="login-brand-feature">
+          <div class="login-brand-feature-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="8" height="8" rx="1"/><circle cx="17" cy="7" r="4"/><polygon points="12 21 17 13 7 13 12 21"/></svg>
+          </div>
+          <div class="login-brand-feature-text">
+            <div class="login-brand-feature-title">다양한 도형과 레이어</div>
+            <div class="login-brand-feature-desc">사각형, 원, 별 등 자유로운 구성</div>
+          </div>
+        </div>
+        <div class="login-brand-feature">
+          <div class="login-brand-feature-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+          </div>
+          <div class="login-brand-feature-text">
+            <div class="login-brand-feature-title">클라우드 자동 저장</div>
+            <div class="login-brand-feature-desc">어디서든 내 프로젝트 이어서</div>
+          </div>
+        </div>
+        <div class="login-brand-feature">
+          <div class="login-brand-feature-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </div>
+          <div class="login-brand-feature-text">
+            <div class="login-brand-feature-title">PNG 내보내기</div>
+            <div class="login-brand-feature-desc">고해상도로 바로 다운로드</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="login-brand-bottom">© 2025 DesignFlow</div>
     </div>
-    <p class="login-desc">디자인을 시작하려면 로그인하세요.</p>
-    <button class="btn-google" onclick="loginWithGoogle()">
-      <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-      Google로 계속하기
-    </button>
-    <div class="login-divider"><span>또는 이메일로</span></div>
-    <div class="login-form">
-      <div class="form-group"><label class="form-label">이메일</label><input class="form-input" type="email" id="authEmail" placeholder="you@example.com"/></div>
-      <div class="form-group"><label class="form-label">비밀번호</label><input class="form-input" type="password" id="authPassword" placeholder="6자 이상" onkeydown="if(event.key==='Enter')handleEmailAuth()"/></div>
+
+    <!-- Form panel -->
+    <div class="login-form-panel">
+      <div class="login-form-title" id="loginFormTitle">다시 만나요 👋</div>
+      <div class="login-form-subtitle" id="loginFormSubtitle">계정에 로그인하여 계속하세요.</div>
+
+      <button class="login-google-btn" onclick="loginWithGoogle()">
+        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Google로 계속하기
+      </button>
+
+      <div class="login-divider"><span>또는 이메일로</span></div>
+
+      <div class="login-field">
+        <label class="login-field-label">이메일</label>
+        <input class="login-field-input" type="email" id="authEmail" placeholder="you@example.com"/>
+      </div>
+      <div class="login-field">
+        <label class="login-field-label">비밀번호</label>
+        <input class="login-field-input" type="password" id="authPassword" placeholder="6자 이상" onkeydown="if(event.key==='Enter')handleEmailAuth()"/>
+      </div>
+
       <div class="login-error" id="authError"></div>
-      <button class="btn-primary" id="authSubmitBtn" onclick="handleEmailAuth()">로그인</button>
+
+      <button class="login-submit-btn" id="authSubmitBtn" onclick="handleEmailAuth()">로그인</button>
+
+      <div class="login-toggle">
+        <span id="authToggleText">계정이 없으신가요?</span> <a onclick="toggleAuthMode()"><span id="authToggleLink">회원가입</span></a>
+      </div>
     </div>
-    <div class="login-toggle"><span id="authToggleText">계정이 없으신가요?</span> <a onclick="toggleAuthMode()"><span id="authToggleLink">회원가입</span></a></div>
   </div>
 </div>
 
@@ -406,14 +696,34 @@ SUPABASE_KEY = your-anon-key</pre>
   </div>
 
   <div class="bottom-toolbar">
+    <!-- SHAPE PICKER — fixed grid layout -->
     <div class="shape-picker" id="shapePicker">
-      <div class="shape-opt" onclick="addShape('rect')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg><span>사각형</span></div>
-      <div class="shape-opt" onclick="addShape('circle')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg><span>원</span></div>
-      <div class="shape-opt" onclick="addShape('triangle')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,3 22,21 2,21"/></svg><span>삼각형</span></div>
-      <div class="shape-opt" onclick="addShape('line')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg><span>선</span></div>
-      <div class="shape-opt" onclick="addShape('star')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>별</span></div>
-      <div class="shape-opt" onclick="addImageFromFile()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>이미지</span></div>
+      <div class="shape-opt" onclick="addShape('rect')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+        <span>사각형</span>
+      </div>
+      <div class="shape-opt" onclick="addShape('circle')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>
+        <span>원</span>
+      </div>
+      <div class="shape-opt" onclick="addShape('triangle')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,3 22,21 2,21"/></svg>
+        <span>삼각형</span>
+      </div>
+      <div class="shape-opt" onclick="addShape('line')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>선</span>
+      </div>
+      <div class="shape-opt" onclick="addShape('star')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <span>별</span>
+      </div>
+      <div class="shape-opt" onclick="addImageFromFile()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span>이미지</span>
+      </div>
     </div>
+
     <div class="settings-popup" id="settingsPopup">
       <div style="font-size:12px;font-weight:600;margin-bottom:8px">설정</div>
       <div class="settings-row"><span style="font-size:12px">스마트 가이드</span><label class="toggle"><input type="checkbox" id="smartGuidesToggle" checked/><span class="toggle-slider"></span></label></div>
@@ -466,7 +776,7 @@ SUPABASE_KEY = your-anon-key</pre>
   <div class="ctx-item" onclick="ctxDo('copy')">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>복사
   </div>
-  <div class="ctx-item" onclick="ctxDo('crop')" id="ctxCropBtn">
+  <div class="ctx-item" onclick="ctxDo('crop')" id="ctxCropBtn" style="display:none">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 2 6 22"/><polyline points="18 22 18 2"/><path d="M2 6h20"/><path d="M2 18h20"/></svg>이미지 자르기
   </div>
   <div class="ctx-sep"></div>
@@ -516,24 +826,39 @@ function closeModal() {
 }
 
 // ═══════════════════════════════════════════════════
-// CROP SYSTEM
+// CROP SYSTEM — FIXED
 // ═══════════════════════════════════════════════════
-let cropNode = null, cropOrigSrc = null;
+let cropNode = null;
 let cropDrag = false, cropStart = {x:0,y:0}, cropRect = {x:0,y:0,w:0,h:0};
-let cropOriginalImageSrc = null; // always keep the FULL original for multi-crop
+let cropOriginalImageSrc = null;
 
 function openCrop(node) {
-  const src = node._cropOrigSrc || node._fillImageSrc || (node instanceof Konva.Image && node.image()?.src);
-  if (!src) { showToast('이미지가 없습니다'); return; }
+  // node may be passed as object from JS or undefined — guard
+  if (!node || typeof node !== 'object') {
+    if (selectedNodes.length) node = selectedNodes[0];
+    else { showToast('이미지를 먼저 선택하세요'); return; }
+  }
+
+  const src = node._cropOrigSrc
+    || node._fillImageSrc
+    || (node instanceof Konva.Image && node.image() && node.image().src ? node.image().src : null);
+
+  if (!src || src.startsWith('data:,') || src === 'null') {
+    showToast('이미지가 없습니다'); return;
+  }
+
   cropNode = node;
   cropOriginalImageSrc = node._cropOrigSrc || src;
 
   const overlay = document.getElementById('cropOverlay');
   const canvas = document.getElementById('cropCanvas');
   const sel = document.getElementById('cropSelection');
-  sel.style.display = 'none'; cropRect = {x:0,y:0,w:0,h:0};
+  sel.style.display = 'none';
+  cropRect = {x:0,y:0,w:0,h:0};
+  cropDrag = false;
 
   const img = new window.Image();
+  img.crossOrigin = 'anonymous';
   img.onload = () => {
     const maxW = Math.min(img.width, window.innerWidth * 0.72);
     const maxH = Math.min(img.height, window.innerHeight * 0.55);
@@ -541,17 +866,23 @@ function openCrop(node) {
     canvas.width = Math.round(img.width * scale);
     canvas.height = Math.round(img.height * scale);
     const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    canvas._scale = scale; canvas._img = img;
+    canvas._scale = scale;
+    canvas._img = img;
     overlay.classList.add('active');
+    attachCropEvents(canvas, sel);
   };
+  img.onerror = () => showToast('이미지를 불러올 수 없습니다');
   img.src = cropOriginalImageSrc;
+}
 
-  const wrap = document.getElementById('cropCanvasWrap');
+function attachCropEvents(canvas, sel) {
   canvas.onmousedown = ev => {
     const r = canvas.getBoundingClientRect();
     cropStart = { x: ev.clientX - r.left, y: ev.clientY - r.top };
-    cropDrag = true; sel.style.display = 'block';
+    cropDrag = true;
+    sel.style.display = 'block';
     cropRect = { x: cropStart.x, y: cropStart.y, w: 0, h: 0 };
     updateCropSel(canvas, sel, cropRect);
   };
@@ -560,7 +891,10 @@ function openCrop(node) {
     const r = canvas.getBoundingClientRect();
     const cx = Math.max(0, Math.min(canvas.width, ev.clientX - r.left));
     const cy = Math.max(0, Math.min(canvas.height, ev.clientY - r.top));
-    cropRect = { x: Math.min(cropStart.x, cx), y: Math.min(cropStart.y, cy), w: Math.abs(cx - cropStart.x), h: Math.abs(cy - cropStart.y) };
+    cropRect = {
+      x: Math.min(cropStart.x, cx), y: Math.min(cropStart.y, cy),
+      w: Math.abs(cx - cropStart.x), h: Math.abs(cy - cropStart.y)
+    };
     updateCropSel(canvas, sel, cropRect);
   };
   canvas.onmouseup = () => { cropDrag = false; };
@@ -577,15 +911,17 @@ function updateCropSel(canvas, sel, rect) {
 
 function applyCrop() {
   const canvas = document.getElementById('cropCanvas');
-  if (!cropNode || cropRect.w < 4 || cropRect.h < 4) { cancelCrop(); return; }
+  if (!cropNode || cropRect.w < 4 || cropRect.h < 4) {
+    cancelCrop(); return;
+  }
   const scale = canvas._scale, img = canvas._img;
   const sx = cropRect.x / scale, sy = cropRect.y / scale;
   const sw = cropRect.w / scale, sh = cropRect.h / scale;
-  const out = document.createElement('canvas'); out.width = Math.round(sw); out.height = Math.round(sh);
+  const out = document.createElement('canvas');
+  out.width = Math.round(sw); out.height = Math.round(sh);
   out.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
   const croppedSrc = out.toDataURL();
 
-  // Store original for re-crop
   if (!cropNode._cropOrigSrc) cropNode._cropOrigSrc = cropOriginalImageSrc;
 
   if (cropNode instanceof Konva.Image) {
@@ -598,7 +934,6 @@ function applyCrop() {
     };
     newImg.src = croppedSrc;
   } else {
-    // Fill image crop
     cropNode._fillImageSrc = croppedSrc;
     const newImg = new window.Image();
     newImg.onload = () => { applyImageFill(cropNode, newImg); updatePropsPanel(); markDirty(); };
@@ -694,6 +1029,8 @@ function toggleAuthMode() {
   document.getElementById('authSubmitBtn').textContent = isSignUp ? '회원가입' : '로그인';
   document.getElementById('authToggleText').textContent = isSignUp ? '이미 계정이 있으신가요?' : '계정이 없으신가요?';
   document.getElementById('authToggleLink').textContent = isSignUp ? '로그인' : '회원가입';
+  document.getElementById('loginFormTitle').textContent = isSignUp ? '환영합니다 ✨' : '다시 만나요 👋';
+  document.getElementById('loginFormSubtitle').textContent = isSignUp ? '새 계정을 만들어 시작하세요.' : '계정에 로그인하여 계속하세요.';
   document.getElementById('authError').textContent = '';
 }
 async function loginWithGoogle() {
@@ -760,7 +1097,7 @@ function renderProjects() {
   projects.forEach((p, i) => {
     const card = document.createElement('div'); card.className = 'project-card';
     card.style.animationDelay = (i * 0.04) + 's';
-    card.innerHTML = `<div class="project-thumb" style="background:${p.thumb_bg||'#2a2f3a'}"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div><div class="project-info"><div class="project-name">${p.name||'제목 없음'}</div><div class="project-meta">${formatDate(p.updated_at||p.created_at)}</div></div><button class="project-del-btn" onclick="deleteProjectPrompt('${p.id}',event)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>`;
+    card.innerHTML = `<div class="project-thumb" style="background:${p.thumb_bg||'#1e2330'}"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div><div class="project-info"><div class="project-name">${p.name||'제목 없음'}</div><div class="project-meta">${formatDate(p.updated_at||p.created_at)}</div></div><button class="project-del-btn" onclick="deleteProjectPrompt('${p.id}',event)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>`;
     card.onclick = e => { if (e.target.closest('.project-del-btn')) return; openProject(p.id); };
     grid.appendChild(card);
   });
@@ -823,7 +1160,7 @@ function doGoBack() {
 }
 
 // ═══════════════════════════════════════════════════
-// EDITOR INIT — Fix: proper stage + layer reset
+// EDITOR INIT
 // ═══════════════════════════════════════════════════
 function initEditor(projectId) {
   if (typeof Konva === 'undefined') {
@@ -852,14 +1189,10 @@ function setupStage(projectId) {
   stage = new Konva.Stage({ container: 'konva-container', width: frameW, height: frameH, pixelRatio: dpr });
   layer = new Konva.Layer(); stage.add(layer);
 
-  // bg white fill
   bgRect = new Konva.Rect({ x:0, y:0, width:frameW, height:frameH, fill:'#ffffff', listening:false, name:'bg' });
   layer.add(bgRect);
-
-  // frame border — on top
   frameRect = new Konva.Rect({ x:0, y:0, width:frameW, height:frameH, stroke:'rgba(0,194,204,0.7)', strokeWidth:1.5, listening:false, fill:'transparent', name:'frame' });
   layer.add(frameRect);
-
   layer.draw();
 
   const area = document.getElementById('canvasArea');
@@ -873,15 +1206,6 @@ function setupStage(projectId) {
   updateLayers();
   isDirty = false;
   updateSaveIndicator(false);
-}
-
-// ── Ensure Konva container has correct pixel ratio canvas ──
-// Konva by default attaches a <canvas>; the viewport div clips the stage.
-// We fix the stage container style so DPR doesn't offset.
-function fixStageCSS() {
-  if (!stage) return;
-  const cv = stage.container().querySelector('canvas');
-  if (cv) { cv.style.width = frameW + 'px'; cv.style.height = frameH + 'px'; }
 }
 
 async function loadProjectData(projectId) {
@@ -915,7 +1239,6 @@ function resizeFrame() {
   stage.width(frameW); stage.height(frameH);
   bgRect.width(frameW); bgRect.height(frameH);
   frameRect.width(frameW); frameRect.height(frameH);
-  fixStageCSS();
   layer.batchDraw();
 }
 
@@ -924,42 +1247,28 @@ function resizeFrame() {
 // ═══════════════════════════════════════════════════
 function setupPanZoom() {
   const area = document.getElementById('canvasArea');
-
   area.addEventListener('mousedown', e => {
     if (e.button !== 2) return;
     rightDownPos = { x: e.clientX, y: e.clientY };
-    rightDragStarted = false;
-    isPanning = false;
+    rightDragStarted = false; isPanning = false;
     panStart = { x: e.clientX, y: e.clientY };
     panStartOff = { x: panX, y: panY };
     e.preventDefault();
   });
-
   window.addEventListener('mousemove', e => {
     if (rightDownPos === null) return;
     const dx = e.clientX - rightDownPos.x, dy = e.clientY - rightDownPos.y;
     if (!rightDragStarted && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) {
-      rightDragStarted = true; isPanning = true;
-      area.style.cursor = 'grabbing';
+      rightDragStarted = true; isPanning = true; area.style.cursor = 'grabbing';
     }
-    if (isPanning) {
-      panX = panStartOff.x + (e.clientX - panStart.x);
-      panY = panStartOff.y + (e.clientY - panStart.y);
-      applyView();
-    }
+    if (isPanning) { panX = panStartOff.x + (e.clientX - panStart.x); panY = panStartOff.y + (e.clientY - panStart.y); applyView(); }
   });
-
   window.addEventListener('mouseup', e => {
     if (e.button !== 2) return;
     if (isPanning) area.style.cursor = '';
-    isPanning = false;
-    rightDownPos = null;
+    isPanning = false; rightDownPos = null;
   });
-
-  area.addEventListener('contextmenu', e => {
-    if (rightDragStarted) { e.preventDefault(); return; }
-  });
-
+  area.addEventListener('contextmenu', e => { if (rightDragStarted) { e.preventDefault(); return; } });
   area.addEventListener('wheel', e => {
     e.preventDefault();
     const rect = area.getBoundingClientRect();
@@ -1009,7 +1318,6 @@ function setupStageEvents() {
     if (e.target === stage || e.target === bgRect || e.target === frameRect) return;
     if (e.target instanceof Konva.Transformer) return;
     if (!selectedNodes.includes(e.target)) selectNode(e.target);
-    // Show/hide crop button
     const isImg = selectedNodes[0] instanceof Konva.Image;
     const hasFillImg = selectedNodes[0]?._fillMode === 'image';
     document.getElementById('ctxCropBtn').style.display = (isImg || hasFillImg) ? 'flex' : 'none';
@@ -1019,8 +1327,7 @@ function setupStageEvents() {
   stage.on('mousedown', e => {
     if (currentTool !== 'draw') return;
     const pos = stage.getPointerPosition(); if (!pos) return;
-    isDrawing = true;
-    drawPoints = [pos.x, pos.y];
+    isDrawing = true; drawPoints = [pos.x, pos.y];
     drawLine = new Konva.Line({ points: drawPoints, stroke: '#00c2cc', strokeWidth: 2, lineCap: 'round', lineJoin: 'round', draggable: true });
     addDragHandlers(drawLine); pushUndo();
     layer.add(drawLine); layer.batchDraw();
@@ -1038,15 +1345,13 @@ function setupStageEvents() {
 }
 
 // ═══════════════════════════════════════════════════
-// SELECTION — using Konva.Transformer properly
+// SELECTION
 // ═══════════════════════════════════════════════════
 let activeTr = null;
 
 function selectNode(node) {
-  destroyTr();
-  selectedNodes = [node];
-  createTr([node]);
-  updatePropsPanel(); updateLayers(); updateMultiInfo();
+  destroyTr(); selectedNodes = [node];
+  createTr([node]); updatePropsPanel(); updateLayers(); updateMultiInfo();
 }
 function toggleNodeSel(node) {
   if (selectedNodes.includes(node)) selectedNodes = selectedNodes.filter(n => n !== node);
@@ -1056,8 +1361,7 @@ function toggleNodeSel(node) {
   updatePropsPanel(); updateLayers(); updateMultiInfo();
 }
 function clearSelection() {
-  destroyTr();
-  selectedNodes = [];
+  destroyTr(); selectedNodes = [];
   updatePropsPanel(); updateLayers(); updateMultiInfo();
 }
 function destroyTr() {
@@ -1067,16 +1371,10 @@ function destroyTr() {
 function createTr(nodes) {
   if (!nodes.length || !layer) return;
   activeTr = new Konva.Transformer({
-    nodes,
-    borderStroke: '#00c2cc',
-    borderStrokeWidth: 1.5,
-    anchorStroke: '#00c2cc',
-    anchorFill: '#ffffff',
-    anchorSize: 9,
-    anchorCornerRadius: 2,
-    rotateAnchorOffset: 22,
-    keepRatio: false,
-    enabledAnchors: ['top-left','top-center','top-right','middle-right','bottom-right','bottom-center','bottom-left','middle-left'],
+    nodes, borderStroke:'#00c2cc', borderStrokeWidth:1.5,
+    anchorStroke:'#00c2cc', anchorFill:'#ffffff', anchorSize:9, anchorCornerRadius:2,
+    rotateAnchorOffset:22, keepRatio:false,
+    enabledAnchors:['top-left','top-center','top-right','middle-right','bottom-right','bottom-center','bottom-left','middle-left'],
   });
   layer.add(activeTr);
   nodes.forEach(n => {
@@ -1086,8 +1384,7 @@ function createTr(nodes) {
     n.on('transform.tr', () => { markDirty(); updatePropsPanel(); });
     n.on('transformend.tr', () => { markDirty(); updatePropsPanel(); updateLayers(); });
   });
-  frameRect.moveToTop();
-  layer.batchDraw();
+  frameRect.moveToTop(); layer.batchDraw();
 }
 function updateMultiInfo() {
   const info = document.getElementById('multiInfo');
@@ -1100,8 +1397,7 @@ function updateMultiInfo() {
 // ═══════════════════════════════════════════════════
 let guideLines = [];
 function drawGuides(node) {
-  clearGuides();
-  if (!smartGuides) return;
+  clearGuides(); if (!smartGuides) return;
   const box = node.getClientRect();
   const area = document.getElementById('canvasArea'), vp = document.getElementById('canvas-viewport');
   const aR = area.getBoundingClientRect(), vpR = vp.getBoundingClientRect();
@@ -1123,9 +1419,7 @@ function clearGuides() { guideLines.forEach(g => g.remove()); guideLines = []; }
 // SHAPES
 // ═══════════════════════════════════════════════════
 function addShape(type) {
-  closeAllPopups();
-  if (!stage || !layer) return;
-  pushUndo();
+  closeAllPopups(); if (!stage || !layer) return; pushUndo();
   const cx = frameW/2, cy = frameH/2;
   let node = null;
   if (type === 'rect')     node = new Konva.Rect({ x: cx-60, y: cy-40, width: 120, height: 80, fill: '#00c2cc', draggable: true, cornerRadius: 4 });
@@ -1134,28 +1428,17 @@ function addShape(type) {
   else if (type === 'line')     node = new Konva.Line({ points: [cx-80, cy, cx+80, cy], stroke: '#00c2cc', strokeWidth: 3, draggable: true, lineCap: 'round' });
   else if (type === 'star')     node = new Konva.Star({ x: cx, y: cy, numPoints: 5, innerRadius: 35, outerRadius: 70, fill: '#00c2cc', draggable: true });
   if (!node) return;
-  addDragHandlers(node);
-  layer.add(node);
-  frameRect.moveToTop();
-  layer.batchDraw();
-  selectNode(node);
-  updateLayers();
-  markDirty();
+  addDragHandlers(node); layer.add(node); frameRect.moveToTop(); layer.batchDraw();
+  selectNode(node); updateLayers(); markDirty();
 }
 
 function addText() {
-  closeAllPopups();
-  if (!stage || !layer) return;
-  pushUndo();
+  closeAllPopups(); if (!stage || !layer) return; pushUndo();
   const node = new Konva.Text({ x: frameW/2-100, y: frameH/2-16, text: '텍스트를 입력하세요', fontSize: 24, fontFamily: 'DM Sans, sans-serif', fill: '#222831', draggable: true, width: 220 });
   addDragHandlers(node);
   node.on('dblclick dbltap', () => editTextInline(node));
-  layer.add(node);
-  frameRect.moveToTop();
-  layer.batchDraw();
-  selectNode(node);
-  updateLayers();
-  markDirty();
+  layer.add(node); frameRect.moveToTop(); layer.batchDraw();
+  selectNode(node); updateLayers(); markDirty();
 }
 
 function editTextInline(node) {
@@ -1184,16 +1467,11 @@ function handleImageFile(e) {
       const scale = Math.min(maxW/img.width, maxH/img.height);
       const w = img.width * scale, h = img.height * scale;
       const kImg = new Konva.Image({ x: frameW/2-w/2, y: frameH/2-h/2, image: img, width: w, height: h, draggable: true });
-      // Store original src for re-crop
       kImg._cropOrigSrc = ev.target.result;
       kImg._croppedSrc = ev.target.result;
       addDragHandlers(kImg);
-      layer.add(kImg);
-      frameRect.moveToTop();
-      layer.batchDraw();
-      selectNode(kImg);
-      updateLayers();
-      markDirty();
+      layer.add(kImg); frameRect.moveToTop(); layer.batchDraw();
+      selectNode(kImg); updateLayers(); markDirty();
     };
     img.src = ev.target.result;
   };
@@ -1217,9 +1495,7 @@ function handleFillImageFile(e) {
       node._fillImageSrc = ev.target.result;
       if (!node._cropOrigSrc) node._cropOrigSrc = ev.target.result;
       node._fillMode = 'image';
-      applyImageFill(node, img);
-      updatePropsPanel();
-      markDirty();
+      applyImageFill(node, img); updatePropsPanel(); markDirty();
     };
     img.src = ev.target.result;
   };
@@ -1252,8 +1528,7 @@ function applyImageFill(node, img) {
 function clearImageFill(node) {
   node._fillImageSrc = null; node._fillMode = 'solid'; node._cropOrigSrc = null;
   try { node.fillPatternImage(null); } catch(e) {}
-  node.fill('#00c2cc');
-  layer.batchDraw();
+  node.fill('#00c2cc'); layer.batchDraw();
 }
 
 function addDragHandlers(node) {
@@ -1314,7 +1589,7 @@ function updatePropsPanel() {
     !isLine ? makeSec('채우기', fillProps(node, isText, isImage)) : '',
     !isLine ? makeSec('투명도', opacityProps(node)) : '',
     isText ? makeSec('텍스트', textProps(node)) : '',
-    isImage ? makeSec('이미지', imageProps(node)) : '',
+    isImage ? makeSec('이미지', imagePropsHTML(node)) : '',
     makeSec('정렬', alignProps()),
   ].join('');
   attachProps(node);
@@ -1323,9 +1598,18 @@ function updatePropsPanel() {
 function makeSec(title, content) { return `<div class="prop-section"><div class="prop-section-header" onclick="toggleSec(this)">${title}<span class="chevron">▾</span></div><div class="prop-section-body">${content}</div></div>`; }
 function toggleSec(el) { el.parentElement.classList.toggle('collapsed'); el.nextElementSibling.classList.toggle('hidden'); }
 
-function imageProps(node) {
-  return `<button class="img-fill-btn" onclick="openCrop(selectedNodes[0])">✂ 이미지 자르기</button>
-  ${node._cropOrigSrc ? `<button class="img-fill-btn" style="margin-top:4px" onclick="resetCrop(selectedNodes[0])">↺ 원본으로 복원</button>` : ''}`;
+// Fixed: use a function name that doesn't conflict with openCrop
+function imagePropsHTML(node) {
+  return `<button class="img-fill-btn" onclick="openCropForSelected()">✂ 이미지 자르기</button>
+  ${node._cropOrigSrc ? `<button class="img-fill-btn" style="margin-top:4px" onclick="resetCropForSelected()">↺ 원본으로 복원</button>` : ''}`;
+}
+
+function openCropForSelected() {
+  if (selectedNodes.length) openCrop(selectedNodes[0]);
+}
+
+function resetCropForSelected() {
+  if (selectedNodes.length) resetCrop(selectedNodes[0]);
 }
 
 function resetCrop(node) {
@@ -1432,7 +1716,7 @@ function fillProps(node, isText, isImage) {
     <div id="fillImage" style="display:${mode==='image'?'block':'none'}">
       ${hasFillImg ? `<img src="${node._fillImageSrc}" style="display:block;width:100%;height:60px;border-radius:5px;border:1px solid var(--border);object-fit:cover;margin-bottom:6px">` : ''}
       <button class="img-fill-btn" onclick="triggerFillImage()">${hasFillImg ? '이미지 변경' : '이미지 선택'}</button>
-      ${hasFillImg ? `<button class="img-fill-btn" onclick="openCrop(selectedNodes[0])" style="margin-top:4px">✂ 이미지 자르기</button>` : ''}
+      ${hasFillImg ? `<button class="img-fill-btn" onclick="openCropForSelected()" style="margin-top:4px">✂ 이미지 자르기</button>` : ''}
       ${hasFillImg ? `<button class="img-fill-btn" onclick="clearImageFill(selectedNodes[0]);updatePropsPanel()" style="margin-top:4px;color:var(--danger)">이미지 제거</button>` : ''}
     </div>`;
 }
@@ -1490,8 +1774,7 @@ function attachProps(node) {
 // ═══════════════════════════════════════════════════
 function setFillMode(mode) {
   if (!selectedNodes.length) return;
-  const node = selectedNodes[0];
-  node._fillMode = mode;
+  const node = selectedNodes[0]; node._fillMode = mode;
   document.querySelectorAll('#fillTabs .fill-tab').forEach((t,i) => t.classList.toggle('active', ['solid','gradient','image','none'][i]===mode));
   document.getElementById('fillSolid').style.display = mode==='solid'?'block':'none';
   document.getElementById('fillGradient').style.display = mode==='gradient'?'block':'none';
@@ -1613,7 +1896,7 @@ function alignSelected(dir) {
 }
 
 // ═══════════════════════════════════════════════════
-// UNDO / REDO — fixed serialization for loaded projects
+// UNDO / REDO
 // ═══════════════════════════════════════════════════
 function pushUndo() { if (!layer) return; undoStack.push(serializeL()); if (undoStack.length>60) undoStack.shift(); redoStack=[]; }
 function undo() { if (!undoStack.length) return; redoStack.push(serializeL()); restoreL(undoStack.pop()); }
@@ -1632,7 +1915,6 @@ function restoreL(json) {
   restoreElements(arr);
 }
 
-// ── KEY FIX: restore with correct pixel ratio canvas styling ──
 function restoreElements(arr) {
   if (!Array.isArray(arr)) return;
   arr.forEach(data => {
@@ -1657,8 +1939,7 @@ function restoreElements(arr) {
     if (data.type==='Text') node.on('dblclick dbltap',()=>editTextInline(node));
     addDragHandlers(node); node.draggable(true); layer.add(node);
   });
-  frameRect.moveToTop();
-  layer.batchDraw(); updateLayers();
+  frameRect.moveToTop(); layer.batchDraw(); updateLayers();
 }
 
 // ═══════════════════════════════════════════════════
@@ -1721,7 +2002,7 @@ function ctxDo(action){
   if(action==='duplicate')duplicateSelected();
   else if(action==='copy')copySelected();
   else if(action==='delete')deleteSelected();
-  else if(action==='crop'){if(selectedNodes.length)openCrop(selectedNodes[0]);}
+  else if(action==='crop'){ openCropForSelected(); }
   else if(action==='bringToFront'){selectedNodes.forEach(n=>{n.moveToTop();});frameRect.moveToTop();layer.batchDraw();updateLayers();}
   else if(action==='bringForward'){selectedNodes.forEach(n=>n.moveUp());frameRect.moveToTop();layer.batchDraw();updateLayers();}
   else if(action==='sendBackward'){selectedNodes.forEach(n=>n.moveDown());layer.batchDraw();updateLayers();}
@@ -1761,7 +2042,7 @@ function updateSaveIndicator(dirty) {
 }
 
 // ═══════════════════════════════════════════════════
-// SAVE / EXPORT — with custom download modal
+// SAVE / EXPORT
 // ═══════════════════════════════════════════════════
 async function saveProject() {
   if (!layer || !sbClient || !currentUser) return;
